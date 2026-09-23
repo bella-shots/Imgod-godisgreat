@@ -1,0 +1,8 @@
+{
+  "name": "Master Portal & Visual Operations Hub",
+  "description": "Integrated company master portal for Projects, Finance, HR, Reimbursements with ₹5,000 policy engine, Salary carry-forward, MOM publishing, and Visual Page Builder.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
