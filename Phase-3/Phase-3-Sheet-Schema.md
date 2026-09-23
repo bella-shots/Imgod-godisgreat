@@ -1,0 +1,16 @@
+| Sheet / Workbook Area | Tab / Table | Purpose | Key fields | Sensitive? | Primary users | Phase 4 use |
+|---|---|---|---|---|---|---|
+| MASTER DATA | Projects | Authoritative project records. | Project_ID; Project_Name; Description; Owner; Start_Date; Event_Date; Status; Drive_Folder_URL; Notes | Moderate | Admin/project managers | Project links, countdown source, notifications, reports |
+| MASTER DATA | Employees | Employee directory and required HR/reimbursement attributes. | Employee_ID; Name; Email; Role; Salary_Basis; Active; Reimbursement_Eligible; Project_Access | YES | Admin/HR | Identity mapping, reimbursement, salary workflows |
+| PROJECTS | Project_Members | Maps employees to projects and access/role. | Project_ID; Employee_ID; Project_Role; Access_Level; Active | YES | Admin/project managers | Access workflows and project reporting |
+| PROJECTS | Project_Notes | Structured project notes. | Note_ID; Project_ID; Date; Author_Email; Note; Status | Moderate | Project members/admin | Reports and project history |
+| PROJECTS | Project_MOM_Index | Index of MOM records and published versions. | MOM_ID; Project_ID; Meeting_Date; Title; Version; Status; Drive_URL; Published_At; Published_By | Moderate | Project/admin users | MOM email automation and history |
+| FINANCE | Budget_Given | Money given to a person for a project/business purpose. | Budget_ID; Date; Recipient; Amount; Purpose; Project_ID; Status; Proof_URL; Created_By | YES | Finance/admin | Expense reconciliation and reporting |
+| FINANCE | Employee_Spending | Employee/project spending records. | Spending_ID; Employee_ID; Date; Amount; Recipient/Vendor; Purpose; Project_ID; Attachment_URL; Status | YES | Employee via Form; finance/admin | Expense calculations and approvals |
+| FINANCE | OOP_Claims | Employee out-of-pocket reimbursement claims. | Claim_ID; Employee_ID; Month; Date; Purpose; Amount; Project_ID; Proof_URL; Status; Approved_Amount; Paid_Date | YES | Employee via Form; finance/admin | Reimbursement and ₹5,000 rule workflow |
+| FINANCE | Salary_Admin | Admin-only monthly salary records. | Salary_Record_ID; Employee_ID; Month; Due_Amount; Paid_Amount; Pending_Carry_Forward; Status; Notes | YES | Admin only | Salary carry-forward and reporting |
+| FINANCE | Investments | Admin-only investment ledger. | Investment_ID; Source/Person; Amount; Taken_Date; Expected_Return_Date; Actual_Return_Date; Status; Notes | YES | Admin only | Investment reporting/reminders |
+| HR | HR_Admin | Admin-controlled HR attributes beyond basic employee directory. | Employee_ID; Joining_Date; Employment_Status; HR_Notes; Reimbursement_Settings | YES | Admin/HR | HR workflows |
+| REPORTS | Report_Index | Catalog of generated/approved reports. | Report_ID; Report_Type; Period; Project_ID; Drive_URL; Status; Generated_Date | YES/CONTROLLED | Admin/authorized users | Automated report publishing |
+| CONFIG | Lists_Config | Controlled dropdown values and configuration. | Status lists; roles; project list; reimbursement settings; categories | YES/CONTROLLED | Admin | Form validation and automation |
+| AUDIT | Submission_Index | Optional audit/index of important submissions. | Submission_ID; Source_Form; Record_ID; Submitted_By; Submitted_At; Processing_Status | YES | Admin | Automation traceability |
