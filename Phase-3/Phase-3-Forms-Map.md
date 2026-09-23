@@ -1,0 +1,10 @@
+| Form | Purpose | Main fields | Destination tab | Who submits | Access rule | Phase 4 dependency |
+|---|---|---|---|---|---|---|
+| Create / Request Project | Create a project or submit a project request. | Project name; description; owner; start date; event date; members; notes | Projects + Project_Members (directly or via controlled processing) | Admin/project-authorized users | Restricted to authorized users | Create project folder/link, notifications |
+| Employee Spending / Expense | Record an expense/spending item. | Employee; date; amount; recipient/vendor; purpose; project; proof upload | Employee_Spending | Employees/authorized users | Authenticated/controlled response access | Validation, totals, approval/status |
+| OOP Claim | Submit monthly out-of-pocket reimbursement. | Employee; month; date; purpose; amount; project; proof upload | OOP_Claims | Employees | Authenticated/controlled response access | ₹5,000 rule, approval, reimbursement, salary treatment |
+| Employee Update / HR Request | Submit/update employee information or HR request. | Employee; request type; relevant details; attachment if needed | HR_Admin / controlled HR workflow | Employees/admin | Restricted | Notifications and HR processing |
+| MOM Input | Create or update a MOM record. | Project; meeting date; title; participants; registered email IDs; content; version/update info | Project_MOM_Index + Drive/Docs as applicable | Project/admin users | Project-authorized users | Publish/update email, version history |
+| Report Request (optional) | Request a defined report. | Report type; period; project; recipient | Report_Index / request area | Admin/authorized users | Restricted | Generate report and notify |
+| Investment Entry (admin) | Record an investment ledger entry. | Source/person; amount; taken date; expected return; actual return; status; notes | Investments | Admin only | Admin only | Reminders/status reporting |
+| Salary Entry (admin) | Create/update monthly salary record. | Employee; month; due amount; paid amount; notes | Salary_Admin | Admin only | Admin only | Carry-forward calculation/reporting |
