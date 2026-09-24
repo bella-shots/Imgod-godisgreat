@@ -1,5 +1,10 @@
 # AI Development Agent Instructions
 
+## IMPORT SAFETY GATE
+
+When this repository is first imported into an AI development environment, **STOP before making any implementation change**. Read `Main Prompt/Main-Prompt.md` first, then this file, then the required `context/` files and current feature prompt. Do not scaffold an application, initialize React/Vite/Node, create demo code, or modify/delete files merely because the repository was imported. Determine the current authorized phase from `context/progress-tracker.md` and follow only its authoritative prompt. If the repository does not provide enough information to determine the next action, stop and request clarification rather than improvising.
+
+
 ## Purpose
 This repository is developed using the spec-driven, architecture-first workflow defined by the project playbook.
 
