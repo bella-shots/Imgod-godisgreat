@@ -22,7 +22,7 @@ CONTROL FOUNDATION — READY FOR FEATURE EXECUTION
 Feature 01 — Google Drive structure.
 
 ## Feature status
-- 01 Google Drive structure: NOT STARTED
+- 01 Google Drive structure: IN VERIFICATION (Hierarchy verified; awaiting permission confirmation)
 - 02 Master Google Site: BLOCKED until Feature 01 is verified
 - 03 Sheets + Forms: BLOCKED until Feature 02 is verified
 - 04 Apps Script automation: BLOCKED until Feature 03 is verified

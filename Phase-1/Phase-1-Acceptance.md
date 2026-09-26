@@ -1,14 +1,14 @@
-| ID | Acceptance Test | Expected Result | Status |
-|---|---|---|---|
-| P1-01 | Create MASTER COMPANY root folder. | Root folder exists under the intended admin Google account. | NOT STARTED |
-| P1-02 | Create six required top-level folders. | Projects, Finance, HR, Templates, MOM and Reports all exist. | NOT STARTED |
-| P1-03 | Create a sample project folder. | PROJECT_<ProjectName> exists under Projects. | NOT STARTED |
-| P1-04 | Create recommended project subfolders. | 01_Admin through 07_Reports exist in the sample project. | NOT STARTED |
-| P1-05 | Verify restricted Finance access. | Test employee account cannot access restricted Finance source material. | NOT STARTED |
-| P1-06 | Verify restricted HR access. | Test employee account cannot access restricted HR source material. | NOT STARTED |
-| P1-07 | Verify project access. | Authorized project user can access only the intended project material. | NOT STARTED |
-| P1-08 | Verify no public exposure. | Confidential folders/files are not published publicly or shared by unrestricted link. | NOT STARTED |
-| P1-09 | Verify naming convention. | Folder names match the documented naming standard. | NOT STARTED |
-| P1-10 | Verify template protection. | Master templates cannot be accidentally overwritten by ordinary users. | NOT STARTED |
-| P1-11 | Verify zero additional software dependency. | No paid third-party storage/file service is required. | NOT STARTED |
-| P1-12 | Phase 1 closure. | All P1 acceptance tests PASS and evidence is recorded. | NOT STARTED |
+| ID | Acceptance Test | Expected Result | Status | Evidence / Notes |
+|---|---|---|---|---|
+| P1-01 | Create MASTER COMPANY root folder. | Root folder exists under the intended admin Google account. | PASS | Verified existing root folder via Apps Script execution (26-Sep-2026). |
+| P1-02 | Create six required top-level folders. | Projects, Finance, HR, Templates, MOM and Reports all exist. | PASS | Verified existing 6 folders (Projects, Finance, HR, Templates, MOM, Reports) via Apps Script execution (26-Sep-2026). |
+| P1-03 | Create a sample project folder. | PROJECT_<ProjectName> exists under Projects. | PASS | Verified existing PROJECT_Phase1_Test folder under Projects (26-Sep-2026). |
+| P1-04 | Create recommended project subfolders. | 01_Admin through 07_Reports exist in the sample project. | PASS | Verified existing 7 subfolders (01_Admin to 07_Reports) under PROJECT_Phase1_Test (26-Sep-2026). |
+| P1-05 | Verify restricted Finance access. | Test employee account cannot access restricted Finance source material. | PENDING FINAL CONFIRMATION | 8:40 PM Audit: Finance verified PRIVATE (Admin-only). Remaining check: Negative access denial confirmation from non-admin account. |
+| P1-06 | Verify restricted HR access. | Test employee account cannot access restricted HR source material. | PENDING FINAL CONFIRMATION | 8:40 PM Audit: HR verified PRIVATE (Admin-only). Remaining check: Negative access denial confirmation from non-admin account. |
+| P1-07 | Verify project access. | Authorized project user can access only the intended project material. | PENDING FINAL CONFIRMATION | 8:40 PM Audit: PROJECT_Phase1_Test verified PRIVATE. Remaining check: Confirm sharing project folder isolates access from sibling/Finance/HR folders. |
+| P1-08 | Verify no public exposure. | Confidential folders/files are not published publicly or shared by unrestricted link. | PASS | 8:40 PM Audit: MASTER COMPANY and all 6 top folders verified PRIVATE (General Access is Restricted, zero public links). |
+| P1-09 | Verify naming convention. | Folder names match the documented naming standard. | PASS | Folder naming matches manifest: all caps root, PascalCase top folders, 01_-07_ prefixes. |
+| P1-10 | Verify template protection. | Master templates cannot be accidentally overwritten by ordinary users. | PENDING FINAL CONFIRMATION | 8:40 PM Audit: Templates verified PRIVATE (Owner-only, zero ordinary user write permissions). |
+| P1-11 | Verify zero additional software dependency. | No paid third-party storage/file service is required. | PASS | Standard Google Drive personal account used. ₹0 spend, zero third-party software. |
+| P1-12 | Phase 1 closure. | All P1 acceptance tests PASS and evidence is recorded. | IN PROGRESS | P1-01 to P1-04, P1-08, P1-09, P1-11 PASS (7 of 11 verified). Awaiting minimum verification on P1-05, P1-06, P1-07, P1-10. |
