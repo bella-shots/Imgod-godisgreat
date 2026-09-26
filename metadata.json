@@ -1,7 +1,0 @@
-{
-  "name": "Master Company Portal",
-  "description": "Internal operations portal and management console for the Master Company Google-native system (Drive, Sites, Sheets, Forms, Apps Script).",
-  "capabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
