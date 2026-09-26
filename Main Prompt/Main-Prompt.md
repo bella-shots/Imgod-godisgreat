@@ -620,3 +620,8 @@ Your responsibility is to continue the project faithfully.
 **Do not jump phases.**
 
 **Do not claim what you cannot verify.**
+
+## Google AI Studio Build Mode Entry
+
+When this repository is used in Google AI Studio Build Mode, use `Main Prompt/AI-Studio-Build-Mode-Startup.md` as the first explicit Build Mode prompt. It is a startup/control prompt only; it must produce a Repository Understanding Report and stop before implementation.
+
