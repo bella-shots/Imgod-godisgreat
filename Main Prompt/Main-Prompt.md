@@ -621,7 +621,75 @@ Your responsibility is to continue the project faithfully.
 
 **Do not claim what you cannot verify.**
 
+## 21. CURRENT REPOSITORY EXECUTION GATE
+
+The repository's current progress tracker is the authority for whether implementation may begin.
+
+At the current controlled state:
+
+- **Phase 1 — Google Drive structure:** COMPLETE & VERIFIED.
+- **Phase 2 — Master Google Site:** UNBLOCKED but **AWAITING EXPLICIT AUTHORIZATION**.
+- **Phase 3 — Sheets + Forms:** BLOCKED until Phase 2 is verified.
+- **Phase 4 — Apps Script automation:** BLOCKED until Phase 3 is verified.
+- **Phase 5 — Testing + permissions + handover:** BLOCKED until Phase 4 is verified.
+
+Therefore, unless context/progress-tracker.md has subsequently been changed by the authorized workflow, an imported AI agent must:
+
+1. Read the repository controls.
+2. Determine that Phase 2 is the next work item.
+3. Read Phase-2/ChatGPT Prompt/Prompt-001.md and its required supporting documentation.
+4. Produce the Repository Understanding Report.
+5. **STOP.**
+
+Do **not** interpret "UNBLOCKED" or "Ready for Phase 2 initiation" as authorization to start building.
+
+Implementation may begin only when the repository state and the current execution instruction together authorize Phase 2.
+
+### Phase 2 controller requirements
+
+When Phase 2 becomes explicitly authorized, the implementation agent must follow Phase-2/ChatGPT Prompt/Prompt-001.md exactly.
+
+That prompt defines Phase 2 as **Master Google Site only**. It does not authorize:
+
+- React/Vite/Next.js or another custom web application
+- Firebase or another custom backend/database
+- custom authentication
+- custom visual website-builder functionality
+- operational Sheets
+- Forms
+- Apps Script automation
+- salary/reimbursement/investment automation
+- MOM automation
+- generated reports
+- Phase 3, Phase 4 or Phase 5 implementation
+
+The legacy workbook/full-builder material is not a Phase 2 implementation authorization. The revised Phase 2 prompt is authoritative for the current Google Site build.
+
+### Phase 2 human-action boundary
+
+Creating or configuring the actual Google Site, ownership, sharing, publishing, or account-level access may require actions in the user's Google account.
+
+If the AI cannot perform those actions with authorized access, it must stop using the Human-Action Boundary in this file and must not claim that the Site exists, is published, or has permission-test results.
+
+### Phase 2 verification boundary
+
+For Phase 2, distinguish strictly between:
+
+- a Site structure described in documentation,
+- instructions for creating a Site,
+- a Site that actually exists,
+- a Site that is actually accessible to the intended users,
+- and a Site whose sensitive-data and editor permissions have actually been tested.
+
+Only the latter states may support the corresponding acceptance PASS results.
+
 ## Google AI Studio Build Mode Entry
 
-When this repository is used in Google AI Studio Build Mode, use `Main Prompt/AI-Studio-Build-Mode-Startup.md` as the first explicit Build Mode prompt. It is a startup/control prompt only; it must produce a Repository Understanding Report and stop before implementation.
+When this repository is used in Google AI Studio Build Mode, the first explicit Build Mode instruction must be the startup/control prompt in `Main Prompt/AI-Studio-Build-Mode-Startup.md`.
+
+Google's current Antigravity documentation states that `.agents/AGENTS.md` is automatically loaded as system instructions at agent startup, while Google AI Studio Build Mode supports importing an existing GitHub repository. This repository therefore uses both mechanisms where available, but the explicit startup prompt remains the required operational gate for this project's workflow. See the current Google documentation cited in the project record.
+
+The startup turn is **read-and-report only**. It must not implement anything. In the current repository state, it must stop after reporting that Phase 2 is awaiting explicit authorization.
+
+The next implementation turn must use the authoritative Phase 2 prompt and must not treat repository import itself as an implementation request.
 
