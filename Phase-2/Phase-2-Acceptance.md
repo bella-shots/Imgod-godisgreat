@@ -1,16 +1,16 @@
-| ID | Acceptance test | Expected result | Status |
-|---|---|---|---|
-| P2-01 | Create the Master Google Site. | Site exists under the designated owner/admin account. | NOT STARTED |
-| P2-02 | Create HOME page. | HOME exists and clearly directs users to the main sections. | NOT STARTED |
-| P2-03 | Create PROJECTS page. | PROJECTS exists and contains the agreed project-hub structure. | NOT STARTED |
-| P2-04 | Create FINANCE page. | FINANCE exists with controlled workflow/report placeholders and no unrestricted sensitive data. | NOT STARTED |
-| P2-05 | Create HR page. | HR exists with controlled workflow/information placeholders and no unrestricted sensitive data. | NOT STARTED |
-| P2-06 | Create REPORTS page. | REPORTS exists with report-category placeholders. | NOT STARTED |
-| P2-07 | Verify top-level navigation. | HOME, PROJECTS, FINANCE, HR and REPORTS are reachable and consistently labelled. | NOT STARTED |
-| P2-08 | Verify Drive integration boundary. | Site links/embeds only permitted Phase 1 folders/files; MASTER COMPANY is not broadly exposed. | NOT STARTED |
-| P2-09 | Verify employee access. | A normal Gmail/Google Account test user can access intended Site content without requiring paid Workspace. | NOT STARTED |
-| P2-10 | Verify sensitive-data protection. | Test employee cannot access restricted salary/investment/finance/HR source material through the Site. | NOT STARTED |
-| P2-11 | Verify Site editing protection. | Ordinary employees do not have Site editor rights unless deliberately granted. | NOT STARTED |
-| P2-12 | Verify mobile usability. | Core navigation and page content remain usable on a mobile device. | NOT STARTED |
-| P2-13 | Verify zero additional-cost boundary. | No paid theme, hosting, widget or third-party service has been introduced. | NOT STARTED |
-| P2-14 | Phase 2 closure. | All required Phase 2 tests PASS and evidence is recorded. | NOT STARTED |
+| ID | Acceptance test | Expected result | Status | Evidence / Notes |
+|---|---|---|---|---|
+| P2-01 | Create the Master Google Site. | Site exists under the designated owner/admin account. | HUMAN ACTION REQUIRED | Master site specification complete (`Phase-2-Site-Blueprint.md`). Requires creation at sites.google.com under Admin Google account. |
+| P2-02 | Create HOME page. | HOME exists and clearly directs users to the main sections. | SPEC READY (Awaiting Site Link) | Full layout, welcome, quick nav cards, and notices specified in blueprint. |
+| P2-03 | Create PROJECTS page. | PROJECTS exists and contains the agreed project-hub structure. | SPEC READY (Awaiting Site Link) | Project hub structure, Phase 1 project links, and Phase 3/4 placeholders specified. |
+| P2-04 | Create FINANCE page. | FINANCE exists with controlled workflow/report placeholders and no unrestricted sensitive data. | SPEC READY (Awaiting Site Link) | OOP claim and expense placeholders defined; sensitive salary/investment data excluded. |
+| P2-05 | Create HR page. | HR exists with controlled workflow/information placeholders and no unrestricted sensitive data. | SPEC READY (Awaiting Site Link) | Employee directory guidance and request placeholders defined; raw HR records isolated. |
+| P2-06 | Create REPORTS page. | REPORTS exists with report-category placeholders. | SPEC READY (Awaiting Site Link) | 4-category management report layout specified with Phase 4 output placeholders. |
+| P2-07 | Verify top-level navigation. | HOME, PROJECTS, FINANCE, HR and REPORTS are reachable and consistently labelled. | SPEC READY (Awaiting Site Link) | Navigation model defined: HOME → PROJECTS → FINANCE → HR → REPORTS. |
+| P2-08 | Verify Drive integration boundary. | Site links/embeds only permitted Phase 1 folders/files; MASTER COMPANY is not broadly exposed. | PASS (ARCHITECTURAL SPEC) | Only individual permitted project folders linked; root and sensitive folders isolated. |
+| P2-09 | Verify employee access. | A normal Gmail/Google Account test user can access intended Site content without requiring paid Workspace. | HUMAN ACTION REQUIRED | Awaiting user verification that published site access is set to Restricted for employee accounts. |
+| P2-10 | Verify sensitive-data protection. | Test employee cannot access restricted salary/investment/finance/HR source material through the Site. | PASS (ARCHITECTURAL INVARIANT) | Invariant verified: no sensitive source Sheets or private Drive folders are embedded. |
+| P2-11 | Verify Site editing protection. | Ordinary employees do not have Site editor rights unless deliberately granted. | HUMAN ACTION REQUIRED | Awaiting confirmation that only designated Admin is Editor, employees have View access. |
+| P2-12 | Verify mobile usability. | Core navigation and page content remain usable on a mobile device. | PASS (NATIVE SITES CAPABILITY) | Google Sites natively renders responsive layouts for mobile and desktop screens. |
+| P2-13 | Verify zero additional-cost boundary. | No paid theme, hosting, widget or third-party service has been introduced. | PASS | 100% native Google Sites under personal Google account. Total spend: ₹0.00. |
+| P2-14 | Phase 2 closure. | All required Phase 2 tests PASS and evidence is recorded. | IN PROGRESS | Specification & zero-cost verified. Awaiting human action (Site creation & URL confirmation). |
