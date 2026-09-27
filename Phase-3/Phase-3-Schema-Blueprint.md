@@ -14,14 +14,17 @@ To enforce **Access Control (Rule 15)** and **Zero-Trust Sensitive Data Protecti
 The data layer is partitioned into three distinct Google Sheets workbooks with isolated Drive permission boundaries:
 
 1. **`MASTER_COMPANY_OPERATIONS`** (General / Project Member accessible workbook)
-   - Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`, `Lists_Config`
-   - Access: Site Admin / PM (Editor); Assigned Employees / Project Members (Viewer).
+   - Authoritative Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`, `Lists_Config`
+   - Native Form Intake Tabs: `Projects_Responses`, `MOM_Responses`
+   - Required Access Policy: Site Admin / Project Lead (Editor); Assigned Employees / Project Members (Viewer).
 2. **`MASTER_COMPANY_FINANCE`** (Restricted Finance & Accounting workbook)
-   - Tabs: `Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, `Investments`
-   - Access: Site Admin / Finance Admin ONLY (Private / Restricted). Ordinary employees have **0 access** to this workbook (employees submit strictly via Forms).
+   - Authoritative Tabs: `Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, `Investments`
+   - Native Form Intake Tabs: `Employee_Spending_Responses`, `OOP_Claims_Responses`, `Salary_Responses`, `Investment_Responses`
+   - Required Access Policy: Site Admin / Finance Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook (employees submit strictly via Forms).
 3. **`MASTER_COMPANY_HR_ADMIN`** (Restricted People Operations & Governance workbook)
-   - Tabs: `Employees`, `HR_Admin`, `Report_Index`, `Submission_Index`
-   - Access: Site Admin / HR Admin ONLY (Private / Restricted). Ordinary employees have **0 access** to this workbook.
+   - Authoritative Tabs: `Employees`, `HR_Admin`, `Report_Index`, `Submission_Index`
+   - Native Form Intake Tabs: `HR_Requests_Responses`, `Report_Requests_Responses`
+   - Required Access Policy: Site Admin / HR Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook.
 
 ---
 
@@ -230,18 +233,24 @@ The data layer is partitioned into three distinct Google Sheets workbooks with i
 
 ---
 
-## 3. Google Forms Mapping & Platform Boundary Rules
-
-| Form ID | Form Name | Key Questions / Input Fields | Native Google Form Destination | Authoritative Target Tab | Native vs Normalized Processing Boundary (Rule 14) |
+### 3. Google Forms Mapping & Three-Layer Data Pipeline
+ 
+The architecture enforces a strict distinction across three layers:
+- **Layer A (Google Form):** User-facing intake interface.
+- **Layer B (Native Form Response Destination):** The raw destination sheet where Google Forms writes incoming submissions.
+- **Layer C (Authoritative Business Table):** The normalized business source-of-truth table.
+- **Phase 4 Processing:** The automation boundary responsible for validation, stable ID generation, normalization, and business logic.
+ 
+| Form ID | Form Name | Native Response Destination (Layer B) | Authoritative Target (Layer C) | Phase 3 Native Capability | Phase 4 Processing Required |
 |---|---|---|---|---|---|
-| **FRM-01** | Create / Request Project | Project Name, Description, Owner Email, Start Date, Event Date, Assigned Members, Notes | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` + `Project_Members` | **PHASE 3 PLATFORM LIMITATION / PHASE 4 PROCESSING REQUIRED**<br>Native Forms write flat rows to `Projects_Responses`. Normalizing members into junction table `Project_Members` requires Phase 4 Apps Script. |
-| **FRM-02** | Employee Spending / Expense | Employee Email / ID, Date Incurred, Amount (INR), Recipient/Vendor, Purpose, Project Selection, File Upload (Receipt) | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Direct 1:1 mapping supported. Native upload link recorded in attachment column. Status default `Submitted`. |
-| **FRM-03** | OOP Claim | Employee Email / ID, Claim Month (`YYYY-MM`), Date, Purpose, Amount (INR), Project Selection, File Upload (Proof) | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Direct 1:1 mapping supported. ₹5,000 threshold calculation deferred to Phase 4. |
-| **FRM-04** | Employee Update / HR Request | Employee Email / ID, Request Type (Personal Info, Leave, Query), Details, Attachment Upload (Optional) | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Direct 1:1 submission mapping. Notification triggers handled in Phase 4. |
-| **FRM-05** | MOM Input | Project Selection, Meeting Date, Title, Participants, Registered Email IDs, Notes / Decisions Body, Version Tag | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Direct 1:1 catalog mapping. Google Doc creation and email distribution deferred to Phase 4. |
-| **FRM-06** | Report Request (Optional) | Report Type, Reporting Period, Target Project, Recipient Email | `Report_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `Report_Index` | Direct 1:1 request log mapping. Report compiler deferred to Phase 4. |
-| **FRM-07** | Investment Entry (Admin) | Investor / Source Entity, Capital Amount (INR), Inflow Date, Expected Return Date, Status, Notes | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Direct 1:1 admin entry. Restricted form access (Admin only). |
-| **FRM-08** | Salary Entry (Admin) | Employee Selection, Compensation Month (`YYYY-MM`), Base Due Amount, Actual Paid Amount, Notes | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Direct 1:1 admin entry. Carry-forward math deferred to Phase 4. |
+| **FRM-01** | Create / Request Project | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` and `Project_Members` | Native Google Forms records flat row submission with project details and list of assigned members. | **Phase 4 Normalization Required:** Parse assigned members into multiple normalized junction records in `Project_Members`; assign stable `PRJ-XXX` and `MBR-XXX` IDs; create Phase 1 Drive project folders. |
+| **FRM-02** | Employee Spending / Expense | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Native Google Forms captures raw expense details and stores receipt in Drive via native upload engine. | **Phase 4 Processing Required:** Validate employee identity against `Employees`; assign stable `SPN-XXX` ID; evaluate status; route attachment link to `Employee_Spending`. |
+| **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata and proof file in Drive. | **Phase 4 Processing Required:** Assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
+| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Dispatch email notifications to HR Admin; route request into `HR_Admin` governance workflow; update `Submission_Index`. |
+| **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata, attendee emails, and notes. | **Phase 4 Processing Required:** Assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
+| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
+| **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
+| **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | **Phase 4 Processing Required:** Assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
 
 ---
 

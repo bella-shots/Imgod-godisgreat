@@ -41,18 +41,24 @@ To enforce the **Zero-Trust Sensitive Data Protection Rule** and prevent unautho
 
 ---
 
-## 3. Forms Created & Mapping Engine
+## 3. Forms Mapping & Three-Layer Data Pipeline
 
-| Form ID | Form Name | Purpose | Destination Tab | Rule 14 Mapping Boundary |
-|---|---|---|---|---|
-| **FRM-01** | Create / Request Project | Project creation request | `Projects_Responses` | **Platform Limitation / Phase 4 Processing Required**<br>Native Forms write flat rows. Normalized creation of `Project_Members` rows requires Phase 4 Apps Script. |
-| **FRM-02** | Employee Spending / Expense | Record direct business expense | `Employee_Spending` | Direct 1:1 mapping supported. Native upload link captured in `Attachment_URL`. |
-| **FRM-03** | OOP Claim | Monthly reimbursement claim | `OOP_Claims` | Direct 1:1 mapping supported. ₹5,000 threshold calculation deferred to Phase 4. |
-| **FRM-04** | Employee Update / HR Request | Update info or submit HR request | `HR_Admin` | Direct 1:1 submission mapping. Notification triggers handled in Phase 4. |
-| **FRM-05** | MOM Input | Log meeting minutes | `Project_MOM_Index` | Direct 1:1 catalog mapping. Doc generation and email distribution deferred to Phase 4. |
-| **FRM-06** | Report Request (Optional) | Request on-demand report | `Report_Index` | Direct 1:1 request log mapping. Report compiler deferred to Phase 4. |
-| **FRM-07** | Investment Entry (Admin) | Record investment inflow/return | `Investments` | Direct 1:1 admin entry. Restricted form access (Admin only). |
-| **FRM-08** | Salary Entry (Admin) | Record monthly salary payout | `Salary_Admin` | Direct 1:1 admin entry. Carry-forward math deferred to Phase 4. |
+The architecture strictly distinguishes:
+- **Layer A (Google Form):** User-facing intake interface.
+- **Layer B (Native Form Response Destination):** Raw intake destination sheet where Google Forms writes incoming submissions.
+- **Layer C (Authoritative Business Table):** Normalized business source-of-truth table.
+- **Phase 4 Processing:** Automation boundary responsible for validation, stable ID generation, normalization, and business logic.
+
+| Form ID | Form Name | Native Response Destination (Layer B) | Authoritative Target (Layer C) | Phase 3 Native Capability | Phase 4 Processing Required |
+|---|---|---|---|---|---|
+| **FRM-01** | Create / Request Project | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` and `Project_Members` | Native Google Forms records flat row submission with project details and list of assigned members. | **Phase 4 Normalization Required:** Parse assigned members into multiple normalized junction records in `Project_Members`; assign stable `PRJ-XXX` and `MBR-XXX` IDs; create Phase 1 Drive project folders. |
+| **FRM-02** | Employee Spending / Expense | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Native Google Forms captures raw expense details and stores receipt in Drive via native upload engine. | **Phase 4 Processing Required:** Validate employee identity against `Employees`; assign stable `SPN-XXX` ID; evaluate status; route attachment link to `Employee_Spending`. |
+| **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata and proof file in Drive. | **Phase 4 Processing Required:** Assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
+| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Dispatch email notifications to HR Admin; route request into `HR_Admin` governance workflow; update `Submission_Index`. |
+| **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata, attendee emails, and notes. | **Phase 4 Processing Required:** Assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
+| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
+| **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
+| **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | **Phase 4 Processing Required:** Assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
 
 ---
 
@@ -73,10 +79,12 @@ To enforce the **Zero-Trust Sensitive Data Protection Rule** and prevent unautho
 ---
 
 ## 6. Access Control & Role Boundaries
-- **Employees:** Submit data via Forms (FRM-02, FRM-03, FRM-04). Have View-only access to permitted operational project records in `MASTER_COMPANY_OPERATIONS`. Have 0 access to `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_HR_ADMIN`.
-- **Finance Admin:** Direct access to `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_OPERATIONS`.
-- **HR Admin:** Direct access to `MASTER_COMPANY_HR_ADMIN` and `MASTER_COMPANY_OPERATIONS`.
-- **Master Admin / Owner:** Full owner/editor rights across all 3 workbooks.
+- **Required Access Policy (Specification):**
+  - **Employees:** Submit data via Forms (FRM-02, FRM-03, FRM-04). Have View-only access to permitted operational project records in `MASTER_COMPANY_OPERATIONS`. Must have 0 direct access to `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_HR_ADMIN`.
+  - **Finance Admin:** Direct access to `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_OPERATIONS`.
+  - **HR Admin:** Direct access to `MASTER_COMPANY_HR_ADMIN` and `MASTER_COMPANY_OPERATIONS`.
+  - **Master Admin / Owner:** Full owner/editor rights across all 3 workbooks.
+- **Verification Distinction:** Access policies are defined as architectural rules in Phase 3. Live verification of Google Account permissions requires administrator configuration in the live Google environment.
 
 ---
 
@@ -90,14 +98,14 @@ To enforce the **Zero-Trust Sensitive Data Protection Rule** and prevent unautho
 | **P3-04** | Create Finance structures | **SPEC READY / HUMAN ACTION REQUIRED** | Schemas defined for `Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, `Investments`. |
 | **P3-05** | Create HR/report/config/audit structures | **SPEC READY / HUMAN ACTION REQUIRED** | Schemas defined for `HR_Admin`, `Report_Index`, `Lists_Config`, and `Submission_Index`. |
 | **P3-06** | Create required Forms | **SPEC READY / HUMAN ACTION REQUIRED** | 8 required Forms mapped in `Phase-3-Forms-Map.md` and detailed with input fields and validation types. |
-| **P3-07** | Verify Form-to-Sheet mappings | **PLATFORM LIMITATION / PHASE 4 PROCESSING REQUIRED** | Mappings 02-08 support direct 1:1 response sheet bindings. FRM-01 requires Phase 4 Apps Script to normalize project members. Rule 14 documented. |
+| **P3-07** | Verify Form-to-Sheet mappings | **PLATFORM LIMITATION / PHASE 4 PROCESSING REQUIRED** | Native Form response destinations defined for all 8 Forms. Authoritative business records are separated from response intake. FRM-01 normalization requires Phase 4 Apps Script. No Phase 4 code exists in Phase 3. |
 | **P3-08** | Verify validation | **SPEC READY / HUMAN ACTION REQUIRED** | Validation dropdown sources mapped to `Lists_Config`; date formats (`YYYY-MM-DD`) and currency formats (`₹#,##0.00`) specified. |
-| **P3-09** | Verify Drive attachment handling | **SPEC READY / HUMAN ACTION REQUIRED** | URL string fields (`Proof_URL`, `Attachment_URL`) specified. Upload engine routes uploads to Drive. Zero binary cells allowed. |
-| **P3-10** | Verify sensitive access | **SPEC READY / HUMAN ACTION REQUIRED** | 3-workbook partitioning model isolates `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_HR_ADMIN` from employee access. Employees submit solely via Forms. |
-| **P3-11** | Verify normal Gmail model | **PASS** | Forms and consumer Sheets operate on standard free-tier Google accounts without requiring paid enterprise Workspace licenses. |
-| **P3-12** | Verify stable IDs and audit fields | **SPEC READY / HUMAN ACTION REQUIRED** | Formats specified for all 11 core entities (`PRJ-`, `EMP-`, `MBR-`, `NOT-`, `MOM-`, `BDG-`, `SPN-`, `CLM-`, `SAL-`, `INV-`, `RPT-`, `SUB-`). |
-| **P3-13** | Verify Phase 4 readiness | **PASS** | All trigger inputs (MOM attendees, OOP rule flag, salary carry-forward balances, submission index) specified. Zero Apps Script created in Phase 3. |
-| **P3-14** | Verify zero additional-cost boundary | **PASS** | 100% native Google Sheets & Forms. Zero third-party databases, paid form builders, or SaaS tools. Total additional spend: ₹0.00. |
+| **P3-09** | Verify Drive attachment handling | **SPEC READY / HUMAN ACTION REQUIRED** | URL string fields (`Proof_URL`, `Attachment_URL`) specified. Google Forms upload engine routes uploads to Drive. Zero binary cells allowed. Phase 1 folder routing automation deferred to Phase 4. |
+| **P3-10** | Verify sensitive access | **SPEC READY / HUMAN ACTION REQUIRED** | Required security policy: 3-workbook partitioning model specifies 0 direct employee access to `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_HR_ADMIN`. Testing against actual Google sharing permissions requires human configuration. |
+| **P3-11** | Verify normal Gmail model | **SPEC READY / HUMAN ACTION REQUIRED** | Design targets standard consumer Google accounts at ₹0.00 spend. Testing access with a representative non-admin Google Account requires human verification in live environment. |
+| **P3-12** | Verify stable IDs and audit fields | **SPEC READY / HUMAN ACTION REQUIRED** | Formats specified for all 11 core entities (`PRJ-`, `EMP-`, `MBR-`, `NOT-`, `MOM-`, `BDG-`, `SPN-`, `CLM-`, `SAL-`, `INV-`, `RPT-`, `SUB-`). Row numbers forbidden. |
+| **P3-13** | Verify Phase 4 readiness | **PASS** | Phase 4 input requirements (MOM attendee list, OOP rule evaluation fields, salary carry-forward balance fields, audit submission index) are fully specified in the schema, and zero Phase 4 Apps Script/triggers have been implemented in Phase 3. |
+| **P3-14** | Verify zero additional-cost boundary | **PASS** | Verified in repository architecture: zero paid database, zero paid form service, zero third-party SaaS, zero paid automation service, and zero paid Workspace subscription prerequisites. |
 | **P3-15** | Phase 3 closure | **NOT VERIFIED** | Specifications, data rules, and cost constraints verified. Awaiting human execution (Sheet & Form instantiation in user's Google account). |
 
 ---
