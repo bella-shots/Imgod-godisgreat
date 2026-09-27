@@ -10,5 +10,14 @@
 | D3-08 | Sensitive tabs are restricted. | Do not give employees broad Editor access to salary/investment/full finance source tabs. | Automation runs against restricted sources. |
 | D3-09 | Forms should collect only required business data. | Avoid unnecessary personal/sensitive information. | Reduces exposure and maintenance. |
 | D3-10 | Do not hard-code the ₹5,000 rule beyond the frozen requirement. | Keep the exact calculation/allowance/extra-line/approval/salary-treatment semantics explicit for Phase 4. | Phase 4 must implement only the approved interpretation. |
-| D3-11 | Do not duplicate authoritative data manually. | Use references/IDs between Projects, Employees, Expenses, Claims and reports. | Prevents reconciliation problems. |
+| D3-11 | Do not duplicate authoritative data manually. | Use references/IDs between Projects, Employees, HR requests, Expenses, Claims and reports.
+
+Treat Employees as the single authoritative employee/HR profile. HR_Admin contains workflow records that reference Employees by Employee_ID. | Prevents reconciliation problems. |
 | D3-12 | Submission timestamp and submitter should be captured where relevant. | Enable automatic Form timestamp and capture submitter identity where the chosen Form access model permits. | Audit trail and notifications. |
+
+## D3-13 — Unified Employee/HR master
+
+The `Employees` tab is the single authoritative employee and HR master record. It contains both baseline identity fields and HR attributes previously split with `HR_Admin`.
+
+Do not duplicate employee profile attributes in `HR_Admin`. `HR_Admin` is reserved for HR request/governance workflow records keyed by `HR_Request_ID` and `Employee_ID`.
+
