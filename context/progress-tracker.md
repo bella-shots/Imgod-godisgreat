@@ -16,14 +16,14 @@ Repository reset to the playbook-controlled architecture.
 The previous Google AI-generated React/Vite implementation was removed because it did not follow the agreed architecture or the playbook's bounded feature workflow.
 
 ## Current state
-CONTROL FOUNDATION — READY FOR FEATURE EXECUTION
+PHASE 1 CLOSED — AWAITING EXPLICIT AUTHORIZATION FOR PHASE 2
 
 ## Next work
-Feature 01 — Google Drive structure.
+Phase 2: Master Google Site (Unblocked; awaiting explicit authorization to begin Phase 2 cycle).
 
 ## Feature status
-- 01 Google Drive structure: IN VERIFICATION (Hierarchy verified; awaiting permission confirmation)
-- 02 Master Google Site: BLOCKED until Feature 01 is verified
+- 01 Google Drive structure: COMPLETE & VERIFIED (Closed 26-Sep-2026)
+- 02 Master Google Site: UNBLOCKED (Ready for Phase 2 initiation; NOT STARTED)
 - 03 Sheets + Forms: BLOCKED until Feature 02 is verified
 - 04 Apps Script automation: BLOCKED until Feature 03 is verified
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
