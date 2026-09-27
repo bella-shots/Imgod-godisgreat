@@ -10,3 +10,4 @@
 | Q07 | Should plugins be arbitrary third-party code? | Plugin registration API, admin-controlled; no untrusted third-party runtime | Security and production stability. | 21-Sep 17:10 | Critical | Open |
 | Q08 | Published custom pages run on same domain or separate route/subdomain? | Same app domain with isolated page runtime | Determines routing and script isolation design. | 21-Sep 18:00 | High | Open |
 | Q07 | Must the app remain at ₹0 additional cost beyond the existing Google AI Pro subscription? | Yes — hard constraint for this build | Determines storage, email, hosting and backend choices. | 20-Sep 10:00 | High | Resolved |
+| Q08 | Should normal Form respondents manually enter stable Project_ID/Employee_ID values? | No. Use human-readable identity inputs and resolve to canonical IDs in Phase 4. | Internal IDs are system identifiers, not reasonable respondent-facing inputs. | 27-Sep | High | Resolved |
