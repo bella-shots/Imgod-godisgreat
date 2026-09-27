@@ -240,6 +240,21 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 
 ---
 
+### 3. Human-Facing Form Identity vs Authoritative IDs
+
+The authoritative business tables retain stable internal IDs such as `Project_ID` and `Employee_ID`. These IDs are system identifiers and must not be treated as mandatory human-facing Form inputs when a respondent can identify the record using a human-readable value.
+
+**Human-facing input rule:**
+- Forms should collect a human-readable project identity (for example, Project Name) rather than requiring the respondent to know/type `Project_ID`.
+- Forms should collect a human-readable employee identity (preferably the respondent's Google account/email where the access model permits, otherwise an employee email/name) rather than requiring the respondent to know/type `Employee_ID`.
+- For project-related Forms, a human-readable Project Name may be used as the input; Phase 4 resolves it to the canonical `Project_ID` in `Projects`.
+- For employee-related Forms, the collected employee identity is resolved to the canonical `Employee_ID` in `Employees`.
+- This is a lookup/normalization boundary, not a second business record and not a replacement for the authoritative ID columns.
+- Native response tabs may contain the human-facing answer. The authoritative business table must contain the canonical stable ID after Phase 4 processing.
+- No Form should ask a normal respondent to manually invent or guess a `PRJ-XXX`, `EMP-XXX`, `MOM-XXX`, `SPN-XXX`, or similar system ID.
+
+This correction preserves the stable-ID invariant while making the Forms usable by ordinary employees/project participants.
+
 ### 3. Google Forms Mapping & Three-Layer Data Pipeline
  
 The architecture enforces a strict distinction across three layers:
@@ -250,14 +265,14 @@ The architecture enforces a strict distinction across three layers:
  
 | Form ID | Form Name | Native Response Destination (Layer B) | Authoritative Target (Layer C) | Phase 3 Native Capability | Phase 4 Processing Required |
 |---|---|---|---|---|---|
-| **FRM-01** | Create / Request Project | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` and `Project_Members` | Native Google Forms records flat row submission with project details and list of assigned members. | **Phase 4 Normalization Required:** Parse assigned members into multiple normalized junction records in `Project_Members`; assign stable `PRJ-XXX` and `MBR-XXX` IDs; create Phase 1 Drive project folders. |
-| **FRM-02** | Employee Spending / Expense | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Native Google Forms captures raw expense details and stores receipt in Drive via native upload engine. | **Phase 4 Processing Required:** Validate employee identity against `Employees`; assign stable `SPN-XXX` ID; evaluate status; route attachment link to `Employee_Spending`. |
-| **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata and proof file in Drive. | **Phase 4 Processing Required:** Assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
-| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Create/update an `HRR-XXX` workflow record in `HR_Admin`, dispatch notifications to HR Admin, and update `Submission_Index`. Employee master updates belong in `Employees`; `HR_Admin` is the workflow queue, not a duplicate employee table. |
-| **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata, attendee emails, and notes. | **Phase 4 Processing Required:** Assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
-| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
+| **FRM-01** | Create / Request Project | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` and `Project_Members` | Native Google Forms records flat row submission with human-facing project details and list of assigned members. | **Phase 4 Normalization Required:** Resolve the submitted project/member identity values as applicable; assign stable `PRJ-XXX` and `MBR-XXX` IDs; parse assigned members into normalized junction records in `Project_Members`; create Phase 1 Drive project folders. |
+| **FRM-02** | Employee Spending / Expense | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Native Google Forms captures raw expense details using human-facing employee/project identity and stores receipt in Drive via native upload engine. | **Phase 4 Processing Required:** Resolve employee identity to `Employee_ID` and project identity to `Project_ID`; assign stable `SPN-XXX` ID; evaluate status; route attachment link to `Employee_Spending`. |
+| **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata using human-facing employee/project identity and proof file in Drive. | **Phase 4 Processing Required:** Resolve employee identity to `Employee_ID` and project identity to `Project_ID`; assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
+| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs human-facing employee identity, request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Resolve employee identity to `Employee_ID`; create/update an `HRR-XXX` workflow record in `HR_Admin`, dispatch notifications to HR Admin, and update `Submission_Index`. Employee master updates belong in `Employees`; `HR_Admin` is the workflow queue, not a duplicate employee table. |
+| **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata using a human-facing Project Name, attendee emails, and notes. | **Phase 4 Processing Required:** Resolve Project Name to canonical `Project_ID`; assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
+| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, recipient email, and human-facing project identity when a project-specific report is requested. | **Phase 4 Processing Required:** Resolve project identity to canonical `Project_ID` when supplied; compile the requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
 | **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
-| **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | **Phase 4 Processing Required:** Assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
+| **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures plus human-facing employee identity from authorized Admin. | **Phase 4 Processing Required:** Resolve employee identity to `Employee_ID`; assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
 
 ---
 
