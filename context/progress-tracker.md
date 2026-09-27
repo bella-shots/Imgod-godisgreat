@@ -24,14 +24,14 @@ Feature 03: Sheets + Forms (Create 3 Google Sheets workbooks and 8 Google Forms 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (Closed 26-Sep-2026)
 - 02 Master Google Site: COMPLETE & VERIFIED (Closed 27-Sep-2026)
-- 03 Sheets + Forms: IN PROGRESS / HUMAN ACTION REQUIRED (Blueprint complete; running change R17 applied; awaiting in-account creation)
+- 03 Sheets + Forms: IN PROGRESS / HUMAN ACTION REQUIRED (Blueprint complete; running change R18 applied; awaiting in-account creation)
 - 04 Apps Script automation: BLOCKED until Feature 03 is verified
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
 
 ## Current Phase 3 Prompt
-- Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-002.md`
-- Prompt-001 remains historical and is not overwritten.
-- Prompt-002 records the controlled running change R17: Lists_Config validation boundary, permission-governed Drive references, and the corrected 22-tab physical count.
+- Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-003.md`
+- Prompt-001 and Prompt-002 remain historical and are not overwritten.
+- Prompt-003 records running change R18: unify employee + HR master data in `Employees`; re-scope `HR_Admin` as the HR request/governance workflow table; preserve the existing workbook partitioning and Phase 3 boundary.
 
 ## Open decisions
 - Any remaining implementation ambiguity must be resolved in the relevant feature specification before dependent behavior is built.
