@@ -2,7 +2,7 @@
 
 **Authoritative Specification for Phase 3: Google Sheets + Google Forms**  
 **Document Reference:** `Phase-3/Phase-3-Schema-Blueprint.md`  
-**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-004.md` (current running-change prompt; Prompt-001, Prompt-002 and Prompt-003 remain historical)  
+**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-005.md` (current running-change prompt; Prompt-001 through Prompt-004 remain historical)  
 **Architecture:** Google Sheets (Authoritative Data Layer) • Google Forms (Controlled Input Layer) • Google Drive (File Storage) • Google Sites (Presentation Layer)  
 **Budget Constraint:** ₹0.00 Additional Project Spend (Native Google consumer free-tier accounts)  
 
@@ -11,7 +11,7 @@
 ## 1. Architectural Distribution & Workbook Boundaries
 
 To enforce **Access Control (Rule 15)** and **Zero-Trust Sensitive Data Protection (Rule 12)** without relying on cosmetic UI tab-hiding:
-The data layer is partitioned into three distinct Google Sheets workbooks with isolated Drive permission boundaries:
+The data layer is partitioned into four distinct Google Sheets workbooks with isolated Drive permission boundaries:
 
 1. **`MASTER_COMPANY_OPERATIONS`** (General / Project Member accessible workbook)
    - Authoritative Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`
@@ -23,10 +23,16 @@ The data layer is partitioned into three distinct Google Sheets workbooks with i
    - Native Form Intake Tabs: `Employee_Spending_Responses`, `OOP_Claims_Responses`, `Salary_Responses`, `Investment_Responses`
    - Required Access Policy: Site Admin / Finance Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook (employees submit strictly via Forms).
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
-3. **`MASTER_COMPANY_HR_ADMIN`** (Restricted People Operations & Governance workbook)
-   - Authoritative Tabs: `Employees`, `HR_Admin`, `Report_Index`, `Submission_Index`
-   - Native Form Intake Tabs: `HR_Requests_Responses`, `Report_Requests_Responses`
+3. **`MASTER_COMPANY_HR_ADMIN`** (Restricted People Operations workbook)
+   - Authoritative Tabs: `Employees`, `HR_Admin`
+   - Native Form Intake Tabs: `HR_Requests_Responses`
    - Required Access Policy: Site Admin / HR Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook.
+   - Native Form response tabs are intake destinations only and are not authoritative business tables.
+4. **`MASTER_COMPANY_ADMIN`** (Restricted cross-domain administration, reporting & audit workbook)
+   - Authoritative Tabs: `Report_Index`, `Submission_Index`
+   - Native Form Intake Tabs: `Report_Requests_Responses`
+   - Required Access Policy: Site Admin ONLY (Private / Restricted). Ordinary employees and ordinary project/finance/HR users must have 0 direct access to this workbook.
+   - This workbook owns cross-domain report cataloguing and central submission traceability. It is intentionally separate from HR because neither structure is an HR master record.
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
 
 ### Physical tab count
@@ -208,7 +214,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the three workbo
   9. `Processed_By` (Email)
 
 ### Tab 12: `Report_Index` (Reporting Catalog)
-- **Workbook:** `MASTER_COMPANY_HR_ADMIN`
+- **Workbook:** `MASTER_COMPANY_ADMIN`
 - **Purpose:** Register of generated management, financial, and operational reports.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
@@ -221,7 +227,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the three workbo
   7. `Generated_Date` (Date, Format: `YYYY-MM-DD`)
 
 ### Tab 13: `Submission_Index` (Audit & Automation Traceability)
-- **Workbook:** `MASTER_COMPANY_HR_ADMIN`
+- **Workbook:** `MASTER_COMPANY_ADMIN`
 - **Purpose:** Audit log of all incoming Form submissions and Phase 4 processing states.
 - **Sensitivity:** High.
 - **Columns:**
@@ -249,7 +255,7 @@ The architecture enforces a strict distinction across three layers:
 | **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata and proof file in Drive. | **Phase 4 Processing Required:** Assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
 | **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Create/update an `HRR-XXX` workflow record in `HR_Admin`, dispatch notifications to HR Admin, and update `Submission_Index`. Employee master updates belong in `Employees`; `HR_Admin` is the workflow queue, not a duplicate employee table. |
 | **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata, attendee emails, and notes. | **Phase 4 Processing Required:** Assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
-| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
+| **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
 | **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
 | **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | **Phase 4 Processing Required:** Assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
 
@@ -275,3 +281,4 @@ The architecture enforces a strict distinction across three layers:
 
 5. **Cost Hard Gate:**
    100% native Google Sheets and Google Forms running in standard Google Accounts. Total additional software spend: **₹0.00**.
+6. **Cross-domain administration boundary:** `Report_Index` and `Submission_Index` are administrative support structures, not HR data. They live in the restricted `MASTER_COMPANY_ADMIN` workbook and must not be moved into `MASTER_COMPANY_HR_ADMIN`.
