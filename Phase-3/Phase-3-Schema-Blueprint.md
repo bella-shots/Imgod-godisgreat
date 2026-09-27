@@ -17,14 +17,20 @@ The data layer is partitioned into three distinct Google Sheets workbooks with i
    - Authoritative Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`, `Lists_Config`
    - Native Form Intake Tabs: `Projects_Responses`, `MOM_Responses`
    - Required Access Policy: Site Admin / Project Lead (Editor); Assigned Employees / Project Members (Viewer).
+   - Native Form response tabs are intake destinations only and are not authoritative business tables.
 2. **`MASTER_COMPANY_FINANCE`** (Restricted Finance & Accounting workbook)
    - Authoritative Tabs: `Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, `Investments`
    - Native Form Intake Tabs: `Employee_Spending_Responses`, `OOP_Claims_Responses`, `Salary_Responses`, `Investment_Responses`
    - Required Access Policy: Site Admin / Finance Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook (employees submit strictly via Forms).
+   - Native Form response tabs are intake destinations only and are not authoritative business tables.
 3. **`MASTER_COMPANY_HR_ADMIN`** (Restricted People Operations & Governance workbook)
    - Authoritative Tabs: `Employees`, `HR_Admin`, `Report_Index`, `Submission_Index`
    - Native Form Intake Tabs: `HR_Requests_Responses`, `Report_Requests_Responses`
    - Required Access Policy: Site Admin / HR Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook.
+   - Native Form response tabs are intake destinations only and are not authoritative business tables.
+
+### Physical tab count
+Phase 3 defines **14 authoritative/support schema tabs** across the three workbooks plus **8 native Form response tabs**, for **22 physical tabs total** after all eight Forms are linked. The response tabs are platform-created intake destinations and must not be counted as additional authoritative business tables.
 
 ---
 
@@ -206,9 +212,9 @@ The data layer is partitioned into three distinct Google Sheets workbooks with i
   6. `Status` (Dropdown: `Draft`, `Published`, `Archived`)
   7. `Generated_Date` (Date, Format: `YYYY-MM-DD`)
 
-### Tab 13: `Lists_Config` (Global Validation Master)
+### Tab 13: `Lists_Config` (Canonical Validation Configuration)
 - **Workbook:** `MASTER_COMPANY_OPERATIONS`
-- **Purpose:** Centralized source for data validation dropdowns across all tabs.
+- **Purpose:** Canonical definition of controlled validation values for the project. It is authoritative as configuration, but it is not a cross-workbook data source that Phase 3 may assume can be directly referenced by native Google Sheets validation in every workbook.
 - **Sensitivity:** High (Admin managed).
 - **Columns:**
   - Column A (`Project_Status`): `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`
@@ -257,7 +263,7 @@ The architecture enforces a strict distinction across three layers:
 ## 4. Drive Upload & Attachment Integrity Rules
 
 - **Native Forms Upload Engine:** When a respondent uploads an expense receipt or claim invoice via Google Forms (Forms 02, 03, 04), Google Drive automatically places the file into the designated `Form Responses` folder under the owner's Google Drive.
-- **Reference Over Binary:** Google Sheets stores the resulting public/workspace Drive URL in the `Proof_URL` or `Attachment_URL` column. Zero binary files are stored in Sheets cells.
+- **Reference Over Binary:** Google Sheets stores a Drive file reference/URL in the `Proof_URL` or `Attachment_URL` column. The reference is governed by the actual Google Drive sharing permissions; it must not be described as inherently public. Zero binary files are stored in Sheets cells.
 - **Phase 4 Automation Boundary:** Automated routing of proofs into project-specific folders (e.g., `MASTER COMPANY/Projects/PROJECT_XXX/03_Expenses`) requires Apps Script triggers and is strictly deferred to Phase 4.
 
 ---
