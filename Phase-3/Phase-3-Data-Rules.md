@@ -3,8 +3,8 @@
 | D3-01 | Every core business record must have a stable unique ID. | Create ID columns and define formats: PROJECT_ID, EMPLOYEE_ID, CLAIM_ID, SPENDING_ID, MOM_ID, INVESTMENT_ID, etc. | Automation must reference IDs, not row numbers. |
 | D3-02 | Dates use a consistent date format. | Use actual Sheet date values; standardize display format. | Calculations/reminders depend on valid dates. |
 | D3-03 | Amounts are numeric currency values. | Use numeric cells with consistent INR/currency formatting. | Expense, salary and reimbursement calculations. |
-| D3-04 | Employee identity uses email + Employee_ID. | Do not rely solely on free-text employee names. | Access and automation mapping. |
-| D3-05 | Project identity uses Project_ID. | Forms should use controlled project selection where feasible. | Project aggregation/reporting. |
+| D3-04 | Employee identity uses a human-facing identity input resolved to the canonical Employee_ID. | Prefer respondent/account email where the Form access model permits; otherwise collect an employee email/name. Do not require normal respondents to know/type Employee_ID. | Access and automation mapping. |
+| D3-05 | Project identity is authoritative as Project_ID, but Forms should be human-facing. | Collect Project Name or another controlled human-readable project selection; Phase 4 resolves it to canonical Project_ID. Do not require normal respondents to know/type Project_ID. | Project aggregation/reporting. |
 | D3-06 | Proof/attachment fields store Drive references/URLs. | Do not store binary files inside Sheets. | Automation can route/check files. |
 | D3-07 | Status fields use controlled values. | Use the approved controlled values defined by the Phase 3 specification locally in each relevant workbook/tab. Do not use a cross-workbook validation range and do not create a separate configuration table. | Automation branches on defined status values. |
 | D3-08 | Sensitive tabs are restricted. | Do not give employees broad Editor access to salary/investment/full finance source tabs. | Automation runs against restricted sources. |
@@ -54,3 +54,10 @@ Where the same controlled value is used in multiple workbooks, the approved lite
 Both belong in the restricted `MASTER_COMPANY_ADMIN` workbook so HR does not become the owner of Finance, Operations and system-wide audit metadata.
 
 `MASTER_COMPANY_ADMIN` is Site Admin-only. Ordinary employees have no direct access.
+
+
+## D3-16 — Human-facing identity vs stable IDs
+
+Stable IDs remain mandatory in authoritative business tables, but they are not mandatory human-facing Form inputs. Forms must collect a usable human-readable identity and Phase 4 must resolve that value to the canonical ID before writing the authoritative business record. Native response tabs may preserve the original human-facing answer for traceability.
+
+This rule prevents the Form experience from requiring ordinary employees/project participants to know internal identifiers while preserving the stable-ID invariant.
