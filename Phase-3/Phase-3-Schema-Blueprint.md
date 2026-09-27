@@ -2,7 +2,7 @@
 
 **Authoritative Specification for Phase 3: Google Sheets + Google Forms**  
 **Document Reference:** `Phase-3/Phase-3-Schema-Blueprint.md`  
-**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-001.md`  
+**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-002.md` (current running-change prompt; Prompt-001 remains historical)  
 **Architecture:** Google Sheets (Authoritative Data Layer) • Google Forms (Controlled Input Layer) • Google Drive (File Storage) • Google Sites (Presentation Layer)  
 **Budget Constraint:** ₹0.00 Additional Project Spend (Native Google consumer free-tier accounts)  
 
@@ -60,7 +60,7 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   1. `Employee_ID` (Text, Format: `EMP-XXX`, e.g., `EMP-001`. Stable unique ID. Required)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
-  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`, Sourced from `Lists_Config!B2:B`)
+  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`; controlled values canonically defined in `Lists_Config!B2:B`. Do not assume a native cross-workbook validation-range reference.)
   5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Monthly agreed CTC/stipend)
   6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
   7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
