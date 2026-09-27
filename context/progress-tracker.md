@@ -16,15 +16,15 @@ Repository reset to the playbook-controlled architecture.
 The previous Google AI-generated React/Vite implementation was removed because it did not follow the agreed architecture or the playbook's bounded feature workflow.
 
 ## Current state
-PHASE 2 CLOSED & VERIFIED (27-Sep-2026) — PHASE 3 UNBLOCKED (Awaiting Phase 3 Authorization)
+PHASE 3 IN PROGRESS — HUMAN ACTION REQUIRED (Sheet & Form Creation in Admin Google Account)
 
 ## Next work
-Feature 03: Sheets + Forms (Unblocked; awaiting explicit authorization to begin Phase 3 cycle).
+Feature 03: Sheets + Forms (Create 3 Google Sheets workbooks and 8 Google Forms per Phase-3-Schema-Blueprint.md).
 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (Closed 26-Sep-2026)
 - 02 Master Google Site: COMPLETE & VERIFIED (Closed 27-Sep-2026)
-- 03 Sheets + Forms: UNBLOCKED (Awaiting explicit Phase 3 implementation authorization)
+- 03 Sheets + Forms: IN PROGRESS / HUMAN ACTION REQUIRED (Blueprint complete; awaiting in-account creation)
 - 04 Apps Script automation: BLOCKED until Feature 03 is verified
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
 

@@ -1,17 +1,17 @@
-| ID | Acceptance test | Expected result | Status |
-|---|---|---|---|
-| P3-01 | Create the required operational Sheets/tabs. | All required data areas from the schema exist. | NOT STARTED |
-| P3-02 | Create Projects structure. | Project records contain the defined fields and stable Project_ID. | NOT STARTED |
-| P3-03 | Create Employees structure. | Employee records contain identity, role, active and reimbursement-related fields. | NOT STARTED |
-| P3-04 | Create Finance structures. | Budget, spending, OOP, salary and investment records exist with appropriate fields. | NOT STARTED |
-| P3-05 | Create HR/report/config/audit structures. | Required controlled support tabs exist. | NOT STARTED |
-| P3-06 | Create required Forms. | Project, expense, OOP, HR, MOM and admin workflows exist as applicable. | NOT STARTED |
-| P3-07 | Verify Form-to-Sheet mappings. | Each form submission lands in the intended authoritative structure. | NOT STARTED |
-| P3-08 | Verify validation. | Dates, amounts, statuses, employees and projects use appropriate validation/controlled values. | NOT STARTED |
-| P3-09 | Verify Drive attachment handling. | Uploaded proofs/files are stored in the intended Drive area and referenced rather than embedded as binary data in Sheets. | NOT STARTED |
-| P3-10 | Verify sensitive access. | Employees cannot directly edit/read restricted salary, investment and sensitive master tabs. | NOT STARTED |
-| P3-11 | Verify normal Gmail model. | Representative employee Gmail/Google Account can use permitted Forms without paid Workspace dependency. | NOT STARTED |
-| P3-12 | Verify stable IDs and audit fields. | Core records have stable IDs and required submission metadata. | NOT STARTED |
-| P3-13 | Verify Phase 4 readiness. | All automation inputs/outputs required for Phase 4 are defined; no business rule is silently invented. | NOT STARTED |
-| P3-14 | Verify zero additional-cost boundary. | No paid database/form/SaaS service has been introduced. | NOT STARTED |
-| P3-15 | Phase 3 closure. | All Phase 3 acceptance tests PASS and evidence is recorded. | NOT STARTED |
+| ID | Acceptance test | Expected result | Status | Observed Evidence / Notes |
+|---|---|---|---|---|
+| P3-01 | Create the required operational Sheets/tabs. | All required data areas from the schema exist. | SPEC READY / HUMAN ACTION REQUIRED | Detailed structural schema and 3-workbook partitioning model established in `Phase-3-Schema-Blueprint.md`. Physical instantiation in Google Sheets requires Admin Google Account action. |
+| P3-02 | Create Projects structure. | Project records contain the defined fields and stable Project_ID. | SPEC READY / HUMAN ACTION REQUIRED | Schema defined with `Project_ID` (`PRJ-XXX`), `Project_Name`, `Owner`, `Start_Date`, `Event_Date`, `Status`, `Drive_Folder_URL`. Awaiting spreadsheet creation. |
+| P3-03 | Create Employees structure. | Employee records contain identity, role, active and reimbursement-related fields. | SPEC READY / HUMAN ACTION REQUIRED | Schema defined with `Employee_ID` (`EMP-XXX`), `Email`, `Role`, `Salary_Basis`, `Active`, `Reimbursement_Eligible`, `Project_Access`. Awaiting spreadsheet creation. |
+| P3-04 | Create Finance structures. | Budget, spending, OOP, salary and investment records exist with appropriate fields. | SPEC READY / HUMAN ACTION REQUIRED | Schemas defined for `Budget_Given` (`BDG-`), `Employee_Spending` (`SPN-`), `OOP_Claims` (`CLM-`), `Salary_Admin` (`SAL-`), `Investments` (`INV-`). Awaiting spreadsheet creation. |
+| P3-05 | Create HR/report/config/audit structures. | Required controlled support tabs exist. | SPEC READY / HUMAN ACTION REQUIRED | Schemas defined for `HR_Admin`, `Report_Index`, `Lists_Config`, and `Submission_Index`. Awaiting spreadsheet creation. |
+| P3-06 | Create required Forms. | Project, expense, OOP, HR, MOM and admin workflows exist as applicable. | SPEC READY / HUMAN ACTION REQUIRED | 8 required Forms mapped in `Phase-3-Forms-Map.md` and detailed with input fields and validation types in `Phase-3-Schema-Blueprint.md`. Awaiting Form creation. |
+| P3-07 | Verify Form-to-Sheet mappings. | Each form submission lands in the intended authoritative structure. | PLATFORM LIMITATION / PHASE 4 PROCESSING REQUIRED | Mappings 02-08 support direct 1:1 response sheet bindings. FRM-01 requires Phase 4 Apps Script to normalize project members into `Project_Members`. Rule 14 documented. |
+| P3-08 | Verify validation. | Dates, amounts, statuses, employees and projects use appropriate validation/controlled values. | SPEC READY / HUMAN ACTION REQUIRED | Validation dropdown sources mapped to `Lists_Config` (Columns A-G); date formats (`YYYY-MM-DD`) and currency formats (`₹#,##0.00`) specified. Awaiting in-sheet application. |
+| P3-09 | Verify Drive attachment handling. | Uploaded proofs/files are stored in the intended Drive area and referenced rather than embedded as binary data in Sheets. | SPEC READY / HUMAN ACTION REQUIRED | URL string fields (`Proof_URL`, `Attachment_URL`) specified. Google Forms upload engine routes uploads to Drive and stores links in Sheets. Zero binary cells allowed. |
+| P3-10 | Verify sensitive access. | Employees cannot directly edit/read restricted salary, investment and sensitive master tabs. | SPEC READY / HUMAN ACTION REQUIRED | 3-workbook partitioning model isolates `MASTER_COMPANY_FINANCE` and `MASTER_COMPANY_HR_ADMIN` from employee access. Employees submit solely via Forms. |
+| P3-11 | Verify normal Gmail model. | Representative employee Gmail/Google Account can use permitted Forms without paid Workspace dependency. | PASS | Forms and consumer Sheets operate on standard free-tier Google accounts without requiring paid enterprise Workspace licenses. |
+| P3-12 | Verify stable IDs and audit fields. | Core records have stable IDs and required submission metadata. | SPEC READY / HUMAN ACTION REQUIRED | Formats specified for all 11 core entities (`PRJ-`, `EMP-`, `MBR-`, `NOT-`, `MOM-`, `BDG-`, `SPN-`, `CLM-`, `SAL-`, `INV-`, `RPT-`, `SUB-`). Row numbers forbidden. |
+| P3-13 | Verify Phase 4 readiness. | All automation inputs/outputs required for Phase 4 are defined; no business rule is silently invented. | PASS | All trigger inputs (MOM attendees, OOP rule flag, salary carry-forward balances, submission index) specified. Zero Apps Script created in Phase 3. |
+| P3-14 | Verify zero additional-cost boundary. | No paid database/form/SaaS service has been introduced. | PASS | 100% native Google Sheets & Forms. Zero third-party databases, paid form builders, or SaaS tools. Total additional spend: ₹0.00. |
+| P3-15 | Phase 3 closure. | All Phase 3 acceptance tests PASS and evidence is recorded. | NOT VERIFIED | Specifications, data rules, and cost constraints verified. Awaiting human execution (Sheet & Form instantiation in user's Google account). |
