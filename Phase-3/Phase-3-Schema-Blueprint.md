@@ -52,20 +52,24 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   9. `Notes` (Text)
   10. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
 
-### Tab 2: `Employees` (Master Data)
+### Tab 2: `Employees` (Unified Employee + HR Master Data)
 - **Workbook:** `MASTER_COMPANY_HR_ADMIN`
-- **Purpose:** Authoritative employee directory and role baseline.
+- **Purpose:** Single authoritative employee and people/HR master record. Employee identity, employment status, HR attributes, reimbursement eligibility and project-access baseline are kept together here to avoid splitting one person's master record across `Employees` and `HR_Admin`.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
-  1. `Employee_ID` (Text, Format: `EMP-XXX`, e.g., `EMP-001`. Stable unique ID. Required)
+  1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. Required)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
-  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`; controlled values canonically defined in `Lists_Config!B2:B`. Do not assume a native cross-workbook validation-range reference.)
+  4. `Role` (Dropdown; canonical values defined in `Lists_Config`. Do not assume native cross-workbook validation-range linkage.)
   5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Monthly agreed CTC/stipend)
   6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
   7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
-  8. `Project_Access` (Text, Comma-delimited `Project_ID`s or role tag)
-  9. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
+  8. `Project_Access` (Text, Comma-delimited `Project_ID` values or role tag)
+  9. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
+  10. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
+  11. `HR_Notes` (Text, Confidential internal notes)
+  12. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
+  13. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
 
 ### Tab 3: `Project_Members` (Projects Mapping)
 - **Workbook:** `MASTER_COMPANY_OPERATIONS`
@@ -188,16 +192,20 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   7. `Status` (Dropdown: `Active`, `Returned`, `Rolled Over`, `Defaulted`)
   8. `Notes` (Text)
 
-### Tab 11: `HR_Admin` (Confidential People Operations)
+### Tab 11: `HR_Admin` (HR Request & Governance Workflow)
 - **Workbook:** `MASTER_COMPANY_HR_ADMIN`
-- **Purpose:** Employment contracts, joining dates, and internal HR governance notes.
+- **Purpose:** Controlled HR request/workflow queue. It is not a second employee master and must not duplicate employee profile fields. The authoritative employee/HR profile remains `Employees`.
 - **Sensitivity:** High (Admin / HR only).
 - **Columns:**
-  1. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
-  2. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
-  3. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
-  4. `HR_Notes` (Text, Confidential internal notes)
-  5. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
+  1. `HR_Request_ID` (Text, Format: `HRR-XXX`, Stable unique request ID)
+  2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
+  3. `Request_Type` (Controlled value, Required)
+  4. `Relevant_Details` (Text, Request/update details, Required)
+  5. `Attachment_URL` (Drive file reference/URL governed by actual Drive sharing permissions)
+  6. `Status` (Dropdown: `Submitted`, `In Review`, `Completed`, `Rejected`)
+  7. `Submitted_At` (Timestamp)
+  8. `Processed_At` (Timestamp)
+  9. `Processed_By` (Email)
 
 ### Tab 12: `Report_Index` (Reporting Catalog)
 - **Workbook:** `MASTER_COMPANY_HR_ADMIN`
@@ -252,7 +260,7 @@ The architecture enforces a strict distinction across three layers:
 | **FRM-01** | Create / Request Project | `Projects_Responses` in `MASTER_COMPANY_OPERATIONS` | `Projects` and `Project_Members` | Native Google Forms records flat row submission with project details and list of assigned members. | **Phase 4 Normalization Required:** Parse assigned members into multiple normalized junction records in `Project_Members`; assign stable `PRJ-XXX` and `MBR-XXX` IDs; create Phase 1 Drive project folders. |
 | **FRM-02** | Employee Spending / Expense | `Employee_Spending_Responses` in `MASTER_COMPANY_FINANCE` | `Employee_Spending` | Native Google Forms captures raw expense details and stores receipt in Drive via native upload engine. | **Phase 4 Processing Required:** Validate employee identity against `Employees`; assign stable `SPN-XXX` ID; evaluate status; route attachment link to `Employee_Spending`. |
 | **FRM-03** | OOP Claim | `OOP_Claims_Responses` in `MASTER_COMPANY_FINANCE` | `OOP_Claims` | Native Google Forms captures raw claim metadata and proof file in Drive. | **Phase 4 Processing Required:** Assign stable `CLM-XXX` ID; evaluate the frozen ₹5,000 threshold rule; populate `Approved_Amount` and `OOP_Rule_Flag`; update status. |
-| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Dispatch email notifications to HR Admin; route request into `HR_Admin` governance workflow; update `Submission_Index`. |
+| **FRM-04** | Employee Update / HR Request | `HR_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `HR_Admin` | Native Google Forms logs request details and optional attachment to response sheet. | **Phase 4 Processing Required:** Create/update an `HRR-XXX` workflow record in `HR_Admin`, dispatch notifications to HR Admin, and update `Submission_Index`. Employee master updates belong in `Employees`; `HR_Admin` is the workflow queue, not a duplicate employee table. |
 | **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata, attendee emails, and notes. | **Phase 4 Processing Required:** Assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
 | **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_HR_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, and recipient email. | **Phase 4 Processing Required:** On-demand compilation of requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
 | **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
@@ -276,5 +284,7 @@ The architecture enforces a strict distinction across three layers:
    No business record exists in duplicate across tabs. `Projects` holds the canonical project definition; `Employees` holds the canonical person profile. All mappings use foreign keys (`Project_ID`, `Employee_ID`).
 3. **Stable ID Invariant:**
    Row numbers are never used as permanent IDs. Prefixed alphanumeric identifiers (`PRJ-`, `EMP-`, `MBR-`, `NOT-`, `MOM-`, `BDG-`, `SPN-`, `CLM-`, `SAL-`, `INV-`, `RPT-`, `SUB-`) guarantee data integrity across sorting, filtering, and deletion.
-4. **Cost Hard Gate:**
+4. **Unified Employee/HR Master Invariant:** `Employees` is the single authoritative employee and HR master profile. `HR_Admin` is a workflow/request table only and must not duplicate employee profile attributes such as Joining_Date, Employment_Status, HR_Notes, or Reimbursement_Settings.
+
+5. **Cost Hard Gate:**
    100% native Google Sheets and Google Forms running in standard Google Accounts. Total additional software spend: **₹0.00**.
