@@ -10,7 +10,7 @@
 | D3-08 | Sensitive tabs are restricted. | Do not give employees broad Editor access to salary/investment/full finance source tabs. | Automation runs against restricted sources. |
 | D3-09 | Forms should collect only required business data. | Avoid unnecessary personal/sensitive information. | Reduces exposure and maintenance. |
 | D3-10 | Do not hard-code the ₹5,000 rule beyond the frozen requirement. | Keep the exact calculation/allowance/extra-line/approval/salary-treatment semantics explicit for Phase 4. | Phase 4 must implement only the approved interpretation. |
-| D3-11 | Do not duplicate authoritative data manually. | Use references/IDs between Projects, Employees, HR requests, Expenses, Claims and reports.
+| D3-11 | Do not duplicate authoritative data manually. | Use references/IDs between Projects, Employees, HR requests, Expenses, Claims and cross-domain admin/report structures.
 
 Treat Employees as the single authoritative employee/HR profile. HR_Admin contains workflow records that reference Employees by Employee_ID. | Prevents reconciliation problems. |
 | D3-12 | Submission timestamp and submitter should be captured where relevant. | Enable automatic Form timestamp and capture submitter identity where the chosen Form access model permits. | Audit trail and notifications. |
@@ -41,3 +41,16 @@ Approved controlled values include:
 - Report Types: Executive Summary, Project Status, Finance Audit, HR Rollup
 
 Where the same controlled value is used in multiple workbooks, the approved literal values are repeated locally; no second authoritative business record is created.
+
+
+## D3-15 — Cross-domain administration ownership
+
+`Employees` and `HR_Admin` are the only Phase 3 authoritative/support tabs owned by `MASTER_COMPANY_HR_ADMIN`.
+
+`Report_Index` and `Submission_Index` are not HR records:
+- `Report_Index` is the cross-domain reporting catalog for management, project, finance and HR reports.
+- `Submission_Index` is the central audit/automation traceability index for all incoming Forms.
+
+Both belong in the restricted `MASTER_COMPANY_ADMIN` workbook so HR does not become the owner of Finance, Operations and system-wide audit metadata.
+
+`MASTER_COMPANY_ADMIN` is Site Admin-only. Ordinary employees have no direct access.
