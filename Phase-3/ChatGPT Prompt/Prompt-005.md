@@ -133,7 +133,30 @@ Do not:
 - modify Phase 1 or Phase 2;
 - advance to Phase 4.
 
-### Verification
+### R21 — Human-facing Form identity correction
+
+### Problem corrected
+The authoritative Sheets layer requires stable internal identifiers, but ordinary Form respondents must not be expected to know or manually type values such as `PRJ-001` or `EMP-001`.
+
+### Authoritative rule
+- Keep `Project_ID` and `Employee_ID` as canonical authoritative-table fields.
+- Forms collect human-readable project/employee identity instead of requiring respondents to know internal IDs.
+- Phase 4 resolves the submitted human-readable identity to the canonical stable ID before writing the authoritative business record.
+- Native response tabs may retain the original human-facing answer for traceability.
+- Do not create duplicate lookup/configuration tables or move ID resolution into Phase 3 Apps Script.
+- FRM-05 specifically uses **Project Name**, not Project ID, as its respondent-facing project field.
+- Apply the same usability rule to FRM-01 through FRM-08 wherever a foreign-key identity is required.
+
+### Scope firewall for R21
+Do not:
+- remove stable IDs from authoritative schemas;
+- require normal respondents to invent or type stable internal IDs;
+- implement Apps Script or Phase 4 normalization now;
+- create a `Lists_Config` or replacement lookup workbook/tab;
+- change workbook ownership boundaries;
+- change the ₹5,000 OOP rule.
+
+## Verification
 
 Confirm:
 1. `Lists_Config` is absent.
