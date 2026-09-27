@@ -2,7 +2,7 @@
 
 **Authoritative Specification for Phase 3: Google Sheets + Google Forms**  
 **Document Reference:** `Phase-3/Phase-3-Schema-Blueprint.md`  
-**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-002.md` (current running-change prompt; Prompt-001 remains historical)  
+**Execution Reference:** `Phase-3/ChatGPT Prompt/Prompt-004.md` (current running-change prompt; Prompt-001, Prompt-002 and Prompt-003 remain historical)  
 **Architecture:** Google Sheets (Authoritative Data Layer) • Google Forms (Controlled Input Layer) • Google Drive (File Storage) • Google Sites (Presentation Layer)  
 **Budget Constraint:** ₹0.00 Additional Project Spend (Native Google consumer free-tier accounts)  
 
@@ -14,7 +14,7 @@ To enforce **Access Control (Rule 15)** and **Zero-Trust Sensitive Data Protecti
 The data layer is partitioned into three distinct Google Sheets workbooks with isolated Drive permission boundaries:
 
 1. **`MASTER_COMPANY_OPERATIONS`** (General / Project Member accessible workbook)
-   - Authoritative Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`, `Lists_Config`
+   - Authoritative Tabs: `Projects`, `Project_Members`, `Project_Notes`, `Project_MOM_Index`
    - Native Form Intake Tabs: `Projects_Responses`, `MOM_Responses`
    - Required Access Policy: Site Admin / Project Lead (Editor); Assigned Employees / Project Members (Viewer).
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
@@ -30,7 +30,7 @@ The data layer is partitioned into three distinct Google Sheets workbooks with i
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
 
 ### Physical tab count
-Phase 3 defines **14 authoritative/support schema tabs** across the three workbooks plus **8 native Form response tabs**, for **22 physical tabs total** after all eight Forms are linked. The response tabs are platform-created intake destinations and must not be counted as additional authoritative business tables.
+Phase 3 defines **13 authoritative/support schema tabs** across the three workbooks plus **8 native Form response tabs**, for **21 physical tabs total** after all eight Forms are linked. `Lists_Config` is removed; controlled values are defined locally in the relevant workbook/tab validation rules. The response tabs are platform-created intake destinations and must not be counted as additional authoritative business tables.
 
 ---
 
@@ -47,7 +47,7 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   4. `Owner` (Email address of project lead, Required)
   5. `Start_Date` (Date, Format: `YYYY-MM-DD`, Required)
   6. `Event_Date` (Date, Format: `YYYY-MM-DD`, Target/delivery date)
-  7. `Status` (Dropdown: `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`, Sourced from `Lists_Config!A2:A`)
+  7. `Status` (Dropdown: `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`. Apply these approved values locally in the workbook; do not depend on a cross-workbook validation range.)
   8. `Drive_Folder_URL` (URL to Phase 1 folder `MASTER COMPANY/Projects/PROJECT_XXX`)
   9. `Notes` (Text)
   10. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
@@ -60,7 +60,7 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. Required)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
-  4. `Role` (Dropdown; canonical values defined in `Lists_Config`. Do not assume native cross-workbook validation-range linkage.)
+  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
   5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Monthly agreed CTC/stipend)
   6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
   7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
@@ -220,20 +220,7 @@ Phase 3 defines **14 authoritative/support schema tabs** across the three workbo
   6. `Status` (Dropdown: `Draft`, `Published`, `Archived`)
   7. `Generated_Date` (Date, Format: `YYYY-MM-DD`)
 
-### Tab 13: `Lists_Config` (Canonical Validation Configuration)
-- **Workbook:** `MASTER_COMPANY_OPERATIONS`
-- **Purpose:** Canonical definition of controlled validation values for the project. It is authoritative as configuration, but it is not a cross-workbook data source that Phase 3 may assume can be directly referenced by native Google Sheets validation in every workbook.
-- **Sensitivity:** High (Admin managed).
-- **Columns:**
-  - Column A (`Project_Status`): `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`
-  - Column B (`Employee_Roles`): `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`
-  - Column C (`Project_Roles`): `Lead`, `Core Contributor`, `Reviewer`, `Observer`
-  - Column D (`Access_Levels`): `Viewer`, `Editor`, `Admin`
-  - Column E (`Finance_Status`): `Submitted`, `Approved`, `Rejected`, `Reimbursed`, `Partially Reconciled`
-  - Column F (`Report_Types`): `Executive Summary`, `Project Status`, `Finance Audit`, `HR Rollup`
-  - Column G (`Employment_Status`): `Probation`, `Full-Time`, `Notice Period`, `Relieved`
-
-### Tab 14: `Submission_Index` (Audit & Automation Traceability)
+### Tab 13: `Submission_Index` (Audit & Automation Traceability)
 - **Workbook:** `MASTER_COMPANY_HR_ADMIN`
 - **Purpose:** Audit log of all incoming Form submissions and Phase 4 processing states.
 - **Sensitivity:** High.
