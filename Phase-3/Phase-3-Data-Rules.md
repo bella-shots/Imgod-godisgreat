@@ -21,3 +21,23 @@ The `Employees` tab is the single authoritative employee and HR master record. I
 
 Do not duplicate employee profile attributes in `HR_Admin`. `HR_Admin` is reserved for HR request/governance workflow records keyed by `HR_Request_ID` and `Employee_ID`.
 
+The `Employees` tab is the single authoritative employee and HR master record. It contains both baseline identity fields and HR attributes previously split with `HR_Admin`.
+
+Do not duplicate employee profile attributes in `HR_Admin`. `HR_Admin` is reserved for HR request/governance workflow records keyed by `HR_Request_ID` and `Employee_ID`.
+
+
+## D3-14 — Local controlled-value validation
+
+There is no `Lists_Config` workbook/tab. Controlled values are maintained as local validation rules in the workbook/tab where they are used. This avoids a false cross-workbook dependency and keeps Phase 3 native Google Sheets validation implementable without Apps Script synchronization.
+
+Approved controlled values include:
+- Project Status: Draft, Active, On Hold, Completed, Cancelled
+- Employee Roles: Administrator, Finance Admin, HR Admin, Project Lead, Team Member, Contractor
+- Project Roles: Lead, Core Contributor, Reviewer, Observer
+- Access Levels: Viewer, Editor, Admin
+- Employment Status: Probation, Full-Time, Notice Period, Relieved
+- Reimbursement Settings: Standard, Executive, Contractor-Direct
+- Finance Status: Submitted, Approved, Rejected, Reimbursed, Partially Reconciled
+- Report Types: Executive Summary, Project Status, Finance Audit, HR Rollup
+
+Where the same controlled value is used in multiple workbooks, the approved literal values are repeated locally; no second authoritative business record is created.
