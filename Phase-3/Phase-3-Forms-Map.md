@@ -8,3 +8,20 @@
 | FRM-06 | Report Request (optional) | Report_Requests_Responses (in MASTER_COMPANY_ADMIN) | Report_Index | Native Google Forms logs report request type, period, and recipient email. | Report compiler: On-demand compilation of requested report; generate output PDF/Sheet; catalog in Report_Index. |
 | FRM-07 | Investment Entry (admin) | Investment_Responses (in MASTER_COMPANY_FINANCE) | Investments | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | Ledger transfer: Assign stable INV-XXX ID; validate dates; transfer record into authoritative Investments ledger. |
 | FRM-08 | Salary Entry (admin) | Salary_Responses (in MASTER_COMPANY_FINANCE) | Salary_Admin | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | Calculation engine: Assign stable SAL-XXX ID; compute pending carry-forward balances; update Salary_Admin. |
+
+## R21 — Human-facing identity input rule
+
+The Forms layer must be usable by ordinary respondents. Stable internal IDs remain authoritative in the Sheets layer, but normal respondents must not be required to know or type them.
+
+| Form | Human-facing input | Phase 4 resolution |
+|---|---|---|
+| FRM-01 Create / Request Project | Project Name; human-facing member identity | Resolve/assign canonical `Project_ID` and `Employee_ID` values as applicable; generate stable record IDs. |
+| FRM-02 Employee Spending / Expense | Employee identity (prefer respondent email where available) + Project Name | Resolve to `Employee_ID` and `Project_ID`. |
+| FRM-03 OOP Claim | Employee identity + Project Name | Resolve to `Employee_ID` and `Project_ID`. |
+| FRM-04 Employee Update / HR Request | Employee identity (prefer respondent email where available) | Resolve to `Employee_ID`. |
+| FRM-05 MOM Input | Project Name | Resolve to `Project_ID`. |
+| FRM-06 Report Request | Project Name when a project-specific report is requested | Resolve to `Project_ID` when supplied. |
+| FRM-07 Investment Entry | Source Person name/entity | No employee/project foreign-key resolution is required by the authoritative schema. |
+| FRM-08 Salary Entry | Employee identity | Resolve to `Employee_ID`. |
+
+**Invariant:** No normal respondent should be asked to manually invent or guess a stable system ID such as `PRJ-001` or `EMP-001`. The authoritative tables retain the IDs; Phase 4 performs the lookup/normalization.
