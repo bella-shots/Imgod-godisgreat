@@ -196,3 +196,15 @@ For FRM-05:
 
 ### Scope firewall
 Do not create a lookup/configuration table, do not implement Phase 4 now, and do not change the authoritative `Projects` or `Project_MOM_Index` schemas.
+
+
+## R23 — Correct salary/payroll architecture
+
+The previous model incorrectly treated normal salary processing as employee-by-employee monthly Form entry. Correct model:
+- `Employees.Salary_Basis` = agreed **6-month CTC/stipend**, not monthly CTC.
+- Monthly payroll is derived from that stored six-month CTC for each applicable active employee.
+- `Salary_Admin` is the authoritative monthly payroll ledger.
+- Phase 4 generates monthly `SAL-XXX` records and records due, paid, pending carry-forward and status.
+- HR/Finance does not manually submit a salary Form for every employee every month.
+- Remove FRM-08 Salary Entry and do not create `Salary_Responses`.
+- Do not implement payroll automation in Phase 3; keep recurring payroll processing in Phase 4.
