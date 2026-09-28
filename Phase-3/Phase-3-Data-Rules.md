@@ -68,3 +68,8 @@ For FRM-05, `Project Name` is a required human-facing **Short answer** input wit
 The current project list must not be copied into Google Forms as manually maintained choices. Project identity is resolved during Phase 4 against authoritative `Projects.Project_Name` to obtain canonical `Project_ID`.
 
 Rationale: a hard-coded Form choice list can become stale and would incorrectly make Phase 3 responsible for maintaining a live project selector. This is not a new lookup/configuration structure.
+
+
+### D3-18 — Salary is six-month CTC + recurring payroll
+
+`Employees.Salary_Basis` stores the employee's agreed **6-month CTC/stipend** and must not be described as monthly CTC. Monthly salary is derived from that six-month CTC for each applicable active employee. `Salary_Admin` is the authoritative monthly payroll ledger. The former FRM-08 / `Salary_Responses` intake model is removed; no salary Form is required for normal monthly payroll. Any exceptional adjustment is a Phase 4 payroll capability.
