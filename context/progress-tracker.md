@@ -50,3 +50,11 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Phase 4 remains responsible for validating/resolving the submitted Project Name to canonical `Project_ID`.
 - No lookup/configuration table is introduced.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R23 session note
+- Corrected salary architecture: `Employees.Salary_Basis` is the agreed **6-month CTC/stipend**, not monthly CTC.
+- `Salary_Admin` is the authoritative monthly payroll ledger; Phase 4 derives monthly salary from the stored six-month CTC for each applicable active employee.
+- Removed FRM-08 / `Salary_Responses` from Phase 3. No `Salary_Responses` tab is to be created.
+- Native response tabs reduce from 8 to 7; physical Phase 3 tab count is 20 (13 authoritative/support + 7 native response tabs).
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
