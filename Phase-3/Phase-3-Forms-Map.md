@@ -7,7 +7,7 @@
 | FRM-05 | MOM Input | MOM_Responses (in MASTER_COMPANY_OPERATIONS) | Project_MOM_Index | Native Google Forms captures meeting metadata, attendee emails, and notes. | Document and distribution engine: Assign stable MOM-XXX ID; generate published Google Doc in 04_MOM; distribute email notices to registered attendee emails; record in Project_MOM_Index. |
 | FRM-06 | Report Request (optional) | Report_Requests_Responses (in MASTER_COMPANY_ADMIN) | Report_Index | Native Google Forms logs report request type, period, and recipient email. | Report compiler: On-demand compilation of requested report; generate output PDF/Sheet; catalog in Report_Index. |
 | FRM-07 | Investment Entry (admin) | Investment_Responses (in MASTER_COMPANY_FINANCE) | Investments | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | Ledger transfer: Assign stable INV-XXX ID; validate dates; transfer record into authoritative Investments ledger. |
-| FRM-08 | Salary Entry (admin) | Salary_Responses (in MASTER_COMPANY_FINANCE) | Salary_Admin | Native Google Forms captures monthly compensation and payout figures from authorized Admin. | Calculation engine: Assign stable SAL-XXX ID; compute pending carry-forward balances; update Salary_Admin. |
+
 
 ## R21 — Human-facing identity input rule
 
@@ -22,7 +22,7 @@ The Forms layer must be usable by ordinary respondents. Stable internal IDs rema
 | FRM-05 MOM Input | Project Name | Resolve to `Project_ID`. |
 | FRM-06 Report Request | Project Name when a project-specific report is requested | Resolve to `Project_ID` when supplied. |
 | FRM-07 Investment Entry | Source Person name/entity | No employee/project foreign-key resolution is required by the authoritative schema. |
-| FRM-08 Salary Entry | Employee identity | Resolve to `Employee_ID`. |
+ |
 
 **Invariant:** No normal respondent should be asked to manually invent or guess a stable system ID such as `PRJ-001` or `EMP-001`. The authoritative tables retain the IDs; Phase 4 performs the lookup/normalization.
 ### R22 — FRM-05 Project Name control
@@ -32,3 +32,8 @@ FRM-05 **Project Name** must be implemented as a **required Short answer**, not 
 The Form must not embed a manually maintained list copied from `Projects.Project_Name`. Respondents enter the human-readable project name; Phase 4 resolves and validates it against the authoritative `Projects` table and writes the canonical `Project_ID` to `Project_MOM_Index`.
 
 This preserves the R21 rule while preventing stale hard-coded Form choices. No lookup/configuration tab is introduced.
+
+
+### R23 — Salary is recurring payroll, not a monthly Form
+
+FRM-08 / `Salary_Responses` is removed from the Phase 3 Form architecture. `Employees.Salary_Basis` stores the agreed **6-month CTC/stipend**. Phase 4 derives monthly salary for each applicable active employee and creates the monthly `SAL-XXX` record in `Salary_Admin`. HR/Finance does not fill a salary Form for every employee every month. `Salary_Admin` is the authoritative payroll ledger and no `Salary_Responses` tab is created.
