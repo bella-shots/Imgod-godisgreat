@@ -81,9 +81,9 @@ Authoritative/support tabs:
 
 **Total = 13 authoritative/support tabs.**
 
-After all eight Forms are linked:
+After the seven applicable Forms are linked:
 
-**13 authoritative/support + 8 native response tabs = 21 physical tabs.**
+**13 authoritative/support + 7 native response tabs = 20 physical tabs.** Recurring payroll is not a Form workflow.
 
 ### Form correction
 
