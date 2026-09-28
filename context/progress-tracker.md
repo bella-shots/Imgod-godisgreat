@@ -44,3 +44,9 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Corrected specification boundary: Forms collect human-readable project/employee identity; Phase 4 resolves those values to canonical stable IDs.
 - Do not manually alter authoritative ID columns or invent replacement IDs in Forms.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+## R22 session note
+- Observed FRM-05 had existing project names pre-populated as Form choices.
+- Corrected the specification: FRM-05 `Project Name` is a required Short answer with no hard-coded/pre-populated project-name list.
+- Phase 4 remains responsible for validating/resolving the submitted Project Name to canonical `Project_ID`.
+- No lookup/configuration table is introduced.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
