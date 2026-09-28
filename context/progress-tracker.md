@@ -31,7 +31,7 @@ Feature 03: Sheets + Forms (Create 4 Google Sheets workbooks and 8 Google Forms 
 ## Current Phase 3 Prompt
 - Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-005.md`
 - Prompt-001, Prompt-002 and Prompt-003 remain historical and are not overwritten.
-- Prompt-005 records running changes R20 and R21. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary so respondents do not need to know/type stable internal IDs such as `Project_ID` or `Employee_ID`. R19 and R18 remain in force. The authoritative/support count remains 13 and the physical count remains 21.
+- Prompt-005 records running changes R20 and R21. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary so respondents do not need to know/type stable internal IDs such as `Project_ID` or `Employee_ID`. R19 and R18 remain in force. The authoritative/support count remains 13 and the physical count is now 20 after removing the normal monthly salary Form/response tab.
 
 ## Open decisions
 - Any remaining implementation ambiguity must be resolved in the relevant feature specification before dependent behavior is built.
