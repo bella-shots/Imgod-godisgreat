@@ -36,7 +36,7 @@ The data layer is partitioned into four distinct Google Sheets workbooks with is
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
 
 ### Physical tab count
-Phase 3 defines **13 authoritative/support schema tabs** across the four workbooks plus **8 native Form response tabs**, for **21 physical tabs total** after all eight Forms are linked. `Lists_Config` is removed; controlled values are defined locally in the relevant workbook/tab validation rules. The response tabs are platform-created intake destinations and must not be counted as additional authoritative business tables.
+Phase 3 defines **13 authoritative/support schema tabs** across the four workbooks plus **7 applicable native Form response tabs**, for **20 physical tabs total**. Recurring payroll is not a Form workflow; `Salary_Admin` is authoritative and has no native response tab. `Lists_Config` is removed; controlled values are defined locally in the relevant workbook/tab validation rules. The response tabs are platform-created intake destinations and must not be counted as additional authoritative business tables.
 
 ---
 
