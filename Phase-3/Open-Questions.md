@@ -12,3 +12,5 @@
 | Q07 | Must the app remain at ₹0 additional cost beyond the existing Google AI Pro subscription? | Yes — hard constraint for this build | Determines storage, email, hosting and backend choices. | 20-Sep 10:00 | High | Resolved |
 | Q08 | Should normal Form respondents manually enter stable Project_ID/Employee_ID values? | No. Use human-readable identity inputs and resolve to canonical IDs in Phase 4. | Internal IDs are system identifiers, not reasonable respondent-facing inputs. | 27-Sep | High | Resolved |
 | Q09 | Should FRM-05 embed current project names as a Form choice list? | No. Required Short answer; Phase 4 validates/resolves against authoritative `Projects`. | A copied choice list becomes stale as projects change and would create an unnecessary Phase 3 maintenance dependency. | 28-Sep | High | Resolved |
+
+| Q10 | Should normal monthly payroll be entered through a salary Form? | No. Use the agreed 6-month CTC in `Employees.Salary_Basis` and generate monthly payroll records in `Salary_Admin`. | A Form-per-employee-per-month workflow is unnecessary and impractical. | 28-Sep | High | Resolved |
