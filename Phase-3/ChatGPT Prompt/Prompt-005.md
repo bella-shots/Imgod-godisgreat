@@ -180,3 +180,19 @@ Confirm:
 **READ → DETERMINE STATE → PLAN → IMPLEMENT → VERIFY → CORRECT → RE-VERIFY → DOCUMENT → STOP**
 
 Do not continue to another Phase 3 unit until this running change is verified.
+### R22 — FRM-05 Project Name must be a free human-facing input
+
+### Problem corrected
+The new FRM-05 had been configured with existing project names as Form choices. That makes the Form dependent on a manually maintained snapshot of the Projects table and can become stale.
+
+### Authoritative rule
+For FRM-05:
+- `Project Name` is **Required**.
+- Question type is **Short answer**.
+- There are **no pre-populated project-name options**.
+- Do not ask for `Project_ID`.
+- Do not copy the current `Projects.Project_Name` values into the Form.
+- Phase 4 validates the submitted Project Name and resolves it to canonical `Project_ID` before writing `Project_MOM_Index`.
+
+### Scope firewall
+Do not create a lookup/configuration table, do not implement Phase 4 now, and do not change the authoritative `Projects` or `Project_MOM_Index` schemas.
