@@ -25,3 +25,10 @@ The Forms layer must be usable by ordinary respondents. Stable internal IDs rema
 | FRM-08 Salary Entry | Employee identity | Resolve to `Employee_ID`. |
 
 **Invariant:** No normal respondent should be asked to manually invent or guess a stable system ID such as `PRJ-001` or `EMP-001`. The authoritative tables retain the IDs; Phase 4 performs the lookup/normalization.
+### R22 — FRM-05 Project Name control
+
+FRM-05 **Project Name** must be implemented as a **required Short answer**, not as a pre-populated dropdown of current project names.
+
+The Form must not embed a manually maintained list copied from `Projects.Project_Name`. Respondents enter the human-readable project name; Phase 4 resolves and validates it against the authoritative `Projects` table and writes the canonical `Project_ID` to `Project_MOM_Index`.
+
+This preserves the R21 rule while preventing stale hard-coded Form choices. No lookup/configuration tab is introduced.
