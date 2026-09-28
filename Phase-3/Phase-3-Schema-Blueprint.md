@@ -20,7 +20,7 @@ The data layer is partitioned into four distinct Google Sheets workbooks with is
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
 2. **`MASTER_COMPANY_FINANCE`** (Restricted Finance & Accounting workbook)
    - Authoritative Tabs: `Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, `Investments`
-   - Native Form Intake Tabs: `Employee_Spending_Responses`, `OOP_Claims_Responses`, `Salary_Responses`, `Investment_Responses`
+   - Native Form Intake Tabs: `Employee_Spending_Responses`, `OOP_Claims_Responses`, `Investment_Responses`
    - Required Access Policy: Site Admin / Finance Admin ONLY (Private / Restricted). Ordinary employees must have 0 direct access to this workbook (employees submit strictly via Forms).
    - Native Form response tabs are intake destinations only and are not authoritative business tables.
 3. **`MASTER_COMPANY_HR_ADMIN`** (Restricted People Operations workbook)
@@ -67,7 +67,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
   4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
-  5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Monthly agreed CTC/stipend)
+  5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed 6-month CTC/stipend)
   6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
   7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
   8. `Project_Access` (Text, Comma-delimited `Project_ID` values or role tag)
@@ -272,7 +272,7 @@ The architecture enforces a strict distinction across three layers:
 | **FRM-05** | MOM Input | `MOM_Responses` in `MASTER_COMPANY_OPERATIONS` | `Project_MOM_Index` | Native Google Forms captures meeting metadata using a human-facing Project Name, attendee emails, and notes. | **Phase 4 Processing Required:** Resolve Project Name to canonical `Project_ID`; assign stable `MOM-XXX` ID; generate published Google Doc in `04_MOM`; distribute email notices to registered attendee emails; record in `Project_MOM_Index`. |
 | **FRM-06** | Report Request (Optional) | `Report_Requests_Responses` in `MASTER_COMPANY_ADMIN` | `Report_Index` | Native Google Forms logs report request type, period, recipient email, and human-facing project identity when a project-specific report is requested. | **Phase 4 Processing Required:** Resolve project identity to canonical `Project_ID` when supplied; compile the requested report; generate output PDF/Sheet; catalog in `Report_Index`. |
 | **FRM-07** | Investment Entry (Admin) | `Investment_Responses` in `MASTER_COMPANY_FINANCE` | `Investments` | Native Google Forms captures capital inflow/outflow entries from authorized Admin. | **Phase 4 Processing Required:** Assign stable `INV-XXX` ID; validate dates; transfer record into authoritative `Investments` ledger. |
-| **FRM-08** | Salary Entry (Admin) | `Salary_Responses` in `MASTER_COMPANY_FINANCE` | `Salary_Admin` | Native Google Forms captures monthly compensation and payout figures plus human-facing employee identity from authorized Admin. | **Phase 4 Processing Required:** Resolve employee identity to `Employee_ID`; assign stable `SAL-XXX` ID; compute pending carry-forward balances; update `Salary_Admin`. |
+| **Payroll** | Monthly Salary Processing | **No Form / no native response tab** | `Salary_Admin` | Monthly payroll is generated from each applicable employee's agreed 6-month CTC stored in `Employees.Salary_Basis`. | **Phase 4 Processing Required:** Derive monthly due amount; create the monthly `SAL-XXX` record; calculate/record paid amount, pending carry-forward and status. |
 
 ---
 
@@ -310,3 +310,10 @@ For **FRM-05 — MOM Input**, the respondent-facing `Project Name` field is a **
 - This does not create a lookup/configuration table and does not move Phase 4 resolution into Phase 3.
 
 This is a focused correction to the R21 human-facing identity rule and applies specifically to the current FRM-05 instantiation.
+
+
+### R23 — Salary/payroll architecture correction
+
+`Employees.Salary_Basis` is the agreed **6-month CTC/stipend**, not monthly CTC. Monthly payroll is derived from that stored six-month CTC for each applicable active employee during Phase 4.
+
+`Salary_Admin` is the authoritative monthly payroll ledger. HR/Finance must not re-enter every employee's salary through a Form every month. The former FRM-08 / `Salary_Responses` model is removed from Phase 3; no `Salary_Responses` tab is to be created. Phase 4 will generate monthly `SAL-XXX` records and handle due, paid, carry-forward and status values. Exceptional payroll adjustments must be explicitly designed in Phase 4 rather than reintroducing a repetitive monthly salary-entry Form.
