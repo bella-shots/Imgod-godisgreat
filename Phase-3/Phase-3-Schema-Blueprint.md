@@ -297,3 +297,16 @@ The architecture enforces a strict distinction across three layers:
 5. **Cost Hard Gate:**
    100% native Google Sheets and Google Forms running in standard Google Accounts. Total additional software spend: **₹0.00**.
 6. **Cross-domain administration boundary:** `Report_Index` and `Submission_Index` are administrative support structures, not HR data. They live in the restricted `MASTER_COMPANY_ADMIN` workbook and must not be moved into `MASTER_COMPANY_HR_ADMIN`.
+### R22 — FRM-05 Project Name input control
+
+For **FRM-05 — MOM Input**, the respondent-facing `Project Name` field is a **Short answer** field, required, with **no pre-populated project-name options**.
+
+- Do not configure a hard-coded dropdown/list of current project names in the Form.
+- Do not copy the current `Projects.Project_Name` values into Form choices.
+- Do not require the respondent to know or type `Project_ID`.
+- The respondent enters the human-readable Project Name.
+- Phase 4 validates/resolves the submitted Project Name against the authoritative `Projects` table and obtains the canonical `Project_ID`.
+- This avoids a stale Form choice list when projects are added, renamed, completed, or cancelled.
+- This does not create a lookup/configuration table and does not move Phase 4 resolution into Phase 3.
+
+This is a focused correction to the R21 human-facing identity rule and applies specifically to the current FRM-05 instantiation.
