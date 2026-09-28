@@ -17,3 +17,10 @@
 | P3-15 | Phase 3 closure. | All Phase 3 acceptance tests PASS and evidence is recorded. | NOT VERIFIED | Specifications, data rules, and cost constraints verified. Awaiting human execution (Sheet & Form instantiation in user's Google account). |
 
 | P3-16 | Verify human-facing Form identity inputs. | Normal respondents are not required to type or invent stable internal IDs; project/employee identities are collected in human-readable form and resolved to canonical IDs during Phase 4. | SPEC READY / HUMAN ACTION REQUIRED | R21 correction added to the schema, Forms map and data rules. Live Form verification remains a human-account action. |
+### P3-17 — FRM-05 human-facing project input
+
+**Requirement:** FRM-05 uses a required `Project Name` **Short answer** field with no pre-populated project-name choices.
+
+**Verify:** The live Form does not contain a manually maintained list of current project names and does not ask for `Project_ID`. The respondent enters the human-readable Project Name; Phase 4 is responsible for validation/resolution to canonical `Project_ID`.
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
