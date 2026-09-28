@@ -61,3 +61,10 @@ Both belong in the restricted `MASTER_COMPANY_ADMIN` workbook so HR does not bec
 Stable IDs remain mandatory in authoritative business tables, but they are not mandatory human-facing Form inputs. Forms must collect a usable human-readable identity and Phase 4 must resolve that value to the canonical ID before writing the authoritative business record. Native response tabs may preserve the original human-facing answer for traceability.
 
 This rule prevents the Form experience from requiring ordinary employees/project participants to know internal identifiers while preserving the stable-ID invariant.
+### D3-17 — FRM-05 Project Name must not be a hard-coded Form choice list
+
+For FRM-05, `Project Name` is a required human-facing **Short answer** input with no pre-populated project-name options.
+
+The current project list must not be copied into Google Forms as manually maintained choices. Project identity is resolved during Phase 4 against authoritative `Projects.Project_Name` to obtain canonical `Project_ID`.
+
+Rationale: a hard-coded Form choice list can become stale and would incorrectly make Phase 3 responsible for maintaining a live project selector. This is not a new lookup/configuration structure.
