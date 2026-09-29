@@ -264,8 +264,7 @@ Never expose Salary_Basis, HR_Notes, employee-level confidential HR records, att
 3. Projects & Operations
 4. Finance Summary — authorized categories only
 5. HR Summary — authorized categories only
-6. Period Activity / Key Counts
-7. Access Notice
+6. Access Notice
 
 Access Notice: the report contains only information permitted by the requester's existing authorization scope.
 
@@ -321,3 +320,8 @@ Phase 4 must:
 No report request, Period, Project Name, or download action may expand permissions.
 
 **R37 closes the previously undefined Company Summary content. It does not change the FRM-06 respondent-facing fields, workbook schemas, R32 View + Download contract, R29 Finance authorization, R31 HR authorization, or Phase 4 ownership of implementation.**
+
+### R38 — FRM-06 Company Summary presentation correction
+FRM-06 Company Summary does not produce a separate “Period Activity / Key Counts” section.
+
+Period-specific results are presented within Projects & Operations, Finance Summary, and HR Summary. No respondent-facing Form field is changed.
