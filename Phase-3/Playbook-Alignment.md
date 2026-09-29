@@ -23,3 +23,8 @@
 
 
 | Focused correction / FRM-06 report-request field lock | R27 locks the respondent-facing FRM-06 fields to Report Type, Period, conditional Project Name and Recipient Email, with exact report-type values and no internal/Phase 4 fields. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log; progress-tracker | Prevents the Form builder from inventing report categories, identity fields or workflow fields and keeps report compilation in Phase 4. | Applied |
+
+
+### R29 — Finance Report security alignment
+
+FRM-06 Finance Report is aligned to the playbook's restricted-data principle: report generation is a controlled presentation of already-authorized data, not a permission-escalation mechanism. The report compiler must enforce requester role/designation and authorized scope before selecting Finance records. Recipient selection must be role-controlled and cannot be used to bypass Finance/HR restrictions.
