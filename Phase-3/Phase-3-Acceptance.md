@@ -59,3 +59,19 @@ Verify the live Form contains exactly:
 Also verify Employee Email ID is required, Relevant Details is required, Attachment / Supporting Document is optional, no Employee_ID or HR_Request_ID is requested, and the Form remains linked to HR_Requests_Responses.
 
 Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
+
+
+### P3-21 — Verify FRM-06 Report Request
+
+Verify the live FRM-06 Form contains exactly these respondent-facing fields:
+- Report Type — Multiple choice, Required, exactly: Executive Summary; Project Status; Finance Audit; HR Rollup.
+- Period — Short answer, Required.
+- Project Name — Short answer, conditional/only when a project-specific report is requested; no hard-coded project-name list and no Project_ID.
+- Recipient Email — Short answer, Required.
+
+Also verify:
+- Native response destination is Report_Requests_Responses in MASTER_COMPANY_ADMIN.
+- No Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing field is respondent-facing.
+- Report_Index remains the authoritative catalog.
+
+Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
