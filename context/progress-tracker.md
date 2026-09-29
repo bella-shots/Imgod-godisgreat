@@ -24,14 +24,14 @@ Feature 03: Sheets + Forms (Create 4 Google Sheets workbooks and 8 Google Forms 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (Closed 26-Sep-2026)
 - 02 Master Google Site: COMPLETE & VERIFIED (Closed 27-Sep-2026)
-- 03 Sheets + Forms: IN PROGRESS / HUMAN ACTION REQUIRED (Blueprint complete; running change R20 applied; awaiting in-account creation)
+- 03 Sheets + Forms: IN PROGRESS / HUMAN ACTION REQUIRED (Blueprint complete; R20 ownership correction and R23 payroll correction applied; documentation reconciled by R24; awaiting in-account creation)
 - 04 Apps Script automation: BLOCKED until Feature 03 is verified
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
 
 ## Current Phase 3 Prompt
 - Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-005.md`
 - Prompt-001, Prompt-002 and Prompt-003 remain historical and are not overwritten.
-- Prompt-005 records running changes R20 and R21. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary so respondents do not need to know/type stable internal IDs such as `Project_ID` or `Employee_ID`. R19 and R18 remain in force. The authoritative/support count remains 13 and the physical count is now 20 after removing the normal monthly salary Form/response tab.
+- Prompt-005 records running changes R20 through R23. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary; R22 makes FRM-05 Project Name a free Short answer; R23 removes the recurring salary Form and makes `Salary_Admin` the payroll ledger. R19 and R18 remain in force. The authoritative/support count is 13 and the applicable/native response count is 7, for 20 physical tabs after all applicable Forms are linked.
 
 ## Open decisions
 - Any remaining implementation ambiguity must be resolved in the relevant feature specification before dependent behavior is built.
@@ -57,4 +57,12 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - `Salary_Admin` is the authoritative monthly payroll ledger; Phase 4 derives monthly salary from the stored six-month CTC for each applicable active employee.
 - Removed FRM-08 / `Salary_Responses` from Phase 3. No `Salary_Responses` tab is to be created.
 - Native response tabs reduce from 8 to 7; physical Phase 3 tab count is 20 (13 authoritative/support + 7 native response tabs).
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+## R24 session note
+- Reconciled stale Phase 3 documentation left after R23.
+- Authoritative model is now consistently documented as 4 workbooks: Operations (4), Finance (5), HR/Admin (2), Admin (2).
+- There are 13 authoritative/support tabs, 7 applicable Forms, 7 native response tabs, and 20 physical tabs after all applicable Forms are linked.
+- `Report_Index` and `Submission_Index` remain in `MASTER_COMPANY_ADMIN`, never HR.
+- `Salary_Admin` has no native Form/response tab.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
