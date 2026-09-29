@@ -440,3 +440,8 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+### R45 — Compensation and payroll architecture correction
+**Date:** 2026-09-29
+
+Expanded the compensation architecture to support recurring monthly compensation and one-time payments. Added Employees.Payment_Frequency and Salary_Admin.Payment_Frequency; made Salary_Admin.Month conditional for Monthly records and added Salary_Admin.Payment_Date for One-Time records. Preserved Employees.Salary_Basis as the agreed compensation basis and clarified self-service CTC visibility. No salary Form/response tab was added.
