@@ -239,7 +239,7 @@ Do not invent additional Request Type values. Do not ask for Employee_ID or HR_R
 
 ### R27 — FRM-06 Report Request field lock
 
-Before human instantiation of FRM-06, use this exact respondent-facing specification:
+Before human instantiation of FRM-06, use the R34 superseding specification below. The earlier R27 field lock is historical:
 
 - Report Type — Multiple choice, Required. Exact options: Company Summary, Project Report, Finance Report, HR Report.
 - Period — Short answer, Required. Use reporting-period text such as 2026-09 or 2026-Q3; do not use a Date question.
