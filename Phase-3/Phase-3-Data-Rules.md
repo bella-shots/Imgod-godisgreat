@@ -31,14 +31,14 @@ Do not duplicate employee profile attributes in `HR_Admin`. `HR_Admin` is reserv
 There is no `Lists_Config` workbook/tab. Controlled values are maintained as local validation rules in the workbook/tab where they are used. This avoids a false cross-workbook dependency and keeps Phase 3 native Google Sheets validation implementable without Apps Script synchronization.
 
 Approved controlled values include:
-- Project Status: Draft, Active, On Hold, Completed, Cancelled
+- Project Report: Draft, Active, On Hold, Completed, Cancelled
 - Employee Roles: Administrator, Finance Admin, HR Admin, Project Lead, Team Member, Contractor
 - Project Roles: Lead, Core Contributor, Reviewer, Observer
 - Access Levels: Viewer, Editor, Admin
 - Employment Status: Probation, Full-Time, Notice Period, Relieved
 - Reimbursement Settings: Standard, Executive, Contractor-Direct
 - Finance Status: Submitted, Approved, Rejected, Reimbursed, Partially Reconciled
-- Report Types: Executive Summary, Project Status, Finance Audit, HR Rollup
+- Report Types: Company Summary, Project Report, Finance Report, HR Report
 
 Where the same controlled value is used in multiple workbooks, the approved literal values are repeated locally; no second authoritative business record is created.
 
@@ -100,7 +100,7 @@ The same literals must be used for the HR_Admin Request_Type workflow field. No 
 ### D3-21 — FRM-06 respondent-facing field controls
 
 FRM-06 must collect only the report-request data defined by the Forms Map:
-- Report Type: required controlled multiple-choice value using exactly Executive Summary, Project Status, Finance Audit, HR Rollup.
+- Report Type: required controlled multiple-choice value using exactly Company Summary, Project Report, Finance Report, HR Report.
 - Period: required text in reporting-period form such as 2026-09 or 2026-Q3; do not use a full Date field.
 - Project Name: human-facing Short answer, used only when the requested report is project-specific; do not request Project_ID or hard-code current project names.
 - Recipient Email: required Short answer for report delivery/distribution.
