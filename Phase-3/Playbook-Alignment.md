@@ -366,3 +366,6 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+## R45 — Compensation/payroll alignment
+The build must support Monthly and One-Time compensation. Employees.Payment_Frequency controls the arrangement; Salary_Admin records the resulting compensation obligation/payment. One-Time arrangements must not be converted into artificial monthly payroll records. Employee self-service may show the employee's own Salary_Basis/CTC and Payment_Frequency; broader compensation visibility requires authorization.
