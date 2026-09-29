@@ -749,3 +749,57 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41 — Finance Report definition frozen
+**Date:** 2026-09-29
+
+The FRM-06 Finance Report output is now frozen. It is a permission-controlled consolidated financial report, not an unrestricted export of MASTER_COMPANY_FINANCE.
+
+### Presentation order
+1. Report Header
+2. Finance Overview
+3. Budget Given
+4. Employee Spending
+5. OOP Claims
+6. Salary / Payroll — authorized roles only
+7. Investments — authorized roles only
+8. Access Notice
+
+Report Header shows Report Type, exact requested Period, Generated Date, and Requested By. Internal Report_ID, Submission_ID, source workbook URLs, and unrestricted source fields are not ordinary report content.
+
+Budget Given uses Budget_Given.Date and shows authorized record count, total Amount, and count/amount by Status. Employee Spending uses Employee_Spending.Date and shows authorized record count, total Amount, and count/amount by Status. OOP Claims uses OOP_Claims.Date and shows authorized record count, total claimed Amount, total Approved_Amount, count/amount by Status, and paid amount where determinable.
+
+Salary / Payroll uses Salary_Admin.Month and is included only for roles already authorized for salary/payroll. Show authorized Due_Amount, Paid_Amount, Pending_Carry_Forward, record count, and Status breakdown. Employee-level salary rows require separate authorization.
+
+Investments uses Taken_Date and Actual_Return_Date for applicable period activity and is included only for roles already authorized for investment information. Standard output shows period-relevant record count, total Amount, and Status breakdown. Source_Person, Notes, and individual investment rows are not standard output unless separately authorized.
+
+Authorization: Team Member / Contractor = self only for employee-linked finance records; Project Lead = authorized project scope where permitted; Manager = authorized management/data scope and does not automatically receive Salary/Payroll or Investments; Finance Admin = company-wide Finance data permitted by role; HR Admin = Salary/Payroll where authorized, but Investments are not granted merely by HR role; Administrator / Site Admin = company-wide within existing authorization.
+
+Unauthorized categories are omitted. No report request may grant permissions or expand scope. No unrestricted workbook export, raw response tabs, proof/attachment URLs, confidential source fields, arbitrary recipient access, or invented fields.
+
+View + Download is governed by R32: downloaded content must exactly match authorized on-screen content.
+
+## R42 — HR Report definition frozen
+**Date:** 2026-09-29
+
+The FRM-06 HR Report output is now frozen. It is a permission-controlled HR report sourced only from Employees and HR_Admin.
+
+### Presentation order
+1. Report Header
+2. Employee / Workforce Snapshot
+3. HR Workflow Activity
+4. Access Notice
+
+Employee / Workforce Snapshot may show, subject to authorization: current Active employee count; current employee count by Employment_Status; current employee count by approved Role; employees whose Joining_Date falls within the requested period; and reimbursement-eligible employee count.
+
+HR Workflow Activity uses HR_Admin. Show HR request count during the requested period using Submitted_At, count by Request_Type, count by Status, and completed request count where Processed_At falls in the period and Status = Completed.
+
+Current employee/status counts are current snapshots, not historical reconstructions.
+
+Only existing Employees and HR_Admin fields may be used. Salary_Basis and HR_Notes remain restricted and are not exposed merely because HR Report was selected. Attachments and Attachment_URL are not exposed merely by report selection.
+
+Authorization: Team Member / Contractor = self-only HR information; Project Lead / Manager = explicitly authorized HR scope; HR Admin = authorized company-wide HR information; Administrator / Site Admin = company-wide within existing authorization. The report request cannot grant or expand access.
+
+No unrestricted employee export, confidential HR notes, unauthorized salary information, raw workbook tabs, unrestricted attachments/URLs, internal processing fields, or invented fields.
+
+View + Download is governed by R32: downloaded content must exactly match authorized on-screen content.
