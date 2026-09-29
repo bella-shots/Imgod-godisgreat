@@ -124,3 +124,17 @@ The Finance Report may contain, for an authorized recipient/scope and selected p
 7. Project-wise financial information when a project scope is supplied and authorized.
 
 The report must not expose restricted salary, investment, or other employees' financial information merely because the requester selected Finance Report.
+### R31 — HR Report scope lock
+
+FRM-06 Report Type **HR Report** means a permission-controlled HR report compiled from the existing Employees and HR_Admin authoritative schemas.
+
+It does **not** mean an unrestricted export of MASTER_COMPANY_HR_ADMIN.
+
+The report compiler must use only existing schema fields and apply requester authorization before selecting records or fields.
+
+HR request workflow fields are exactly:
+HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, Processed_By.
+
+Employee/HR master fields are exactly those defined in the authoritative Employees schema. No new HR fields may be invented for reporting.
+
+A report request does not grant new permissions. Recipient selection must not bypass authorization.
