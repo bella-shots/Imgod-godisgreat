@@ -22,3 +22,6 @@
 
 
 | Q13 | What exact respondent-facing fields should FRM-06 use? | Report Type (4 locked values), Period (text), conditional Project Name (free text), Recipient Email (required). | Prevents the Form builder from inventing fields or exposing internal report/workflow columns. | 29-Sep | Medium | Resolved |
+
+
+| Q14 | What should Finance Report return and who may receive it? | Finance Report is a permission-controlled consolidated report. Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, authorized Investments, authorized financial totals and authorized project-wise financial information may be included according to requester role/designation and scope. Recipient selection is role-controlled and cannot bypass permissions. | Prevents a report request from exposing restricted salary, investment or other employee financial records. | 29-Sep | Critical | Resolved |
