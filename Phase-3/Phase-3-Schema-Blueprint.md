@@ -352,3 +352,17 @@ For FRM-04 — Employee Update / HR Request, the respondent-facing Form fields a
 4. Attachment / Supporting Document — File upload, Optional.
 
 The Form must not ask for Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By. Those remain workflow fields handled by the response pipeline and Phase 4. HR_Admin.Request_Type uses the same nine approved literal values.
+
+
+### R27 — FRM-06 Report Request field specification
+
+For the Phase 3 human-instantiation of FRM-06, use this exact respondent-facing field specification:
+
+1. Report Type — Multiple choice, Required. Exact values: Executive Summary, Project Status, Finance Audit, HR Rollup.
+2. Period — Short answer, Required. Example values: 2026-09 or 2026-Q3.
+3. Project Name — Short answer, Conditional / only when a project-specific report is requested. Human-facing input; no hard-coded project-name choices and no Project_ID question.
+4. Recipient Email — Short answer, Required.
+
+Do not expose Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing fields to respondents.
+
+Report_Requests_Responses remains the native intake destination in MASTER_COMPANY_ADMIN; Report_Index remains the authoritative report catalog.
