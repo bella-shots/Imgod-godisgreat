@@ -14,3 +14,6 @@
 | Q09 | Should FRM-05 embed current project names as a Form choice list? | No. Required Short answer; Phase 4 validates/resolves against authoritative `Projects`. | A copied choice list becomes stale as projects change and would create an unnecessary Phase 3 maintenance dependency. | 28-Sep | High | Resolved |
 
 | Q10 | Should normal monthly payroll be entered through a salary Form? | No. Use the agreed 6-month CTC in `Employees.Salary_Basis` and generate monthly payroll records in `Salary_Admin`. | A Form-per-employee-per-month workflow is unnecessary and impractical. | 28-Sep | High | Resolved |
+
+
+| Q11 | Should FRM-02 use the submitted Employee Email ID or the signed-in Google account email when they differ? | Use the explicit **Employee Email ID** as the employee identity input; retain any platform-captured signed-in email only as audit metadata. A mismatch is not silently resolved and must enter validation failure/manual review or the defined correction workflow. | Prevents a submission from being attributed to the wrong employee when a respondent uses a different Google login. | 29-Sep | High | Resolved |
