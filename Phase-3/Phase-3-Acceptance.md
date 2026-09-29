@@ -40,3 +40,22 @@
 **Verify:** The live Form does not ask the respondent to type EMP-XXX. The submitted Employee Email ID resolves to Employees.Email during Phase 4. If the respondent is logged into Google Forms with a different email, the captured login address does not override the explicit Employee Email ID; the mismatch is held for validation failure/manual review or the defined correction workflow.
 
 **Status:** SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
+
+### P3-20 — Verify FRM-04 Request Type
+
+Requirement: FRM-04 uses the locked nine-value Request Type list.
+
+Verify the live Form contains exactly:
+- Personal Information Update
+- Bank / Payment Details Update
+- Leave / Attendance Request
+- Employment / HR Document Request
+- Salary / Payroll Query
+- Reimbursement / Benefits Query
+- Project / Role Update
+- Resignation / Exit Request
+- Other
+
+Also verify Employee Email ID is required, Relevant Details is required, Attachment / Supporting Document is optional, no Employee_ID or HR_Request_ID is requested, and the Form remains linked to HR_Requests_Responses.
+
+Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
