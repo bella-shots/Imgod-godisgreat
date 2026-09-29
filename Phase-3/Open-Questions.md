@@ -37,3 +37,14 @@ The universal behavior is:
 - provide a Download Report action for users who want a copy.
 
 The download must reflect the same authorization and report content as the displayed report. The exact downloadable file format remains a Phase 4 implementation detail.
+
+
+## R32 — Resolved reporting output question
+
+**Resolved:** Report delivery is not download-only and is not a raw workbook export.
+
+The universal behavior is:
+- display the generated authorized report directly in the system; and
+- provide a Download Report action for users who want a copy.
+
+The download must reflect the same authorization and report content as the displayed report. The exact downloadable file format remains a Phase 4 implementation detail.
