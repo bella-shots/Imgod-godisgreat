@@ -467,3 +467,6 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+## R45 — Compensation/payroll Form impact
+R45 introduces no salary Form or response tab. Payment frequency and compensation treatment are maintained administratively in Employees and Salary_Admin.
