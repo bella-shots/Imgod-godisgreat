@@ -470,3 +470,12 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 
 ## R45 — Compensation/payroll Form impact
 R45 introduces no salary Form or response tab. Payment frequency and compensation treatment are maintained administratively in Employees and Salary_Admin.
+
+
+## R46 — Employee Role vs Designation correction
+
+The Forms architecture does not add any respondent-facing Role or Designation field for FRM-06. The authoritative `Employees` schema now defines:
+- `Role` = functional responsibility / what the employee does.
+- `Designation` = company level/position.
+
+Both are authoritative employee-profile attributes and may be displayed in HR Report when authorized. They are not authorization/access fields, and no Form request may use either field to expand permissions.
