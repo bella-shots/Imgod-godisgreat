@@ -703,3 +703,15 @@ Implement compensation with two exact payment frequencies: Monthly and One-Time.
 - One-Time arrangements generate a single compensation/payment obligation and must not be represented as artificial monthly payroll.
 - Employees may view their own Salary_Basis/CTC and Payment_Frequency; broader compensation visibility requires authorization.
 - No salary Form or response tab is introduced.
+
+
+## R46 — Employee Role vs Designation correction
+
+When creating or validating the authoritative `Employees` tab and HR Report:
+- `Role` = what the employee does / functional responsibility.
+- `Designation` = the employee's company level/position.
+- Keep both as separate employee-master fields.
+- Do not populate Role with authorization labels merely to represent access.
+- Do not treat Designation as an authorization field.
+- HR Report Employee / HR Profile must include both Role and Designation when authorized.
+- No new respondent-facing FRM-06 field is required for either attribute.
