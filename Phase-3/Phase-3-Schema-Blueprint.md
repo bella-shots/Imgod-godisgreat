@@ -889,18 +889,81 @@ Phase 4 must resolve the requester, determine existing authorization, select onl
 
 **R41 is frozen. Any change to this Finance Report contract requires a new revision and explicit approval before implementation.**
 
-## R42 — HR Report definition — DRAFT / NOT FROZEN
-**Status:** Draft pending user review and explicit approval.
+## R42 — HR Report status correction
+**Superseded by R44.** R42 recorded that the HR Report was still draft after an earlier premature freeze. R44 now contains the approved HR Report contract.
 
-The current HR Report text remains a proposal only. It must **not** be treated as an approved/frozen Phase 3 contract or implemented as final behavior until the user reviews and explicitly approves it.
+## R44 — HR Report definition frozen
+**Date:** 2026-09-29
 
-The current proposal uses:
-1. Report Header
-2. Employee / Workforce Snapshot
-3. HR Workflow Activity
-4. Access Notice
+HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 contract.
 
-It proposes using only `Employees` and `HR_Admin`, R40 exact inclusive date ranges, existing authorization scope, and R32 View + Download. It proposes current workforce snapshots plus period-filtered HR workflow activity using `Employees.Joining_Date`, `HR_Admin.Submitted_At`, and `Processed_At` with Status = Completed.
+### Approved presentation
+1. **Report Header**
+   - Report Type
+   - Requested Period
+   - Generated Date
+   - Requested By
+   - Employee/Scope context when applicable and authorized
 
-**This is not frozen.** Do not treat its proposed fields, authorization details, exclusions, or presentation as final until separately approved.
+2. **Employee / HR Profile**
+   - Employee_ID
+   - Name
+   - Email
+   - Role
+   - Active
+   - Reimbursement_Eligible
+   - Project_Access, only where authorized
+   - Joining_Date
+   - Employment_Status
+   - Reimbursement_Settings, only where authorized
+   - Created_At, only where authorized
+   - Salary_Basis only where the requester is explicitly authorized
+   - HR_Notes only for explicitly authorized HR/Admin users; not ordinary employee/manager report content
 
+3. **HR Requests**
+   - HR_Request_ID
+   - Employee_ID / resolved employee identity
+   - Request_Type
+   - Relevant_Details
+   - Status
+   - Submitted_At
+   - Processed_At, when populated
+   - Processed_By, when populated and authorized
+   - Attachment_URL only when the requester is authorized to access the supporting document
+
+4. **HR Request Summary**
+   - Total authorized HR requests in the requested period
+   - Request count by Request_Type
+   - Request count by Status
+   - Completed request count, using Processed_At where populated and Status = Completed
+
+5. **Access Notice**
+   - States that the report contains only HR information the requester is authorized to access.
+   - Restricted employee data, Salary_Basis, HR_Notes, attachments and other confidential fields are omitted unless the requester's authorization explicitly permits them.
+
+### Source and period rules
+- Employee profile information comes only from the authoritative Employees schema.
+- HR workflow information comes only from the authoritative HR_Admin schema.
+- For HR requests, HR_Admin.Submitted_At is the primary period-filtering field; Processed_At may be used for processing/completion metrics.
+- Employee Joining_Date and Created_At may be used for explicitly defined period-sensitive profile metrics.
+- R40 applies: the requested Period is YYYY-MM-DD to YYYY-MM-DD, inclusive.
+- Current employee fields such as Active and Employment_Status are current snapshots; the report does not reconstruct historical employee status because no status-history table exists.
+
+### Authorization
+- Team Member / Contractor: own authorized employee profile information and own HR requests only.
+- Project Lead: only explicitly authorized project/scope information and permitted fields; role alone does not grant salary/CTC, HR Notes or unrestricted HR access.
+- Manager: authorized management scope only; role alone does not grant unrestricted salary/CTC, HR Notes or all employee records.
+- HR Admin: authorized company-wide HR information, including HR workflow records and restricted fields where the HR role permits them.
+- Administrator / Site Admin: company-wide information within administrator authorization.
+- Requester identity is resolved from the submitted Employee Email ID and authenticated account context; supplying another employee's email/name cannot expand access.
+- Selecting HR Report cannot grant or expand permissions.
+- The report is a permission-controlled HR report, not an export of MASTER_COMPANY_HR_ADMIN.
+
+### Delivery
+- R32 View + Download applies.
+- Downloaded content must match the authorized on-screen report.
+- No raw workbook export.
+- No new FRM-06 fields or Phase-3 schemas are introduced.
+- No report request, Period, Project Name or download action can expand permissions.
+
+**R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
