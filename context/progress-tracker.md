@@ -106,3 +106,8 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Locked role/designation-based recipient scope: Team Member/Contractor self-only; Project Lead authorized project scope; Manager authorized management/data scope; Finance Admin company-wide Finance scope; HR Admin authorized salary/payroll scope but not investment access merely by role; Administrator/Site Admin company-wide authorized scope.
 - Recipient must not be an unrestricted free-text lookup or a mechanism for bypassing permissions.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R30 session note
+- Added Manager to the controlled Employees.Role values because Finance Report recipient authorization now explicitly uses Manager as a designation/access category.
+- Manager remains subject to authorized management/data scope; Manager status alone does not grant restricted salary/payroll or investment access.
