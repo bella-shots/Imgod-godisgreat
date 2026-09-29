@@ -132,3 +132,12 @@ Confirm:
 7. Reports remain View + optional Download in Phase 4.
 8. Report_Index schema is unchanged.
 9. Historical R34 remains identifiable as historical; current FRM-06 uses R35.
+
+
+### R36 — FRM-06 Project Name exact case-sensitive matching
+
+The current FRM-06 **Project Name** field is explicitly **case-sensitive**. When a project-specific report is requested, the respondent must enter the project name **exactly as it appears in the authoritative Projects.Project_Name field**, including capitalization, spaces, spelling, and punctuation.
+
+Phase 4 must resolve the submitted Project Name using an exact match against Projects.Project_Name. No case-insensitive, fuzzy, trimmed, normalized, or approximate match may silently select a different project. Do not ask for or enter Project_ID, and do not provide a hard-coded project-name choice list in FRM-06.
+
+This revision clarifies the existing human-facing Project Name rule and does not change the four-field FRM-06 structure, report types, workbook schemas, authorization boundary, or Phase 4 ownership of identity resolution.
