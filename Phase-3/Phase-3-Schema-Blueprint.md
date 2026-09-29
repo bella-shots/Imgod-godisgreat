@@ -361,7 +361,7 @@ For the Phase 3 human-instantiation of FRM-06, use this exact respondent-facing 
 1. Report Type — Multiple choice, Required. Exact values: Company Summary, Project Report, Finance Report, HR Report.
 2. Period — Short answer, Required. Example values: 2026-09 or 2026-Q3.
 3. Project Name — Short answer, Conditional / only when a project-specific report is requested. Human-facing input; no hard-coded project-name choices and no Project_ID question.
-4. Recipient Email — Short answer, Required.
+4. Project Name — Short answer, Conditional / only when a project-specific report is requested.
 
 Do not expose Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing fields to respondents.
 
@@ -463,7 +463,7 @@ Minimum scope rules for the HR Report:
 
 Phase 4 must determine the authenticated requester, role, authorized employee/project scope, and permitted fields before selecting HR records.
 
-A requester must not be able to obtain another employee's restricted HR information by typing that employee's email/name into the Recipient Email field or by selecting HR Report.
+A requester must not be able to obtain another employee's restricted HR information by supplying another employee's email/name as an identity shortcut or by selecting HR Report. Requester identity is resolved from the submitted Employee Email ID; report scope is determined by authorization.
 
 **HR Report is therefore a permission-controlled HR report, not an export of the entire MASTER_COMPANY_HR_ADMIN workbook.**
 
