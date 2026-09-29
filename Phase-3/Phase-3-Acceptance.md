@@ -75,3 +75,16 @@ Also verify:
 - Report_Index remains the authoritative catalog.
 
 Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
+
+
+### P3-22 — Verify Finance Report authorization and contents
+
+Verify that FRM-06 Finance Report is not an unrestricted export of the Finance workbook.
+
+For a Team Member/Contractor test account, verify employee-linked Finance records are restricted to self only. For Project Lead/Manager accounts, verify recipient scope is limited to the user's authorized project/management/data scope. For Finance Admin, verify authorized company-wide Finance reporting works. Verify salary/payroll and investment information are exposed only to roles explicitly authorized for those categories.
+
+Verify that the system does not allow a requester to bypass authorization by typing another employee's name/email into a recipient field or by selecting Finance Report.
+
+Verify that the report can contain, subject to authorization and period: Budget Given; Employee Spending; OOP Claims; authorized Salary/Payroll; authorized Investments; authorized financial totals/aggregations; and authorized project-wise financial information.
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until Phase 4 implementation and permission tests exist.
