@@ -137,7 +137,7 @@ The HR Report must not invent fields that are absent from these schemas.
 
 For HR requests, Submitted_At is the primary request-period field. Processed_At and Processed_By represent processing metadata when populated and authorized.
 
-Authorization must be evaluated before selecting records or fields. A report request does not grant new permissions. Team Member/Contractor access is self-only; Project Lead and Manager access is limited to explicitly authorized scope; HR Admin has authorized company-wide HR scope; Administrator/Site Admin has company-wide scope within administrator authorization. Restricted Salary_Basis and confidential HR_Notes must not be exposed merely because HR Report was selected.
+Authorization must be evaluated before selecting records or fields. A report request does not grant new permissions. Team Member/Contractor access is self-only; Project Lead and Manager access is limited to explicitly authorized scope; HR Admin has authorized company-wide HR scope; Administrator/Site Admin has company-wide scope within administrator authorization. Salary_Basis is self-visible for the employee and available to HR Admin/Administrator within authorized scope; confidential HR_Notes remain restricted and must not be exposed merely because HR Report was selected.
 
 HR_Admin remains workflow-only and must not duplicate employee master fields.
 
@@ -449,7 +449,7 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
    - Employment_Status
    - Reimbursement_Settings, only where authorized
    - Created_At, only where authorized
-   - Salary_Basis only where the requester is explicitly authorized
+   - Salary_Basis — the employee's own agreed compensation basis/CTC may be shown to that employee; HR Admin/Administrator may view it within authorized scope; other employees require separate authorization
    - HR_Notes only for explicitly authorized HR/Admin users; not ordinary employee/manager report content
 
 3. **HR Requests**
