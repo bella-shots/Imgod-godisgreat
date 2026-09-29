@@ -356,3 +356,11 @@ Key frozen corrections:
 
 R42 is **DRAFT / NOT FROZEN**. The earlier repository wording that described HR Report as frozen was premature. HR Report remains pending user review and explicit approval. Phase 4 must not treat R42 as a final contract.
 
+### R43 — Finance Report OOP Claims presentation correction
+**Date:** 2026-09-29
+
+The user-facing Finance Report no longer displays the redundant `OOP_Claims.Month` field. The OOP Claims section displays Claim Date, Purpose, Project, Claimed Amount, Approved Amount, Status, and Paid Date when applicable.
+
+`OOP_Claims.Month` remains in the authoritative `OOP_Claims` schema for internal processing/reconciliation and must remain consistent with `OOP_Claims.Date`.
+
+R43 changes report presentation only. It does not change the workbook schema, FRM-06 fields, period filtering, authorization model, or Phase 4 source data.
