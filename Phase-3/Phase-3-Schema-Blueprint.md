@@ -220,7 +220,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Columns:**
   1. `Report_ID` (Text, Format: `RPT-XXX`, Stable unique ID)
   2. `Report_Type` (Dropdown: `Company Summary`, `Project Report`, `Finance Report`, `HR Report`)
-  3. `Period` (Text, e.g., `2026-Q3`, `2026-09`)
+  3. `Period` (Text, Format: `YYYY-MM-DD to YYYY-MM-DD`, inclusive exact reporting date range, e.g., `2026-07-01 to 2026-09-30`)
   4. `Project_ID` (Text, Optional, Foreign Key -> `Projects.Project_ID`)
   5. `Drive_URL` (URL to PDF/Sheet report in `MASTER COMPANY/Reports`)
   6. `Status` (Dropdown: `Draft`, `Published`, `Archived`)
@@ -619,8 +619,7 @@ Unauthorized sections/categories are omitted rather than shown as empty restrict
 - Invented fields absent from the authoritative Phase 3 schemas.
 
 #### 7. Period rules
-- Monthly YYYY-MM: applicable dated activity within that calendar month.
-- Quarterly YYYY-QN: applicable dated activity within that calendar quarter.
+- Date-range `YYYY-MM-DD to YYYY-MM-DD`: applicable dated activity whose authoritative date falls within the inclusive requested range.
 - Projects.Created_At = project creation activity.
 - Projects.Start_Date = project-start activity.
 - Projects.Event_Date = event/delivery-date activity.
@@ -694,8 +693,7 @@ For Project Finance Summary: Budget_Given shows record count, total Amount and S
 Salary/Payroll and Investments are not ordinary Project Report content. They require their own existing authorization and are not exposed merely because Project Report was selected.
 
 #### Project Report period rules
-- Monthly YYYY-MM: applicable project activity within that calendar month.
-- Quarterly YYYY-QN: applicable project activity within that calendar quarter.
+- Date-range `YYYY-MM-DD to YYYY-MM-DD`: applicable project activity whose authoritative date falls within the inclusive requested range.
 - Projects.Created_At, Start_Date and Event_Date support project lifecycle activity.
 - Project_Members.Assigned_Date supports team-assignment activity.
 - Project_Notes.Date is the note activity date.
@@ -712,3 +710,42 @@ Salary/Payroll and Investments are not ordinary Project Report content. They req
 
 #### Project Report View + Download
 Project Report follows the global R32 View + Download contract. The report is displayed in the system and may be downloaded. The downloaded report must contain the same authorized content shown on screen and must not expose additional source records or fields. Raw source workbooks are not report outputs.
+
+### R40 — FRM-06 universal exact date-range Period format
+
+**Decision:** The respondent-facing **FRM-06 Period** field now uses one standard format for **all four report types**: Company Summary, Project Report, Finance Report, and HR Report.
+
+**Required format:**
+`YYYY-MM-DD to YYYY-MM-DD`
+
+**Example:**
+`2026-07-01 to 2026-09-30`
+
+This is a required **Short answer** field, not a Google Forms Date question.
+
+**Period semantics:**
+- The start date and end date are both inclusive.
+- The start date must be on or before the end date.
+- The requested period is an exact calendar date range.
+- A report must include period-filtered records whose authoritative activity date falls within that inclusive range.
+- This replaces the active use of monthly `YYYY-MM` and quarterly `YYYY-QN` formats for FRM-06. Earlier monthly/quarterly wording in R33/R34 and earlier specifications remains historical revision history and is superseded for current implementation by R40.
+- The same date-range rule applies regardless of report type; users do not use different Period formats for Company Summary, Project Report, Finance Report, or HR Report.
+
+**Authoritative source-date rules:**
+- `Projects.Created_At`, `Start_Date`, and `Event_Date` use their corresponding dates.
+- `Project_Notes.Date` filters project notes.
+- `Project_MOM_Index.Meeting_Date` filters MOM activity.
+- `Budget_Given.Date` filters Budget Given activity.
+- `Employee_Spending.Date` filters Employee Spending activity.
+- `OOP_Claims.Date` filters OOP activity; `OOP_Claims.Month` must remain consistent with the claim date.
+- `Salary_Admin.Month` is month-based. Include a salary record when its `YYYY-MM` calendar month intersects the requested date range.
+- `Investments.Taken_Date` and `Actual_Return_Date` are used for applicable investment activity.
+- `HR_Admin.Submitted_At` filters HR request submissions; `Processed_At` is used for processing/completion activity.
+- `Employees.Joining_Date` filters joiner activity.
+- Current snapshot metrics, such as current project Status or current active employee count, remain current snapshots and are not reconstructed historically.
+
+**Project Report example:** If Project A has Published Project Notes dated July, August, and September 2026, a request for `2026-07-01 to 2026-09-30` includes all qualifying Published notes in that entire range.
+
+**Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
+
+**No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
