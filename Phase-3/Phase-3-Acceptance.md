@@ -63,7 +63,7 @@ Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
 
 ### P3-21 — Verify FRM-06 Report Request
 
-Verify the live FRM-06 Form contains exactly these respondent-facing fields:
+Verify the live FRM-06 Form contains exactly these respondent-facing fields (R34):
 - Report Type — Multiple choice, Required, exactly: Company Summary; Project Report; Finance Report; HR Report.
 - Period — Short answer, Required.
 - Project Name — Short answer, conditional/only when a project-specific report is requested; no hard-coded project-name list and no Project_ID.
