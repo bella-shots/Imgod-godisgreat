@@ -87,7 +87,7 @@ Do not mark a phase complete because documentation exists. Completion requires o
 ## R27 session note
 - Reconciled FRM-06 against the authoritative Phase 3 Forms Map and Schema Blueprint.
 - Locked the respondent-facing FRM-06 fields: Report Type (required multiple choice), Period (required short answer), conditional Project Name (short answer for project-specific reports), and Recipient Email (required short answer).
-- Locked Report Type to exactly Executive Summary; Project Status; Finance Audit; HR Rollup.
+- Locked Report Type to exactly Company Summary; Project Report; Finance Report; HR Report.
 - Explicitly prohibited internal/report-processing fields such as Report_ID, Project_ID, Drive_URL, Status, Generated_Date and Submission_ID from the Form.
 - Phase 4 remains responsible for Project Name resolution and report compilation/cataloguing.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
