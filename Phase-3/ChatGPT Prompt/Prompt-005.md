@@ -166,8 +166,8 @@ Confirm:
 5. Admin has exactly 2 authoritative/support tabs: `Report_Index`, `Submission_Index`.
 6. Total authoritative/support tabs = 13.
 7. FRM-06 response destination is in `MASTER_COMPANY_ADMIN`.
-8. All eight Forms produce the expected eight native response tabs.
-9. Expected physical tab count after all Forms are linked = 21.
+8. The seven applicable Forms produce the expected seven native response tabs.
+9. Expected physical tab count after all applicable Forms are linked = 20.
 10. `Employees` remains the single employee + HR master.
 11. `HR_Admin` remains workflow-only.
 12. `Report_Index` and `Submission_Index` are not inside the HR workbook.
