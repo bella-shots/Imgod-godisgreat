@@ -392,3 +392,20 @@ There is no respondent-facing Recipient Email field. Reports are displayed in th
 Do not add respondent-facing Employee_ID, Designation/Role, Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4 processing fields.
 
 This revision changes the FRM-06 respondent-facing field count from five to four. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
+
+
+### R36 — FRM-06 Project Name exact case-sensitive matching
+
+For FRM-06, when the Project Name field is shown for a project-specific report, treat it as **case-sensitive**.
+
+The respondent must enter the Project Name **exactly as it appears in the authoritative Projects.Project_Name field**, including:
+- capitalization;
+- spaces;
+- spelling; and
+- punctuation.
+
+Phase 4 must resolve the submitted Project Name using an **exact match** against Projects.Project_Name. Do not silently perform case-insensitive, fuzzy, trimmed, normalized, or approximate matching that could select a different project.
+
+Do not ask for or enter Project_ID. Do not create a hard-coded project-name choice list in FRM-06.
+
+This is a clarification of the existing FRM-06 human-facing identity rule. Do not change the four-field FRM-06 structure, report types, workbook schemas, authorization boundary, or Phase 4 ownership of identity resolution.
