@@ -149,3 +149,14 @@ FRM-06 remains a request/intake form only. After submission, all report types fo
 The Form does not ask whether the user wants View or Download; the system provides both. View is the normal report presentation, while Download is an explicit action available from the displayed report.
 
 The download must contain only the same authorized information available in the displayed report. It must not expose the underlying source workbook or bypass permissions.
+
+
+## R32 — Global FRM-06 report delivery contract
+
+FRM-06 remains a request/intake form only. After submission, all report types follow one common delivery contract:
+
+**Report request → identity/authorization check → authorized report generation → in-system View → optional user-initiated Download.**
+
+The Form does not ask whether the user wants View or Download; the system provides both. View is the normal report presentation, while Download is an explicit action available from the displayed report.
+
+The download must contain only the same authorized information available in the displayed report. It must not expose the underlying source workbook or bypass permissions.
