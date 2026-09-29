@@ -362,3 +362,12 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41/R42 status update — 2026-09-29
+Finance Report: DEFINED + FROZEN (R41).
+HR Report: DEFINED + FROZEN (R42).
+Company Summary: FROZEN (R37/R38).
+Project Report: FROZEN (R39).
+FRM-06 Period: FROZEN exact date range (R40).
+
+All four FRM-06 report types now have frozen Phase 3 output contracts. Phase 3 remains HUMAN ACTION REQUIRED only for live Google Sheet/Form verification. Phase 4 implementation remains blocked until the remaining Phase 3 gate is satisfied.
