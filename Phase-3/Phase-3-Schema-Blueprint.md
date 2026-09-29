@@ -66,7 +66,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. Required)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
-  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
+  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Manager`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
   5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed 6-month CTC/stipend)
   6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
   7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
