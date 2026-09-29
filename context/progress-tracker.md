@@ -364,10 +364,11 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
 ## R41/R42 status update — 2026-09-29
-Finance Report: DEFINED + FROZEN (R41).
-HR Report: DEFINED + FROZEN (R42).
+Finance Report: **DEFINED + FROZEN (R41)** — explicitly approved.
+HR Report: **DRAFT / NOT FROZEN (R42)** — pending user review and explicit approval.
 Company Summary: FROZEN (R37/R38).
 Project Report: FROZEN (R39).
 FRM-06 Period: FROZEN exact date range (R40).
 
-All four FRM-06 report types now have frozen Phase 3 output contracts. Phase 3 remains HUMAN ACTION REQUIRED only for live Google Sheet/Form verification. Phase 4 implementation remains blocked until the remaining Phase 3 gate is satisfied.
+All completed report contracts must remain frozen until a new revision is explicitly approved. Phase 3 remains HUMAN ACTION REQUIRED for live Google Sheet/Form verification. Phase 4 implementation remains blocked until the remaining Phase 3 gate is satisfied.
+
