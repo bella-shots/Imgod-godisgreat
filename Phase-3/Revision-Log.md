@@ -448,3 +448,7 @@ Expanded the compensation architecture to support recurring monthly compensation
 
 
 | R46 | Running Change — corrected the employee master distinction between functional Role and company Designation/level. `Employees.Role` now means what the employee does / functional responsibility; `Employees.Designation` means the employee's company level/position. Added `Designation` to the authoritative Employees schema and HR Report profile. Explicitly separated both fields from authorization/access classification. No new Form field or salary response tab was introduced. |
+
+
+## R47 — Budget_Given spending and return tracking
+Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`) with a simple calculated money-flow model. `Amount Given INR` and `Used Amount INR` determine calculated `To Be Returned INR`; `Returned Amount INR` determines calculated `Pending Return Amount INR`; Status is automatically derived as `Pending Return`, `Fully Returned`, or `No Return Required`. Any positive pending amount, including ₹1, remains `Pending Return`. Used Amount cannot exceed Amount Given and Returned Amount cannot exceed To Be Returned. `Recipient Email / Name` is name-or-email, not email-only. No Form, workbook-boundary, Lists_Config, cross-workbook validation, or Phase 4 architecture change.
