@@ -394,3 +394,75 @@ The Finance Report can include these categories, filtered by authorization and p
 Recipient must never be an unrestricted free-text mechanism for bypassing access control. Phase 4 must derive/validate recipient options from the requester's role/designation and authorized scope. Manually entering another employee's email/name must not grant access to that employee's restricted data.
 
 A report request grants no new permission. The requester can receive only data that the requester was already authorized to access through the company's access model.
+### R31 — HR Report exact scope and field mapping
+
+**Purpose:** Define exactly what **FRM-06 → HR Report** may return. The HR Report must be derived only from the authoritative Employees and HR_Admin schemas already defined in Phase 3. No generic or invented HR fields may be introduced.
+
+#### A. Employee / HR master information — source: Employees
+
+The HR Report may use these existing Employees columns, subject to requester authorization:
+
+- Employee_ID — canonical internal employee identifier.
+- Name — employee name.
+- Email — employee email.
+- Role — controlled employee role.
+- Salary_Basis — agreed 6-month CTC/stipend; restricted and shown only to explicitly authorized roles.
+- Active — active/inactive state.
+- Reimbursement_Eligible — reimbursement eligibility.
+- Project_Access — project-access baseline, only where the requester is authorized to see it.
+- Joining_Date — joining date.
+- Employment_Status — employment status.
+- HR_Notes — confidential internal HR notes; not part of ordinary employee/manager HR reports and exposed only to explicitly authorized HR/Admin users.
+- Reimbursement_Settings — reimbursement setting, subject to authorization.
+- Created_At — employee master creation timestamp, subject to authorization.
+
+#### B. HR request / workflow information — source: HR_Admin
+
+The HR Report may use these exact HR_Admin columns:
+
+1. HR_Request_ID — unique identifier of the HR request.
+2. Employee_ID — canonical employee reference for the requester/subject.
+3. Request_Type — one of the nine locked HR request categories.
+4. Relevant_Details — details submitted by the employee in FRM-04.
+5. Attachment_URL — supporting-document reference, only where the requester is authorized to access the document.
+6. Status — current request workflow status: Submitted, In Review, Completed, or Rejected.
+7. Submitted_At — timestamp when the HR request was submitted.
+8. Processed_At — timestamp when processing was completed/recorded, where populated.
+9. Processed_By — email of the person recorded as processing the request, where populated and authorized.
+
+**Therefore, the earlier vague labels are replaced by these exact mappings:**
+- “Employee/requester” → HR_Admin.Employee_ID, resolved through Employees to the authorized employee identity.
+- “Request type” → HR_Admin.Request_Type.
+- “Request details” → HR_Admin.Relevant_Details.
+- “Status” → HR_Admin.Status.
+- “Request date” → HR_Admin.Submitted_At.
+- “Processing information” → HR_Admin.Processed_At and HR_Admin.Processed_By.
+- “Attachment/supporting document” → HR_Admin.Attachment_URL, only when authorized.
+
+#### C. HR Report does NOT invent or duplicate fields
+
+The HR Report must not create a second HR master or invent fields such as Department, Manager, Designation, Leave Balance, Attendance, Performance Score, Recruitment Status, Employee Phone, Address, etc. unless those fields are separately added to the authoritative Phase 3 schema through a documented revision.
+
+HR_Admin remains a workflow table only. Employee profile information must be joined from Employees; it must not be copied into HR_Admin.
+
+#### D. Period filtering
+
+FRM-06 supplies a Period. Phase 4 must apply that period to reportable records using the relevant existing date/timestamp fields. For HR requests, the primary request-period field is Submitted_At. For employee master data, fields such as Joining_Date and Created_At may be used where the report definition requires a period-sensitive employee view.
+
+#### E. Authorization
+
+Selecting **HR Report** does not grant additional HR access.
+
+Minimum scope rules for the HR Report:
+
+- **Team Member / Contractor:** own employee profile information that is appropriate for self-service, plus own HR requests. No other employee's HR records.
+- **Project Lead:** only employee/HR information within an explicitly authorized project scope, and only fields permitted by the underlying HR access policy. Project Lead status alone does not grant access to confidential HR notes, salary/CTC, or unrestricted HR records.
+- **Manager:** authorized management scope only. Manager status alone does not grant unrestricted salary/CTC, HR notes, or all HR records.
+- **HR Admin:** authorized company-wide HR information, including HR workflow records and restricted HR fields where the HR role permits them.
+- **Administrator / Site Admin:** company-wide information within the administrator's authorized scope.
+
+Phase 4 must determine the authenticated requester, role, authorized employee/project scope, and permitted fields before selecting HR records.
+
+A requester must not be able to obtain another employee's restricted HR information by typing that employee's email/name into the Recipient Email field or by selecting HR Report.
+
+**HR Report is therefore a permission-controlled HR report, not an export of the entire MASTER_COMPANY_HR_ADMIN workbook.**
