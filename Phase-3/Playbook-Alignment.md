@@ -369,3 +369,12 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 
 ## R45 — Compensation/payroll alignment
 The build must support Monthly and One-Time compensation. Employees.Payment_Frequency controls the arrangement; Salary_Admin records the resulting compensation obligation/payment. One-Time arrangements must not be converted into artificial monthly payroll records. Employee self-service may show the employee's own Salary_Basis/CTC and Payment_Frequency; broader compensation visibility requires authorization.
+
+
+## R46 — Employee Role vs Designation alignment
+
+The build must keep `Employees.Role` and `Employees.Designation` distinct:
+- Role = what the employee does / functional responsibility.
+- Designation = company level/position.
+
+Do not use either field as a permission/access-role substitute. HR Report Employee / HR Profile must map both fields from the authoritative `Employees` record when authorized. No new FRM-06 respondent field is required.
