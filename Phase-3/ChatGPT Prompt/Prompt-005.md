@@ -208,3 +208,20 @@ The previous model incorrectly treated normal salary processing as employee-by-e
 - HR/Finance does not manually submit a salary Form for every employee every month.
 - Remove FRM-08 Salary Entry and do not create `Salary_Responses`.
 - Do not implement payroll automation in Phase 3; keep recurring payroll processing in Phase 4.
+
+
+## R25 — FRM-02 Employee Email ID and alternate-login handling
+
+Correct the FRM-02 employee identity field as follows:
+
+- **AS IS:** Employee ID
+- **TO BE:** Employee Email ID
+- Make Employee Email ID required.
+- Do not ask for Employee_ID.
+- Phase 4 resolves the submitted Employee Email ID against Employees.Email to obtain the canonical Employee_ID.
+- If the respondent is logged into Google Forms using a different email, do not silently use that login email instead of the explicit Employee Email ID.
+- If platform-captured respondent email is available, retain it only as audit/submission metadata.
+- A mismatch between the signed-in email and the entered Employee Email ID must go to validation failure/manual review or the defined correction workflow; do not guess or silently substitute an employee.
+- Do not add a second employee-login email question solely for this case.
+- Do not change the authoritative Employee_Spending.Employee_ID field.
+- Do not implement Phase 4 automation now.
