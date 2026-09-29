@@ -314,3 +314,44 @@ The report compiler must apply requester identity, role/designation and authoriz
 Salary_Basis and HR_Notes are restricted and must not be exposed merely because HR Report was selected.
 
 A report request does not grant new permissions.
+
+
+## R32 — Universal report View + Download contract
+
+### Problem corrected
+Earlier report wording could be interpreted as producing a downloadable file or raw workbook export rather than a report that users can simply view. The reporting behavior must be consistent across all report types.
+
+### Authoritative rule
+For every FRM-06 request — **Company Summary, Project Report, Finance Report, or HR Report** — Phase 4 must:
+1. identify/authenticate the requester;
+2. apply existing role/designation and authorization scope;
+3. apply report type and period;
+4. select only authorized records and fields;
+5. generate a human-readable report;
+6. display the report directly in the system; and
+7. provide a user-initiated **Download Report** action.
+
+The user chooses whether to download. Download is not required for viewing.
+
+The downloaded artifact must be generated from the same authorized report result shown to the requester. Download must never expose additional fields, records, source workbook tabs, or otherwise bypass the requester's permissions.
+
+Raw Google Sheets workbooks are source data, not report outputs. The exact download format is a Phase 4 implementation detail unless separately frozen.
+
+### Scope firewall for R32
+Do not:
+- make reports download-only;
+- make raw workbook exports the report output;
+- create a separate weaker authorization path for downloads;
+- expose restricted fields merely because a report was requested;
+- implement Phase 4 during Phase 3.
+
+### Verification
+Confirm:
+1. Company Summary supports View + Download.
+2. Project Report supports View + Download.
+3. Finance Report supports View + Download.
+4. HR Report supports View + Download.
+5. View does not require Download.
+6. Download cannot expose information beyond the displayed authorized report.
+7. Raw source workbooks are not presented as report outputs.
+8. Phase 4 remains responsible for implementation.
