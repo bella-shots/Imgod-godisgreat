@@ -27,7 +27,7 @@
 
 ### R29 — Finance Report security alignment
 
-FRM-06 Finance Report is aligned to the playbook's restricted-data principle: report generation is a controlled presentation of already-authorized data, not a permission-escalation mechanism. The report compiler must enforce requester role/designation and authorized scope before selecting Finance records. Recipient selection must be role-controlled and cannot be used to bypass Finance/HR restrictions.
+FRM-06 Finance Report is aligned to the playbook's restricted-data principle: report generation is a controlled presentation of already-authorized data, not a permission-escalation mechanism. The report compiler must enforce requester role/designation and authorized scope before selecting Finance records. Report access must be role-controlled and cannot be used to bypass Finance/HR restrictions.
 ### R31 — HR Report must follow authoritative schema, not generic HR assumptions
 
 For **FRM-06 → HR Report**, implementation guidance must map report content directly to the current Employees and HR_Admin schemas.
@@ -66,11 +66,11 @@ For every FRM-06 report type, Phase 4 must implement: authorization → report g
 The implementation must not create separate weaker/stronger authorization paths for View and Download. The exact download format is intentionally left open for Phase 4 unless separately approved.
 \n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification did not change the field types or reporting-period semantics at the time. R34 subsequently revises the FRM-06 field set by adding the required Employee Email ID requester-identity field.
 
-### R34 — FRM-06 requester identity and alternate-account handling
+### R34 — FRM-06 requester identity and alternate-account handling (historical; superseded by R35)
 
-R27 is revised for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
+R34 revised R27 for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
 
-The authoritative respondent-facing FRM-06 field set is now:
+The R34 historical respondent-facing FRM-06 field set was:
 
 | # | Field | Type | Required |
 |---|---|---|---|
