@@ -340,11 +340,19 @@ This is a required **Short answer** field, not a Google Forms Date question.
 ### R41 — Finance Report definition frozen
 **Date:** 2026-09-29
 
-Finance Report is now frozen as a permission-controlled consolidated Finance report using existing Finance schemas only. Frozen scope covers Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, authorized Investments, exact inclusive R40 date-range filtering, role-based authorization, exclusions, and View + Download. It is not an unrestricted Finance workbook export. Manager does not automatically receive Salary/Payroll; HR Admin does not receive Investments merely by HR role; unauthorized categories are omitted.
+Finance Report was explicitly reviewed and approved by the user and is now frozen. The authoritative structure is: Report Header; Finance Summary; Budget Given; Employee Spending; OOP Claims; My Salary / Payroll; Access Notice.
 
-### R42 — HR Report definition frozen
+Key frozen corrections:
+- Investments are excluded from the standard Finance Report.
+- Every employee may see their own `Salary_Admin` payroll records.
+- Other employees' salary/payroll requires separate authorization.
+- Finance Admin access to the Finance workbook does not automatically grant visibility into everyone’s salary.
+- The report uses R40 exact inclusive date ranges and R32 View + Download.
+- Unauthorized data and restricted proof/attachment/internal fields are omitted.
+- No new Phase 3 fields or schemas are introduced.
+
+### R42 — HR Report status correction
 **Date:** 2026-09-29
 
-HR Report is now frozen as a permission-controlled report sourced only from Employees and HR_Admin. Frozen scope covers current workforce snapshots, Joining_Date activity, HR request submission/completion activity, exact inclusive R40 date-range filtering, role-based authorization, confidential-field restrictions, exclusions, and View + Download. It is not an unrestricted employee/HR workbook export.
+R42 is **DRAFT / NOT FROZEN**. The earlier repository wording that described HR Report as frozen was premature. HR Report remains pending user review and explicit approval. Phase 4 must not treat R42 as a final contract.
 
-R41 and R42 do not change FRM-06 fields or workbook schemas. They close the previously undefined report-content boundary and leave only Phase 4 implementation work.
