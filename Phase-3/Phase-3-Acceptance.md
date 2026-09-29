@@ -31,3 +31,12 @@
 `Employees.Salary_Basis` must be the agreed **6-month CTC/stipend**, not monthly CTC. No `Salary_Responses` tab or FRM-08 monthly salary-entry Form is created. Phase 4 will derive monthly salary for each applicable active employee and maintain monthly `SAL-XXX` records in `Salary_Admin`.
 
 **Status:** SPEC READY / HUMAN ACTION REQUIRED for live workbook verification.
+
+
+### P3-19 — Verify FRM-02 Employee Email ID handling
+
+**Requirement:** FRM-02 uses a required **Employee Email ID** field rather than Employee_ID.
+
+**Verify:** The live Form does not ask the respondent to type EMP-XXX. The submitted Employee Email ID resolves to Employees.Email during Phase 4. If the respondent is logged into Google Forms with a different email, the captured login address does not override the explicit Employee Email ID; the mismatch is held for validation failure/manual review or the defined correction workflow.
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
