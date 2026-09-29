@@ -90,3 +90,25 @@ Verify that the system does not allow a requester to bypass authorization by typ
 Verify that the report can contain, subject to authorization and period: Budget Given; Employee Spending; OOP Claims; authorized Salary/Payroll; authorized Investments; authorized financial totals/aggregations; and authorized project-wise financial information.
 
 **Status:** SPEC READY / HUMAN ACTION REQUIRED until Phase 4 implementation and permission tests exist.
+### P3-23 — Verify HR Report exact contents and authorization
+
+Verify that **FRM-06 → HR Report** is compiled only from the current authoritative Employees and HR_Admin schemas.
+
+Verify that the report compiler recognizes these Employees fields:
+Employee_ID, Name, Email, Role, Salary_Basis, Active, Reimbursement_Eligible, Project_Access, Joining_Date, Employment_Status, HR_Notes, Reimbursement_Settings, Created_At.
+
+Verify that the report compiler recognizes these HR_Admin fields:
+HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, Processed_By.
+
+Verify:
+- Submitted_At is the primary period field for HR request records.
+- Processed_At and Processed_By are included only when populated and authorized.
+- Attachment_URL is exposed only when the requester is authorized to access the underlying document.
+- Salary_Basis and HR_Notes are not exposed to ordinary Team Member/Contractor or unauthorized Project Lead/Manager requesters.
+- Team Member/Contractor requests return only the requester's own authorized HR information.
+- Project Lead/Manager requests are limited to explicitly authorized scope.
+- HR Admin and Administrator/Site Admin receive only the company-wide fields permitted by their authorization.
+- Selecting HR Report cannot grant access to another employee's restricted HR data.
+- No fields absent from Employees or HR_Admin are invented.
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until Phase 4 implementation and permission tests exist.
