@@ -378,3 +378,7 @@ The build must keep `Employees.Role` and `Employees.Designation` distinct:
 - Designation = company level/position.
 
 Do not use either field as a permission/access-role substitute. HR Report Employee / HR Profile must map both fields from the authoritative `Employees` record when authorized. No new FRM-06 respondent field is required.
+
+
+## R47 — Budget_Given money-flow alignment
+The Phase 3 playbook alignment now uses the simplified Budget_Given money-flow model: Amount Given INR → Used Amount INR → calculated To Be Returned INR; Returned Amount INR → calculated Pending Return Amount INR; derived Status = Pending Return / Fully Returned / No Return Required. The model explicitly avoids the previous `Reconciled` terminology and remains a Phase 3 native-Sheets calculation, not Apps Script or Phase 4 processing.
