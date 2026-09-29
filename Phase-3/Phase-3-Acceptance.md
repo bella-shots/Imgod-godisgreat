@@ -127,3 +127,18 @@ The Phase 3 reporting contract is accepted only when the following are frozen fo
 - Authorization is applied before report data is selected and before either View or Download delivery.
 - Report request parameters do not grant permissions.
 - Exact download format is a Phase 4 implementation detail unless separately frozen; View + Download behavior is mandatory.
+
+
+## R32 — Report delivery acceptance criteria
+
+The Phase 3 reporting contract is accepted only when the following are frozen for Phase 4:
+
+- All four FRM-06 report types are viewable directly in the system after authorized generation.
+- A user is not required to download a report to read it.
+- Every generated report provides a user-initiated Download action.
+- The downloaded artifact represents the same authorized report content shown to the requester.
+- Download cannot expose additional fields/records beyond the on-screen authorization scope.
+- Raw Finance/HR/Operations/Admin workbooks are never treated as the report output.
+- Authorization is applied before report data is selected and before either View or Download delivery.
+- Report request parameters do not grant permissions.
+- Exact download format is a Phase 4 implementation detail unless separately frozen; View + Download behavior is mandatory.
