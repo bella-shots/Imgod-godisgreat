@@ -358,4 +358,8 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 **Decision:** Support both Monthly and One-Time compensation. Add Employees.Payment_Frequency and corresponding Salary_Admin.Payment_Frequency; require Salary_Admin.Month only for Monthly records and Salary_Admin.Payment_Date for One-Time records. Preserve Salary_Basis as the agreed compensation basis and permit employees to view their own compensation basis/CTC and payment frequency. No salary Form is introduced.
 
 
+## R46 — Employee Role vs Designation correction
+
+The Role/Designation distinction is resolved as follows: `Role` = functional responsibility / what the employee does; `Designation` = company level/position. Both are authoritative employee-profile fields and neither is an authorization/access field.
+
 | Q15 | Should Employee Role and Designation be separate fields? | **Resolved: Yes.** `Employees.Role` means what the employee does / functional responsibility. `Employees.Designation` means the employee's level/position in the company. Both are authoritative employee-profile fields. Neither is an authorization/access field. | Prevents functional responsibility from being confused with organizational level or system access. | 29-Sep | High | Resolved |
