@@ -241,7 +241,7 @@ Do not invent additional Request Type values. Do not ask for Employee_ID or HR_R
 
 Before human instantiation of FRM-06, use this exact respondent-facing specification:
 
-- Report Type — Multiple choice, Required. Exact options: Executive Summary, Project Status, Finance Audit, HR Rollup.
+- Report Type — Multiple choice, Required. Exact options: Company Summary, Project Report, Finance Report, HR Report.
 - Period — Short answer, Required. Use reporting-period text such as 2026-09 or 2026-Q3; do not use a Date question.
 - Project Name — Short answer, conditional/only when a project-specific report is requested. Do not provide a hard-coded project-name choice list and do not ask for Project_ID.
 - Recipient Email — Short answer, Required.
