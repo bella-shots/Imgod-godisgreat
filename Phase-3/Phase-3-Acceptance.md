@@ -7,7 +7,7 @@
 | P3-05 | Create HR/report/audit structures. | Required controlled support tabs exist. | SPEC READY / HUMAN ACTION REQUIRED | `HR_Admin` is defined as the controlled HR request/governance workflow keyed by `HR_Request_ID` and `Employee_ID`. `Report_Index` and `Submission_Index` are cross-domain administrative support structures owned by `MASTER_COMPANY_ADMIN`, not HR. No duplicate employee master is permitted. |
 | P3-06 | Create required Forms. | Project, expense, OOP, HR, MOM and admin workflows exist as applicable. | SPEC READY / HUMAN ACTION REQUIRED | 7 applicable Forms mapped in `Phase-3-Forms-Map.md`; recurring payroll is not a Form and detailed with input fields and validation types in `Phase-3-Schema-Blueprint.md`. Awaiting Form creation. |
 | P3-07 | Verify Form-to-Sheet mappings. | Each form submission lands in the intended authoritative structure. | PLATFORM LIMITATION / PHASE 4 PROCESSING REQUIRED | Native Form response destinations defined for all 7 applicable Forms (`Projects_Responses`, `Employee_Spending_Responses`, `OOP_Claims_Responses`, `HR_Requests_Responses`, `MOM_Responses`, `Report_Requests_Responses`, `Investment_Responses`). Authoritative business records (`Employee_Spending`, `Projects`, etc.) are separated from response intake. FRM-01 normalization and multi-table ingestion require Phase 4 Apps Script. No Phase 4 code exists in Phase 3. |
-| P3-08 | Verify validation. | Dates, amounts, statuses, employees and projects use appropriate validation/controlled values. | SPEC READY / HUMAN ACTION REQUIRED | Controlled values are defined as local native validation rules in the relevant workbook/tab. No cross-workbook validation range or `Lists_Config` dependency exists. Awaiting in-sheet application. |
+| P3-08 | Verify validation. | Dates, amounts, statuses, employees and projects use appropriate validation/controlled values, and Finance amount/state fields use the approved native calculation and validation rules. | SPEC READY / HUMAN ACTION REQUIRED | Controlled values are defined as local native validation rules in the relevant workbook/tab. `Budget_Given` now uses native Sheet calculations for To Be Returned INR and Pending Return Amount INR and a derived Status: Pending Return, Fully Returned, or No Return Required. `Used Amount INR` cannot exceed Amount Given INR; Returned Amount INR cannot exceed To Be Returned INR; any positive pending amount, including ₹1, keeps Status = Pending Return. No cross-workbook validation range or `Lists_Config` dependency exists. Awaiting in-sheet application. |
 | P3-09 | Verify Drive attachment handling. | Uploaded proofs/files are stored in Drive and referenced rather than embedded as binary data in Sheets, with access governed by actual Drive permissions. | SPEC READY / HUMAN ACTION REQUIRED | Drive file reference/URL fields (`Proof_URL`, `Attachment_URL`) specified. The specification does not describe these references as inherently public. Phase 1 folder routing automation deferred to Phase 4. |
 | P3-10 | Verify sensitive access. | Employees cannot directly edit/read restricted salary, investment and sensitive master tabs. | SPEC READY / HUMAN ACTION REQUIRED | Required security policy: 4-workbook partitioning model specifies 0 direct employee access to `MASTER_COMPANY_FINANCE`, `MASTER_COMPANY_HR_ADMIN`, and `MASTER_COMPANY_ADMIN`. `MASTER_COMPANY_ADMIN` is Site Admin-only. Testing against actual Google sharing permissions requires human configuration. |
 | P3-11 | Verify normal Gmail model. | Representative employee Gmail/Google Account can use permitted Forms without paid Workspace dependency. | SPEC READY / HUMAN ACTION REQUIRED | Design targets standard consumer Google accounts at ₹0.00 spend. Testing access with a representative non-admin Google Account requires human verification in live environment. |
@@ -465,3 +465,64 @@ The Phase-3 schema must support both Monthly and One-Time compensation. Employee
 ## R46 — Employee Role vs Designation acceptance
 
 Acceptance requires that `Employees` contain both `Role` and `Designation` as separate fields. `Role` must represent functional responsibility; `Designation` must represent company level/position. Neither field may be used as a substitute for authorization/access control. The HR Report Employee / HR Profile section must display both fields when authorized.
+
+### P3-24 — Verify Budget_Given spending and return tracking
+
+Verify the live `MASTER_COMPANY_FINANCE → Budget_Given` sheet implements the R47 money-flow model exactly.
+
+**Required fields:**
+- Amount Given INR
+- Used Amount INR
+- To Be Returned INR
+- Returned Amount INR
+- Pending Return Amount INR
+- Status
+
+**Calculation tests:**
+
+1. Amount Given = ₹50,000; Used Amount = ₹0.
+   - To Be Returned = ₹50,000.
+   - Pending Return = ₹50,000 until money is returned.
+   - Status = Pending Return.
+
+2. Amount Given = ₹50,000; Used Amount = ₹20,000.
+   - To Be Returned = ₹30,000.
+
+3. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹10,000.
+   - Pending Return = ₹20,000.
+   - Status = Pending Return.
+
+4. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹29,999.
+   - Pending Return = ₹1.
+   - Status must still be Pending Return.
+
+5. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹30,000.
+   - Pending Return = ₹0.
+   - Status = Fully Returned.
+
+6. Amount Given = ₹50,000; Used Amount = ₹50,000.
+   - To Be Returned = ₹0.
+   - Pending Return = ₹0.
+   - Status = No Return Required.
+
+7. Attempt Used Amount > Amount Given.
+   - Must be rejected.
+
+8. Attempt Returned Amount > To Be Returned.
+   - Must be rejected.
+
+9. Verify To Be Returned INR and Pending Return Amount INR are calculated, not manually typed.
+
+10. Verify Status is derived automatically and is not a manually selected dropdown.
+
+11. Verify `Recipient Email / Name` accepts either a legitimate name or an email address; it is not email-only validation.
+
+**Architecture checks:**
+- No `Lists_Config`.
+- No cross-workbook validation range.
+- No Apps Script.
+- No automatic stable-ID generation added here.
+- No Form or response-tab changes.
+- No old Budget_Given status values remain: `Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`.
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until the live workbook is updated and the above tests pass.
