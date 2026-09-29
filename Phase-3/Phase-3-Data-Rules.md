@@ -345,3 +345,24 @@ Period filtering and period-specific counts remain embedded within:
 - HR Summary
 
 No duplicate catch-all period section is permitted. All other R37 rules remain unchanged.
+
+
+### R39 — Project Report definition and rules
+FRM-06 Project Report is a project-scoped report generated only after exact Project Name resolution and existing authorization checks.
+
+Frozen presentation order:
+1. Report Header
+2. Project Overview
+3. Project Team
+4. Project Activity & Documentation
+5. Project Finance Summary — authorized project-linked finance only
+6. Access Notice
+
+Project Overview uses the current authoritative Projects record; current Status is a current snapshot, not historical reconstruction.
+Project Team is resolved through Project_Members and Employees and may show only project-context identity, Project_Role, Active and Assigned_Date. Salary_Basis, HR_Notes and unrelated HR fields remain restricted.
+Project Notes are reportable only when linked to the project and Status = Published. Project MOMs are reportable only when linked to the project and Status = Published or Revised.
+Project-linked finance is limited to authorized Budget_Given, Employee_Spending and OOP_Claims records for the requested period. Salary/Payroll and Investments are not ordinary Project Report content.
+Period filtering uses the authoritative source dates defined in R39.
+Requesting a Project Report never grants project, Finance or HR access.
+Exact case-sensitive Project Name matching from R36 remains mandatory.
+View + Download follows R32; download cannot reveal more than the on-screen authorized report.
