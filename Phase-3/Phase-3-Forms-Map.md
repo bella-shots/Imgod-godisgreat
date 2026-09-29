@@ -479,3 +479,7 @@ The Forms architecture does not add any respondent-facing Role or Designation fi
 - `Designation` = company level/position.
 
 Both are authoritative employee-profile attributes and may be displayed in HR Report when authorized. They are not authorization/access fields, and no Form request may use either field to expand permissions.
+
+
+## R47 — Budget_Given return-tracking revision
+The `Budget_Given` authoritative Finance table is revised to use Amount Given INR, Used Amount INR, automatically calculated To Be Returned INR, Returned Amount INR, automatically calculated Pending Return Amount INR, and automatically derived Status (`Pending Return`, `Fully Returned`, `No Return Required`). This revision does not add or change any respondent-facing Form fields or native response destinations. FRM-02/FRM-03/FRM-07 mappings remain unchanged. The Finance workbook remains restricted and local validation remains native to the authoritative tab.
