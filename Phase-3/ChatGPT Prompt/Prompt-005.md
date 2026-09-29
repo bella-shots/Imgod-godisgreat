@@ -715,3 +715,7 @@ When creating or validating the authoritative `Employees` tab and HR Report:
 - Do not treat Designation as an authorization field.
 - HR Report Employee / HR Profile must include both Role and Designation when authorized.
 - No new respondent-facing FRM-06 field is required for either attribute.
+
+
+## R47 — Budget_Given implementation change
+Prompt-005 must implement the revised Budget_Given model exactly: Amount Given INR, Used Amount INR, calculated To Be Returned INR = MAX(0, Given - Used), Returned Amount INR, calculated Pending Return Amount INR = MAX(0, To Be Returned - Returned), and derived Status = Pending Return when Pending Return > 0, Fully Returned when Pending Return = 0 and To Be Returned > 0, and No Return Required when To Be Returned = 0. Used Amount cannot exceed Amount Given; Returned Amount cannot exceed To Be Returned. Remove old Budget_Given statuses Disbursed, Partially Reconciled, Reconciled and Returned. Recipient Email / Name accepts name or email and is not email-only. No Form changes, Lists_Config, cross-workbook validation, Apps Script, or Phase 4 processing are introduced by R47.
