@@ -225,3 +225,13 @@ Correct the FRM-02 employee identity field as follows:
 - Do not add a second employee-login email question solely for this case.
 - Do not change the authoritative Employee_Spending.Employee_ID field.
 - Do not implement Phase 4 automation now.
+
+### R26 — FRM-04 Request Type lock
+
+FRM-04 must be implemented exactly as follows:
+- Employee Email ID — Short answer, Required.
+- Request Type — Multiple choice, Required, with exactly: Personal Information Update; Bank / Payment Details Update; Leave / Attendance Request; Employment / HR Document Request; Salary / Payroll Query; Reimbursement / Benefits Query; Project / Role Update; Resignation / Exit Request; Other.
+- Relevant Details — Paragraph, Required.
+- Attachment / Supporting Document — File upload, Optional.
+
+Do not invent additional Request Type values. Do not ask for Employee_ID or HR_Request_ID. Keep HR_Admin as the workflow target and Phase 4 responsible for employee identity resolution and workflow processing.
