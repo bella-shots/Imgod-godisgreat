@@ -95,3 +95,14 @@ FRM-04 Request_Type is a controlled Form value. The approved literal values are:
 - Other
 
 The same literals must be used for the HR_Admin Request_Type workflow field. No additional category may be introduced during Phase 3 without a documented specification revision. Other is the catch-all for requests outside the defined categories.
+
+
+### D3-21 — FRM-06 respondent-facing field controls
+
+FRM-06 must collect only the report-request data defined by the Forms Map:
+- Report Type: required controlled multiple-choice value using exactly Executive Summary, Project Status, Finance Audit, HR Rollup.
+- Period: required text in reporting-period form such as 2026-09 or 2026-Q3; do not use a full Date field.
+- Project Name: human-facing Short answer, used only when the requested report is project-specific; do not request Project_ID or hard-code current project names.
+- Recipient Email: required Short answer for report delivery/distribution.
+
+System/catalog fields such as Report_ID, Project_ID, Drive_URL, Status, and Generated_Date remain non-respondent fields. Phase 4 resolves Project Name to canonical Project_ID when applicable and catalogs the generated output in Report_Index.
