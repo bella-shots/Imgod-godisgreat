@@ -276,3 +276,41 @@ Recipient scope:
 Finance Report content, subject to authorization and period, includes Budget Given; Employee Spending; OOP Claims; authorized Salary/Payroll; authorized Investments; authorized financial totals/aggregations; and authorized project-wise financial information.
 
 Do not implement Recipient as an unrestricted free-text lookup. A requester must not be able to enter another employee's email/name and thereby obtain restricted data. A report request must never expand the requester's underlying permissions.
+## R31 — Define HR Report exactly from the authoritative schema
+
+The **HR Report** option in FRM-06 must be implemented as a permission-controlled HR report, not as an unrestricted export of MASTER_COMPANY_HR_ADMIN.
+
+Use only the current authoritative schemas.
+
+### HR_Admin report fields
+Use exactly:
+- HR_Request_ID
+- Employee_ID
+- Request_Type
+- Relevant_Details
+- Attachment_URL
+- Status
+- Submitted_At
+- Processed_At
+- Processed_By
+
+Map the previously vague concepts explicitly:
+- Employee/requester = Employee_ID, resolved through Employees
+- Request type = Request_Type
+- Request details = Relevant_Details
+- Status = Status
+- Request date = Submitted_At
+- Processing information = Processed_At + Processed_By
+- Supporting document = Attachment_URL
+
+### Employees source
+Employee/HR profile information must come only from the authoritative Employees schema. Do not duplicate employee master fields into HR_Admin.
+
+### Restrictions
+Do not invent HR fields that are absent from the authoritative schemas.
+
+The report compiler must apply requester identity, role/designation and authorized scope before selecting records or fields. Team Member/Contractor is self-only; Project Lead and Manager are limited to authorized scope; HR Admin has authorized company-wide HR scope; Administrator/Site Admin has company-wide scope within authorization.
+
+Salary_Basis and HR_Notes are restricted and must not be exposed merely because HR Report was selected.
+
+A report request does not grant new permissions.
