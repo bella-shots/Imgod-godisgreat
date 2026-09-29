@@ -219,7 +219,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Sensitivity:** High (Restricted).
 - **Columns:**
   1. `Report_ID` (Text, Format: `RPT-XXX`, Stable unique ID)
-  2. `Report_Type` (Dropdown: `Executive Summary`, `Project Status`, `Finance Audit`, `HR Rollup`)
+  2. `Report_Type` (Dropdown: `Company Summary`, `Project Report`, `Finance Report`, `HR Report`)
   3. `Period` (Text, e.g., `2026-Q3`, `2026-09`)
   4. `Project_ID` (Text, Optional, Foreign Key -> `Projects.Project_ID`)
   5. `Drive_URL` (URL to PDF/Sheet report in `MASTER COMPANY/Reports`)
@@ -358,7 +358,7 @@ The Form must not ask for Employee_ID, HR_Request_ID, Status, Submitted_At, Proc
 
 For the Phase 3 human-instantiation of FRM-06, use this exact respondent-facing field specification:
 
-1. Report Type — Multiple choice, Required. Exact values: Executive Summary, Project Status, Finance Audit, HR Rollup.
+1. Report Type — Multiple choice, Required. Exact values: Company Summary, Project Report, Finance Report, HR Report.
 2. Period — Short answer, Required. Example values: 2026-09 or 2026-Q3.
 3. Project Name — Short answer, Conditional / only when a project-specific report is requested. Human-facing input; no hard-coded project-name choices and no Project_ID question.
 4. Recipient Email — Short answer, Required.
