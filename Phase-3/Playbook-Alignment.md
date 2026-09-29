@@ -283,5 +283,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
-## R41/R42 — Frozen Finance and HR report contracts
-Phase 4 must treat Finance Report and HR Report as frozen output contracts. Finance Report is permission-controlled across Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, and authorized Investments. HR Report is permission-controlled across Employees and HR_Admin. Both use R40 exact inclusive date ranges and the R32 View + Download contract. No new Form fields, report-source tables, or permission-expanding request parameters may be introduced without a new revision.
+## R41 — Frozen Finance Report contract
+Finance Report is frozen to the user-approved seven-section structure: Report Header, Finance Summary, Budget Given, Employee Spending, OOP Claims, My Salary / Payroll, Access Notice. It uses existing Finance schemas, R40 exact inclusive date ranges, existing authorization boundaries, and R32 View + Download. Investments are outside the standard Finance Report. Every employee may view their own Salary_Admin payroll; broader payroll visibility requires separate authorization. No report request may expand permissions.
+
+## R42 — HR Report contract — draft / not frozen
+HR Report remains a draft proposal pending user review and explicit approval. It must not be treated as a frozen contract or implemented as final behavior.
+
