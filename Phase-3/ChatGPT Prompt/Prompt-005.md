@@ -251,3 +251,28 @@ Do not add respondent-facing Report_ID, Project_ID, Drive_URL, Status, Generated
 The native response destination is Report_Requests_Responses in MASTER_COMPANY_ADMIN; the authoritative target is Report_Index.
 
 Phase 4 remains responsible for resolving Project Name to canonical Project_ID when applicable and compiling/cataloguing the requested report. Do not implement Phase 4 or Apps Script during this Phase 3 change.
+
+
+## R29 — Finance Report access and output definition
+
+When implementing/reporting from FRM-06, treat **Finance Report** as a permission-controlled consolidated financial report, not as an unrestricted export of MASTER_COMPANY_FINANCE.
+
+The implementation must:
+1. Identify the authenticated requester.
+2. Resolve the requester's role/designation and authorized data scope.
+3. Determine the permitted recipient scope before selecting Finance records.
+4. Select only records and fields the requester is already authorized to access.
+5. Generate the report for the requested period.
+6. Record/report delivery through the existing Report_Index workflow.
+
+Recipient scope:
+- Team Member / Contractor: self only for employee-linked Finance records.
+- Project Lead: authorized project scope, where permitted.
+- Manager: authorized management/data scope; Manager status alone does not grant restricted salary/payroll or investment access.
+- Finance Admin: company-wide Finance data permitted to Finance Admin.
+- HR Admin: salary/payroll data where authorized; investment data is not granted merely by HR role.
+- Administrator / Site Admin: company-wide data within authorized administrator scope.
+
+Finance Report content, subject to authorization and period, includes Budget Given; Employee Spending; OOP Claims; authorized Salary/Payroll; authorized Investments; authorized financial totals/aggregations; and authorized project-wise financial information.
+
+Do not implement Recipient as an unrestricted free-text lookup. A requester must not be able to enter another employee's email/name and thereby obtain restricted data. A report request must never expand the requester's underlying permissions.
