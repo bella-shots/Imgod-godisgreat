@@ -369,7 +369,22 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
 ## R41 — Finance Report acceptance criteria
-Finance Report is accepted only if it uses existing Finance schemas; applies the exact inclusive R40 date range; produces the frozen authorized aggregates; excludes Salary/Payroll unless authorized; excludes Investments unless authorized; enforces Team Member/Contractor self-only, Project Lead project scope, Manager authorized management scope, Finance Admin Finance scope, HR Admin authorized salary scope, and Administrator/Site Admin existing scope; omits unauthorized categories; does not expose proof URLs or confidential fields merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
+Finance Report is accepted only if it follows the frozen seven-section order: Report Header, Finance Summary, Budget Given, Employee Spending, OOP Claims, My Salary / Payroll, Access Notice; uses only existing Finance schemas; applies R40 exact inclusive date ranges; excludes Investments from the standard report; allows every employee to see their own Salary_Admin payroll records while preventing access to other employees' salary unless separately authorized; enforces existing Finance/project authorization for non-self records; omits unauthorized categories/fields; does not expose proof/attachment URLs merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
 
-## R42 — HR Report acceptance criteria
-HR Report is accepted only if it uses Employees and HR_Admin; distinguishes current snapshots from historical reconstruction; uses Joining_Date, Submitted_At, and Processed_At according to the frozen rules; enforces existing role/scope authorization; keeps Team Member/Contractor self-only; limits Project Lead/Manager to explicit authorized scope; restricts HR Admin and Administrator/Site Admin to existing authorized scope; does not expose Salary_Basis, HR_Notes, restricted records, or attachments merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
+**R41 is frozen. Any change requires a new revision and explicit approval.**
+
+## R42 — HR Report definition — DRAFT / NOT FROZEN
+**Status:** Draft pending user review and explicit approval.
+
+The current HR Report text remains a proposal only. It must **not** be treated as an approved/frozen Phase 3 contract or implemented as final behavior until the user reviews and explicitly approves it.
+
+The current proposal uses:
+1. Report Header
+2. Employee / Workforce Snapshot
+3. HR Workflow Activity
+4. Access Notice
+
+It proposes using only `Employees` and `HR_Admin`, R40 exact inclusive date ranges, existing authorization scope, and R32 View + Download. It proposes current workforce snapshots plus period-filtered HR workflow activity using `Employees.Joining_Date`, `HR_Admin.Submitted_At`, and `Processed_At` with Status = Completed.
+
+**This is not frozen.** Do not treat its proposed fields, authorization details, exclusions, or presentation as final until separately approved.
+
