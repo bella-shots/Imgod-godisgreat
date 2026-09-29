@@ -140,3 +140,20 @@ For HR requests, Submitted_At is the primary request-period field. Processed_At 
 Authorization must be evaluated before selecting records or fields. A report request does not grant new permissions. Team Member/Contractor access is self-only; Project Lead and Manager access is limited to explicitly authorized scope; HR Admin has authorized company-wide HR scope; Administrator/Site Admin has company-wide scope within administrator authorization. Restricted Salary_Basis and confidential HR_Notes must not be exposed merely because HR Report was selected.
 
 HR_Admin remains workflow-only and must not duplicate employee master fields.
+
+
+## R32 — Global report View/Download rule
+
+For every FRM-06 report request, apply this sequence:
+
+1. Authenticate/identify the requester.
+2. Resolve role/designation and existing authorized scope.
+3. Apply requested report type and period.
+4. Select only authorized records and fields.
+5. Generate a human-readable report representation.
+6. Display that report directly in the system.
+7. Provide a user-initiated **Download Report** option for the same authorized report.
+
+The Download path must reuse the authorized report result; it must not independently query unrestricted source workbooks. A user cannot obtain additional information by downloading instead of viewing.
+
+This rule applies equally to Company Summary, Project Report, Finance Report and HR Report. Report requests never grant additional permissions.
