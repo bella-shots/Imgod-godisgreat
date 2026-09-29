@@ -243,7 +243,7 @@ Before human instantiation of FRM-06, use the R34 superseding specification belo
 
 - Report Type — Multiple choice, Required. Exact options: Company Summary, Project Report, Finance Report, HR Report.
 - Period — Short answer, Required. Use reporting-period text such as 2026-09 or 2026-Q3; do not use a Date question.
-- Project Name — Short answer, conditional/only when a project-specific report is requested. Do not provide a hard-coded project-name choice list and do not ask for Project_ID.
+- Project Name — Short answer, conditional/only when a project-specific report is requested. **CAUTION — CASE-SENSITIVE:** the respondent must enter the project name exactly as it appears in authoritative `Projects.Project_Name`, including capitalization, spaces, spelling, and punctuation. Phase 4 must require an exact match; do not ask for or enter `Project_ID`, and do not provide a hard-coded project-name choice list.
 
 Do not add respondent-facing Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing fields.
 
@@ -385,7 +385,7 @@ If Google Forms captures a signed-in Google account email and it differs from th
 **Period** remains a required Short answer with this description:
 > Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).
 
-**Project Name** remains a conditional Short answer for project-specific reports. It is a human-facing project name; do not ask for Project_ID or provide a hard-coded project-name choice list.
+**Project Name** remains a conditional Short answer for project-specific reports. **CAUTION — CASE-SENSITIVE:** Enter the Project Name **exactly as it appears in the authoritative `Projects.Project_Name` field**, including capitalization, spaces, spelling, and punctuation. The value is case-sensitive and must be an exact match for Phase 4 resolution. Do not ask for or enter `Project_ID`. Do not provide a hard-coded project-name choice list.
 
 There is no respondent-facing Recipient Email field. Reports are displayed in the system and may be downloaded by the requester; report delivery to an arbitrary email address is not part of FRM-06.
 
