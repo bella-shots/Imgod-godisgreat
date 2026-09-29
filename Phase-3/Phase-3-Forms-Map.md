@@ -74,14 +74,13 @@ Do not add Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Pr
 
 ### R27 — FRM-06 Report Request field lock
 
-FRM-06 respondent-facing fields are locked as follows:
+The R27 FRM-06 respondent-facing field lock below is historical; R35 is the current field specification:
 
 | Field | Type | Required |
 |---|---|---|
 | Report Type | Multiple choice | Yes |
 | Period | Short answer | Yes |
 | Project Name | Short answer | Conditional / only when a project-specific report is requested |
-| — | — | — |
 
 Report Type must use exactly these four approved Report_Index.Report_Type values:
 1. Company Summary
@@ -162,11 +161,11 @@ The Form does not ask whether the user wants View or Download; the system provid
 The download must contain only the same authorized information available in the displayed report. It must not expose the underlying source workbook or bypass permissions.
 \n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification did not change the field types or reporting-period semantics at the time. R34 subsequently revises the FRM-06 field set by adding the required Employee Email ID requester-identity field.
 
-### R34 — FRM-06 requester identity and alternate-account handling
+### R34 — FRM-06 requester identity and alternate-account handling (historical; superseded by R35)
 
-R27 is revised for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
+R34 revised R27 for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
 
-The authoritative respondent-facing FRM-06 field set is now:
+The R34 historical respondent-facing FRM-06 field set was:
 
 | # | Field | Type | Required |
 |---|---|---|---|
