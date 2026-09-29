@@ -98,3 +98,29 @@ Recipient Email is required because the Forms Map explicitly requires FRM-06 to 
 Do not ask respondents for Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4/system fields.
 
 The native response destination remains Report_Requests_Responses in MASTER_COMPANY_ADMIN; Report_Index remains the authoritative catalog.
+
+
+### R29 — Finance Report scope and recipient authorization
+
+FRM-06 **Finance Report** is a controlled financial report, not an unrestricted export of the Finance workbook. The report compiler must apply the requester's authenticated identity, role/designation and authorized data scope before selecting records or fields.
+
+For Finance Report requests, the effective recipient scope is permission-controlled:
+- **Team Member / Contractor:** self only for employee-linked finance records.
+- **Project Lead:** employees/data within the project scope the user is authorized to manage/view, where the underlying data is permitted.
+- **Manager:** employee-linked finance records within the user's authorized management/data scope; the Manager role does not by itself grant access to restricted salary/payroll or investment records.
+- **Finance Admin:** company-wide Finance data permitted by the Finance Admin role, including restricted Finance categories.
+- **HR Admin:** HR-authorized salary/payroll information where applicable; Finance-only investment information is not granted merely by being HR Admin.
+- **Administrator / Site Admin:** company-wide data within the administrator's authorized scope.
+
+The Recipient concept must never be implemented as an unrestricted free-text lookup. Phase 4 must derive or validate permitted recipient options from the requester's role/designation and access scope. A requester cannot obtain another person's restricted data by manually entering another employee's email/name or by requesting a broader report type.
+
+The Finance Report may contain, for an authorized recipient/scope and selected period:
+1. Budget Given — Date, Recipient, Amount, Purpose, Project, Status.
+2. Employee Spending — Employee/recipient, Date, Amount, Vendor, Purpose, Project, Status.
+3. OOP Claims — Employee/recipient, Month/Date, Amount, Purpose, Project, Status, Approved Amount, Paid Date.
+4. Salary/Payroll — only where the requester's role explicitly permits salary/payroll access.
+5. Investments — only where the requester's role explicitly permits investment access.
+6. Financial totals/aggregations derived only from the records and fields the requester is authorized to see.
+7. Project-wise financial information when a project scope is supplied and authorized.
+
+The report must not expose restricted salary, investment, or other employees' financial information merely because the requester selected Finance Report.
