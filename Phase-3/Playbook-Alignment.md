@@ -18,3 +18,5 @@
 
 
 | Focused correction / identity mismatch handling | R25 makes FRM-02's respondent-facing field explicitly Employee Email ID and defines deterministic handling when the respondent is logged into a different Google account: do not silently substitute the login email; retain it only as audit metadata and route mismatch to validation/manual review before authoritative transfer. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log | Prevents accidental employee misattribution while keeping Phase 4 as the identity-resolution boundary. | Applied |
+
+| Focused correction / HR request taxonomy | R26 locks FRM-04 Request Type to nine controlled values and defines the exact respondent-facing field set, eliminating the previously unspecified controlled-value gap. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log; progress-tracker | Prevents implementation agents from inventing HR request categories and keeps the Form/workflow boundary explicit. | Applied |
