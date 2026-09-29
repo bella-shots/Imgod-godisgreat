@@ -828,13 +828,14 @@ Source: `OOP_Claims`.
 
 For the requester's authorized claims, show:
 - Claim Date
-- Month
 - Purpose
 - Project
 - Claimed Amount
 - Approved Amount
 - Status
 - Paid Date when applicable
+
+**Presentation correction (R43):** Do not display `OOP_Claims.Month` in the user-facing Finance Report. `Month` remains an authoritative source field for internal processing/reconciliation and must remain consistent with `OOP_Claims.Date`.
 
 Summary:
 - claim count
