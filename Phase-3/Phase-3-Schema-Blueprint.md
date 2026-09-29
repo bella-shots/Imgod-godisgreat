@@ -481,3 +481,18 @@ The downloaded report must be generated from the **same authorized report datase
 Source workbook tabs remain data sources; they are not themselves the report output. A raw workbook export is not a valid substitute for the report view.
 
 Phase 4 owns implementation of the report-generation, authorization, in-system display, download generation, and delivery flow. The exact download file format may be selected during Phase 4 implementation, but View + optional Download is mandatory.
+
+
+## R32 — Universal report delivery: in-system View + user-initiated Download
+
+All four FRM-06 report types — **Company Summary, Project Report, Finance Report, and HR Report** — use the same report delivery model.
+
+A report request must produce an **authorized, human-readable report** that is **viewable directly in the system**. The user must not be forced to download a file merely to read the report.
+
+The displayed report must provide a **Download Report** action. Download is an explicit user choice, not the default delivery mechanism.
+
+The downloaded report must be generated from the **same authorized report dataset/content shown to the requester**. Download must never expose fields, records, or source-workbook content beyond what the requester is authorized to view on screen.
+
+Source workbook tabs remain data sources; they are not themselves the report output. A raw workbook export is not a valid substitute for the report view.
+
+Phase 4 owns implementation of the report-generation, authorization, in-system display, download generation, and delivery flow. The exact download file format may be selected during Phase 4 implementation, but View + optional Download is mandatory.
