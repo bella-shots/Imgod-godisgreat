@@ -537,3 +537,23 @@ No report request, Period, Project Name, or download action may expand permissio
 When implementing Company Summary, do not generate a standalone “Period Activity / Key Counts” section.
 
 Place period-specific metrics within the relevant Projects & Operations, Finance Summary, and HR Summary sections. Preserve all other R37 rules.
+
+
+### R39 — Project Report implementation contract
+When implementing FRM-06 Project Report, use this exact contract.
+
+Output order:
+1. Report Header
+2. Project Overview
+3. Project Team
+4. Project Activity & Documentation
+5. Project Finance Summary — authorized project-linked finance only
+6. Access Notice
+
+Project Overview: current Projects record — Project_ID, Project_Name, Description, Owner, Start_Date, Event_Date, current Status and Created_At. Treat Status as current snapshot only.
+Project Team: resolve Project_Members to Employees and show only project-context identity plus Project_Role, Active and Assigned_Date. Never expose Salary_Basis, HR_Notes or unrelated HR fields merely because Project Report was selected.
+Project Activity & Documentation: include period-relevant Published Project_Notes and Published/Revised Project_MOM_Index records. Use Project_Notes.Date and Project_MOM_Index.Meeting_Date for period filtering.
+Project Finance Summary: include only authorized project-linked Budget_Given, Employee_Spending and OOP_Claims records for the requested period, with counts/totals/status breakdowns as applicable. Do not include Salary/Payroll or Investments as ordinary Project Report content.
+Authorization: exact case-sensitive Project Name → Project_ID resolution is mandatory; requester must already be authorized for the project. The report request cannot grant project, Finance or HR access.
+Delivery: display the authorized report in the system and provide Download Report with identical authorized content. Do not export raw source workbooks.
+Do not change FRM-06 fields or create new Phase-3 schemas while implementing this contract.
