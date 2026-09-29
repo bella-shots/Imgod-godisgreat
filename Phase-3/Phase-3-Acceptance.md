@@ -79,6 +79,8 @@ Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
 
 ### P3-22 — Verify Finance Report authorization and contents
 
+The employee Role controlled values must include Manager so the role-based recipient rule can be implemented.
+
 Verify that FRM-06 Finance Report is not an unrestricted export of the Finance workbook.
 
 For a Team Member/Contractor test account, verify employee-linked Finance records are restricted to self only. For Project Lead/Manager accounts, verify recipient scope is limited to the user's authorized project/management/data scope. For Finance Admin, verify authorized company-wide Finance reporting works. Verify salary/payroll and investment information are exposed only to roles explicitly authorized for those categories.
