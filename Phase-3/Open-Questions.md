@@ -214,3 +214,19 @@ No report request, Period, Project Name, or download action may expand permissio
 The standalone “Period Activity / Key Counts” section is removed because the same period-specific information is already defined within Projects & Operations, Finance Summary, and HR Summary.
 
 No open question remains regarding this presentation item.
+
+
+### R39 — Project Report definition resolved
+Resolved: What exactly should FRM-06 → Project Report return?
+
+The frozen answer is:
+1. Report Header
+2. Project Overview
+3. Project Team
+4. Project Activity & Documentation
+5. Project Finance Summary — authorized project-linked finance only
+6. Access Notice
+
+The report uses the existing Projects, Project_Members, Employees, Project_Notes, Project_MOM_Index, Budget_Given, Employee_Spending and OOP_Claims schemas only.
+Project Report does not automatically expose Salary/Payroll, Investments, Salary_Basis, HR_Notes or unrelated employee HR information. Existing authorization remains the controlling boundary.
+**Status:** Resolved / No open question.
