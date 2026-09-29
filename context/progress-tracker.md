@@ -66,3 +66,12 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - `Report_Index` and `Submission_Index` remain in `MASTER_COMPANY_ADMIN`, never HR.
 - `Salary_Admin` has no native Form/response tab.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R25 session note
+- Corrected FRM-02 respondent-facing employee identity from **Employee ID** to **Employee Email ID**.
+- Phase 4 resolves the submitted Employee Email ID against authoritative Employees.Email to canonical Employee_ID.
+- If the respondent is logged into Google Forms with a different email, the signed-in email is audit metadata only and does not override the explicit Employee Email ID.
+- Mismatches require validation failure/manual review or the defined correction workflow; no silent employee substitution is permitted.
+- No second login-email question is required.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
