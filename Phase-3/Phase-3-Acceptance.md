@@ -367,3 +367,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41 — Finance Report acceptance criteria
+Finance Report is accepted only if it uses existing Finance schemas; applies the exact inclusive R40 date range; produces the frozen authorized aggregates; excludes Salary/Payroll unless authorized; excludes Investments unless authorized; enforces Team Member/Contractor self-only, Project Lead project scope, Manager authorized management scope, Finance Admin Finance scope, HR Admin authorized salary scope, and Administrator/Site Admin existing scope; omits unauthorized categories; does not expose proof URLs or confidential fields merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
+
+## R42 — HR Report acceptance criteria
+HR Report is accepted only if it uses Employees and HR_Admin; distinguishes current snapshots from historical reconstruction; uses Joining_Date, Submitted_At, and Processed_At according to the frozen rules; enforces existing role/scope authorization; keeps Team Member/Contractor self-only; limits Project Lead/Manager to explicit authorized scope; restricts HR Admin and Administrator/Site Admin to existing authorized scope; does not expose Salary_Basis, HR_Notes, restricted records, or attachments merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
