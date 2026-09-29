@@ -920,7 +920,7 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
    - Employment_Status
    - Reimbursement_Settings, only where authorized
    - Created_At, only where authorized
-   - Salary_Basis only where the requester is explicitly authorized
+   - Salary_Basis — the employee's own agreed compensation basis/CTC may be shown to that employee; HR Admin/Administrator may view it within authorized scope; other employees require separate authorization
    - HR_Notes only for explicitly authorized HR/Admin users; not ordinary employee/manager report content
 
 3. **HR Requests**
