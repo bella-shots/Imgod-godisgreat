@@ -37,3 +37,12 @@
 
 | R30 | Consistency correction — added Manager to the controlled Employees.Role values so the new Finance Report role-based recipient rule has an explicit implementable designation. Manager access remains limited by authorized management/data scope and does not automatically grant restricted salary/payroll or investment access. |
 | R31 | Defined the exact Phase-3 meaning, field mapping and authorization boundary for HR Report. Replaced vague HR request labels with the actual HR_Admin columns: HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, and Processed_By. Defined Employees as the sole source for employee/HR master information, prohibited invented HR fields, defined period handling and locked role-based authorization. Updated the Schema Blueprint, Forms Map, Data Rules, Acceptance, Playbook Alignment, Open Questions, Prompt-005 and progress tracking. No workbook, Phase boundary or live Google resource was changed. |
+
+
+## R32 session note
+- Locked a **global report-delivery contract** for all four FRM-06 report types: Company Summary, Project Report, Finance Report and HR Report.
+- A generated report must be directly **viewable in the system**; downloading is optional and user-initiated through a Download Report action.
+- The downloaded artifact must contain the same authorized report content shown on screen and must never bypass authorization or expose additional source fields/records.
+- Raw source workbooks are not report outputs.
+- Exact download file format remains a Phase 4 implementation decision; View + Download behavior is frozen now.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
