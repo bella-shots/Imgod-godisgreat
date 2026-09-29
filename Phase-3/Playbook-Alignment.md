@@ -28,3 +28,21 @@
 ### R29 — Finance Report security alignment
 
 FRM-06 Finance Report is aligned to the playbook's restricted-data principle: report generation is a controlled presentation of already-authorized data, not a permission-escalation mechanism. The report compiler must enforce requester role/designation and authorized scope before selecting Finance records. Recipient selection must be role-controlled and cannot be used to bypass Finance/HR restrictions.
+### R31 — HR Report must follow authoritative schema, not generic HR assumptions
+
+For **FRM-06 → HR Report**, implementation guidance must map report content directly to the current Employees and HR_Admin schemas.
+
+Do not describe report contents using vague labels such as “workflow information”, “processing information”, or “employee/requester” without mapping them to actual columns.
+
+The exact HR_Admin mapping is:
+- Employee/requester → Employee_ID resolved through Employees
+- Request type → Request_Type
+- Request details → Relevant_Details
+- Status → Status
+- Request date → Submitted_At
+- Processing information → Processed_At and Processed_By
+- Supporting document → Attachment_URL
+
+The exact employee-profile source is Employees; HR_Admin must not become a duplicate employee master.
+
+The implementation must not invent HR fields that are not present in the authoritative schema.
