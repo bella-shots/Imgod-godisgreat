@@ -97,3 +97,12 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Locked respondent-facing labels as: Company Summary; Project Report; Finance Report; HR Report.
 - Updated the Phase 3 documentation set so the same simple labels are used consistently.
 - No report category meaning, workbook structure, Phase boundary, or Phase 4 behavior changed.
+
+
+## R29 session note
+- Defined the actual meaning of Finance Report for FRM-06.
+- Locked the principle that a report request cannot grant new permissions or bypass restricted Finance/HR data access.
+- Finance Report may include Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, authorized Investments, authorized financial totals/aggregations, and authorized project-wise financial information for the requested period.
+- Locked role/designation-based recipient scope: Team Member/Contractor self-only; Project Lead authorized project scope; Manager authorized management/data scope; Finance Admin company-wide Finance scope; HR Admin authorized salary/payroll scope but not investment access merely by role; Administrator/Site Admin company-wide authorized scope.
+- Recipient must not be an unrestricted free-text lookup or a mechanism for bypassing permissions.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
