@@ -46,3 +46,27 @@ FRM-02 respondent-facing employee identity is now explicitly **Employee Email ID
 Phase 4 resolves the submitted Employee Email ID against authoritative Employees.Email to obtain Employee_ID.
 
 If the respondent is signed into Google Forms with a different email address, the signed-in address is retained only as submission/audit metadata where platform capture is enabled. It must not override the explicit Employee Email ID. A mismatch must not be silently mapped to another employee; Phase 4 places the submission into validation failure/manual review or the defined correction workflow before authoritative transfer.
+
+### R26 — FRM-04 Request Type controlled values
+
+FRM-04 is locked to these respondent-facing fields:
+
+| Field | Type | Required |
+|---|---|---|
+| Employee Email ID | Short answer | Yes |
+| Request Type | Multiple choice | Yes |
+| Relevant Details | Paragraph | Yes |
+| Attachment / Supporting Document | File upload | No |
+
+Request Type must use exactly these nine controlled values:
+1. Personal Information Update
+2. Bank / Payment Details Update
+3. Leave / Attendance Request
+4. Employment / HR Document Request
+5. Salary / Payroll Query
+6. Reimbursement / Benefits Query
+7. Project / Role Update
+8. Resignation / Exit Request
+9. Other
+
+Do not add Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By to the Form. Phase 4 resolves Employee Email ID to canonical Employee_ID and creates/updates the HR workflow record.
