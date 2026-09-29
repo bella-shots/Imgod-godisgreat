@@ -369,9 +369,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
 ## R41 — Finance Report acceptance criteria
-Finance Report is accepted only if it follows the frozen seven-section order: Report Header, Finance Summary, Budget Given, Employee Spending, OOP Claims, My Salary / Payroll, Access Notice; uses only existing Finance schemas; applies R40 exact inclusive date ranges; excludes Investments from the standard report; allows every employee to see their own Salary_Admin payroll records while preventing access to other employees' salary unless separately authorized; enforces existing Finance/project authorization for non-self records; omits unauthorized categories/fields; does not expose proof/attachment URLs merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
+Finance Report is accepted only if it follows the frozen seven-section order: Report Header, Finance Summary, Budget Given, Employee Spending, OOP Claims, My Salary / Payroll, Access Notice; uses only existing Finance schemas; applies R40 exact inclusive date ranges; excludes Investments from the standard report; allows every employee to see their own Salary_Admin payroll records while preventing access to other employees' salary unless separately authorized; enforces existing Finance/project authorization for non-self records; presents OOP Claims using Claim Date rather than the internal Month field; omits unauthorized categories/fields; does not expose proof/attachment URLs merely by report selection; and makes View and Download identical in authorized content. The request cannot expand permissions.
 
-**R41 is frozen. Any change requires a new revision and explicit approval.**
+**R41 remains frozen subject to approved R43 presentation correction. Any further change requires a new revision and explicit approval.**
 
 ## R42 — HR Report definition — DRAFT / NOT FROZEN
 **Status:** Draft pending user review and explicit approval.
