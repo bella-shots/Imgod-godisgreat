@@ -75,3 +75,10 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Mismatches require validation failure/manual review or the defined correction workflow; no silent employee substitution is permitted.
 - No second login-email question is required.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+## R26 session note
+- Resolved the previously unspecified FRM-04 Request_Type controlled-value gap.
+- Locked exactly nine values: Personal Information Update; Bank / Payment Details Update; Leave / Attendance Request; Employment / HR Document Request; Salary / Payroll Query; Reimbursement / Benefits Query; Project / Role Update; Resignation / Exit Request; Other.
+- FRM-04 respondent-facing fields are Employee Email ID (required), Request Type (required), Relevant Details (required), and optional Attachment / Supporting Document.
+- No Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By is requested from the respondent.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
