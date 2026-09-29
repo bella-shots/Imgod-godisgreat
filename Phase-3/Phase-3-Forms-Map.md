@@ -160,4 +160,42 @@ FRM-06 remains a request/intake form only. After submission, all report types fo
 The Form does not ask whether the user wants View or Download; the system provides both. View is the normal report presentation, while Download is an explicit action available from the displayed report.
 
 The download must contain only the same authorized information available in the displayed report. It must not expose the underlying source workbook or bypass permissions.
-\n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification does not change the FRM-06 field set, report types, Project Name behavior, Recipient Email requirement, workbook structure, or Phase 4 boundary.
+\n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification did not change the field types or reporting-period semantics at the time. R34 subsequently revises the FRM-06 field set by adding the required Employee Email ID requester-identity field.
+
+### R34 — FRM-06 requester identity and alternate-account handling
+
+R27 is revised for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
+
+The authoritative respondent-facing FRM-06 field set is now:
+
+| # | Field | Type | Required |
+|---|---|---|---|
+| 1 | Employee Email ID | Short answer | Yes |
+| 2 | Report Type | Multiple choice | Yes |
+| 3 | Period | Short answer | Yes |
+| 4 | Project Name | Short answer | Conditional / only when a project-specific report is requested |
+| 5 | Recipient Email | Short answer | Yes |
+
+**Employee Email ID description:**
+> Enter your company Employee Email ID. This is used to identify your employee record for report authorization. Do not enter your Employee ID.
+
+Phase 4 resolves the submitted Employee Email ID against authoritative `Employees.Email` to obtain the canonical `Employee_ID` and the employee's authoritative `Role`. The respondent does not select or enter Employee_ID or Designation/Role.
+
+If Google Forms captures a signed-in Google account email and it differs from the submitted Employee Email ID, the captured login email is audit metadata only. It must not override the explicit Employee Email ID. A mismatch must go to validation failure/manual review or the defined correction workflow before report generation. No silent identity substitution is permitted.
+
+**Report Type** remains a required Multiple choice with exactly:
+- Company Summary
+- Project Report
+- Finance Report
+- HR Report
+
+**Period** remains a required Short answer with this description:
+> Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).
+
+**Project Name** remains a conditional Short answer for project-specific reports. It is a human-facing project name; do not ask for Project_ID or provide a hard-coded project-name choice list.
+
+**Recipient Email** remains a required Short answer for report delivery/distribution.
+
+Do not add respondent-facing Employee_ID, Designation/Role, Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4 processing fields.
+
+This revision changes the FRM-06 respondent-facing field count from four to five. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
