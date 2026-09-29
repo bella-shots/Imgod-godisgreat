@@ -17,3 +17,5 @@
 
 
 | Q11 | Should FRM-02 use the submitted Employee Email ID or the signed-in Google account email when they differ? | Use the explicit **Employee Email ID** as the employee identity input; retain any platform-captured signed-in email only as audit metadata. A mismatch is not silently resolved and must enter validation failure/manual review or the defined correction workflow. | Prevents a submission from being attributed to the wrong employee when a respondent uses a different Google login. | 29-Sep | High | Resolved |
+
+| Q12 | What controlled values should FRM-04 Request Type use? | Nine locked values: Personal Information Update; Bank / Payment Details Update; Leave / Attendance Request; Employment / HR Document Request; Salary / Payroll Query; Reimbursement / Benefits Query; Project / Role Update; Resignation / Exit Request; Other. | Prevents the Form builder from inventing categories and defines the HR workflow taxonomy. | 29-Sep | Medium | Resolved |
