@@ -123,3 +123,20 @@ The Finance Report recipient scope is controlled by the requester's role/designa
 - Administrator / Site Admin: company-wide data within authorized administrator scope.
 
 Recipient must not be an unrestricted free-text lookup. Manual entry of another employee's name/email must not bypass authorization. Restricted salary, investment and other sensitive Finance records must remain inaccessible unless the requester's role explicitly permits them.
+### D3-24 — HR Report exact field mapping and authorization
+
+FRM-06 **HR Report** is a permission-controlled report compiled only from the authoritative Employees and HR_Admin schemas.
+
+**Employee/master source (Employees) fields that may be used:**
+Employee_ID, Name, Email, Role, Salary_Basis, Active, Reimbursement_Eligible, Project_Access, Joining_Date, Employment_Status, HR_Notes, Reimbursement_Settings, Created_At.
+
+**HR workflow source (HR_Admin) fields that may be used:**
+HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, Processed_By.
+
+The HR Report must not invent fields that are absent from these schemas.
+
+For HR requests, Submitted_At is the primary request-period field. Processed_At and Processed_By represent processing metadata when populated and authorized.
+
+Authorization must be evaluated before selecting records or fields. A report request does not grant new permissions. Team Member/Contractor access is self-only; Project Lead and Manager access is limited to explicitly authorized scope; HR Admin has authorized company-wide HR scope; Administrator/Site Admin has company-wide scope within administrator authorization. Restricted Salary_Basis and confidential HR_Notes must not be exposed merely because HR Report was selected.
+
+HR_Admin remains workflow-only and must not duplicate employee master fields.
