@@ -363,3 +363,7 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 The Role/Designation distinction is resolved as follows: `Role` = functional responsibility / what the employee does; `Designation` = company level/position. Both are authoritative employee-profile fields and neither is an authorization/access field.
 
 | Q15 | Should Employee Role and Designation be separate fields? | **Resolved: Yes.** `Employees.Role` means what the employee does / functional responsibility. `Employees.Designation` means the employee's level/position in the company. Both are authoritative employee-profile fields. Neither is an authorization/access field. | Prevents functional responsibility from being confused with organizational level or system access. | 29-Sep | High | Resolved |
+
+
+## R47 — Budget_Given return model resolved
+Resolved the Budget_Given spending/return-state ambiguity. The authoritative model is: Amount Given INR; Used Amount INR; calculated To Be Returned INR = MAX(0, Given - Used); Returned Amount INR; calculated Pending Return Amount INR = MAX(0, To Be Returned - Returned); and derived Status = Pending Return when any positive amount remains, Fully Returned when the amount to be returned is fully returned, and No Return Required when nothing remains to be returned. A pending amount of ₹1 or any positive amount remains Pending Return. The old Reconciled terminology is removed from Budget_Given. Recipient Email / Name accepts a name or email. No Form change is required.
