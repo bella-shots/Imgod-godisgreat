@@ -91,3 +91,9 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Explicitly prohibited internal/report-processing fields such as Report_ID, Project_ID, Drive_URL, Status, Generated_Date and Submission_ID from the Form.
 - Phase 4 remains responsible for Project Name resolution and report compilation/cataloguing.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+## R28 session note
+- Simplified FRM-06 Report Type names for ordinary users.
+- Locked respondent-facing labels as: Company Summary; Project Report; Finance Report; HR Report.
+- Updated the Phase 3 documentation set so the same simple labels are used consistently.
+- No report category meaning, workbook structure, Phase boundary, or Phase 4 behavior changed.
