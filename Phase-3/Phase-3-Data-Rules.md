@@ -73,3 +73,10 @@ Rationale: a hard-coded Form choice list can become stale and would incorrectly 
 ### D3-18 — Salary is six-month CTC + recurring payroll
 
 `Employees.Salary_Basis` stores the employee's agreed **6-month CTC/stipend** and must not be described as monthly CTC. Monthly salary is derived from that six-month CTC for each applicable active employee. `Salary_Admin` is the authoritative monthly payroll ledger. The former FRM-08 / `Salary_Responses` intake model is removed; no salary Form is required for normal monthly payroll. Any exceptional adjustment is a Phase 4 payroll capability.
+
+
+### D3-19 — FRM-02 explicit Employee Email ID and alternate-login mismatch
+
+For FRM-02, the respondent-facing employee field is **Employee Email ID** and is required. The value is resolved against Employees.Email to obtain the canonical Employee_ID.
+
+If Google Forms captures a signed-in respondent email and it differs from the submitted Employee Email ID, the captured login email is audit metadata only and must not override the explicit Employee Email ID. Phase 4 must not guess or silently substitute an employee. The submission must enter validation failure/manual review or the defined correction workflow before an authoritative Employee_Spending record is created.
