@@ -81,7 +81,7 @@ FRM-06 respondent-facing fields are locked as follows:
 | Report Type | Multiple choice | Yes |
 | Period | Short answer | Yes |
 | Project Name | Short answer | Conditional / only when a project-specific report is requested |
-| Recipient Email | Short answer | Yes |
+| — | — | — |
 
 Report Type must use exactly these four approved Report_Index.Report_Type values:
 1. Company Summary
@@ -93,7 +93,7 @@ Period is a text reporting period such as 2026-09 or 2026-Q3; it is not a Date q
 
 Project Name is a human-facing free-text input. Do not ask for Project_ID, do not hard-code a project-name choice list, and do not create a lookup/configuration tab. Phase 4 resolves the supplied Project Name to canonical Project_ID when applicable.
 
-Recipient Email is required because the Forms Map explicitly requires FRM-06 to capture recipient email for Phase 4 report delivery/distribution.
+R35 removes Recipient Email from FRM-06. Reports are displayed in the system with optional user-initiated download; email delivery is not part of the current report request contract.
 
 Do not ask respondents for Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4/system fields.
 
