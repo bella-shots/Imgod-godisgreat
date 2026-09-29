@@ -122,20 +122,38 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   10. `Published_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
   11. `Published_By` (Email)
 
-### Tab 6: `Budget_Given` (Finance Disbursals)
+### Tab 6: `Budget_Given` (Finance Budget / Advance Tracking)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
-- **Purpose:** Disbursals/advances allocated to personnel for project execution.
+- **Purpose:** Track money given for project execution, how much has been used, how much remains to be returned, how much has actually been returned, and the remaining return obligation.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
   1. `Budget_ID` (Text, Format: `BDG-XXX`, Stable unique ID)
-  2. `Date` (Date, Format: `YYYY-MM-DD`, Disbursal date, Required)
-  3. `Recipient` (Email / Name of recipient, Required)
-  4. `Amount` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
-  5. `Purpose` (Text, Operational description, Required)
-  6. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
-  7. `Status` (Dropdown: `Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`)
-  8. `Proof_URL` (URL to transfer receipt in `03_Expenses`)
-  9. `Created_By` (Email of disburser)
+  2. `Date` (Date, Format: `YYYY-MM-DD`, Date money was given, Required)
+  3. `Recipient Email / Name` (Email or Name, Required; do not force email-only validation)
+  4. `Amount Given INR` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
+  5. `Used Amount INR` (Currency INR, Format: `₹#,##0.00`, Number >= 0; entered/updated by Finance Admin)
+  6. `To Be Returned INR` (Currency INR, Format: `₹#,##0.00`; automatically calculated as `Amount Given INR - Used Amount INR`; never negative)
+  7. `Returned Amount INR` (Currency INR, Format: `₹#,##0.00`, Number >= 0; entered/updated by Finance Admin)
+  8. `Pending Return Amount INR` (Currency INR, Format: `₹#,##0.00`; automatically calculated as `To Be Returned INR - Returned Amount INR`; never negative)
+  9. `Purpose` (Text, Operational description, Required)
+  10. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
+  11. `Status` (Automatically calculated; exact values: `Pending Return`, `Fully Returned`, `No Return Required`; do not make this a manually selected dropdown)
+  12. `Proof_URL` (URL to transfer/return proof in Drive)
+  13. `Created_By` (Email of disburser)
+
+**Budget_Given calculation rules:**
+- `To Be Returned INR = MAX(0, Amount Given INR - Used Amount INR)`.
+- `Pending Return Amount INR = MAX(0, To Be Returned INR - Returned Amount INR)`.
+- If `Pending Return Amount INR > 0` (even ₹1), Status = `Pending Return`.
+- If `Pending Return Amount INR = 0` and `To Be Returned INR > 0`, Status = `Fully Returned`.
+- If `To Be Returned INR = 0`, Status = `No Return Required`.
+- `Returned Amount INR` must never exceed `To Be Returned INR`.
+- `Used Amount INR` must never exceed `Amount Given INR`.
+- Returning money does not change `Used Amount INR`; it changes `Returned Amount INR` and therefore `Pending Return Amount INR`.
+- Example: ₹50,000 given, ₹20,000 used → `To Be Returned INR = ₹30,000`. If ₹10,000 is returned → `Pending Return Amount INR = ₹20,000` and Status remains `Pending Return`. When the remaining ₹20,000 is returned → Pending Return = ₹0 and Status = `Fully Returned`.
+- Example: ₹50,000 given and fully used → To Be Returned = ₹0 and Status = `No Return Required`.
+- Example: ₹50,000 given, ₹0 used → To Be Returned = ₹50,000. Until the money is returned, Status = `Pending Return`; after the full ₹50,000 is returned, Status = `Fully Returned`.
+- These are native Sheet calculations/fields, not Phase 4 business processing.
 
 ### Tab 7: `Employee_Spending` (Finance Expenses)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
