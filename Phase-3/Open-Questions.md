@@ -26,3 +26,14 @@
 
 | Q14 | What should Finance Report return and who may receive it? | Finance Report is a permission-controlled consolidated report. Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, authorized Investments, authorized financial totals and authorized project-wise financial information may be included according to requester role/designation and scope. Recipient selection is role-controlled and cannot bypass permissions. | Prevents a report request from exposing restricted salary, investment or other employee financial records. | 29-Sep | Critical | Resolved |
 | Q15 | What exactly should HR Report return? | HR Report is a permission-controlled report using only the current Employees and HR_Admin schemas. HR request fields are HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, and Processed_By. Employee profile fields come only from Employees. | Prevents vague HR-report definitions and prevents invented HR fields. | 29-Sep | Critical | Resolved |
+
+
+## R32 — Resolved reporting output question
+
+**Resolved:** Report delivery is not download-only and is not a raw workbook export.
+
+The universal behavior is:
+- display the generated authorized report directly in the system; and
+- provide a Download Report action for users who want a copy.
+
+The download must reflect the same authorization and report content as the displayed report. The exact downloadable file format remains a Phase 4 implementation detail.
