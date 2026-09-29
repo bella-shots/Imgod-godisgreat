@@ -463,3 +463,7 @@ The compensation model now supports Monthly and One-Time arrangements. Employees
 - HR Report Employee / HR Profile now includes both Role and Designation when authorized.
 - Role and Designation are not authorization/access fields; Phase 4 must not infer permissions from either alone.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R47 — Budget_Given spending and return tracking
+Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`) with a simple calculated money-flow model. `Amount Given INR` and `Used Amount INR` determine calculated `To Be Returned INR`; `Returned Amount INR` determines calculated `Pending Return Amount INR`; Status is automatically derived as `Pending Return`, `Fully Returned`, or `No Return Required`. Any positive pending amount, including ₹1, remains `Pending Return`. Used Amount cannot exceed Amount Given and Returned Amount cannot exceed To Be Returned. `Recipient Email / Name` is name-or-email, not email-only. No Form, workbook-boundary, Lists_Config, cross-workbook validation, or Phase 4 architecture change.
