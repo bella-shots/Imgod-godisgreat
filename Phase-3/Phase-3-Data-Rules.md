@@ -32,7 +32,7 @@ There is no `Lists_Config` workbook/tab. Controlled values are maintained as loc
 
 Approved controlled values include:
 - Project Report: Draft, Active, On Hold, Completed, Cancelled
-- Employee Roles: Administrator, Finance Admin, HR Admin, Project Lead, Team Member, Contractor
+- Employee Roles: Administrator, Finance Admin, HR Admin, Manager, Project Lead, Team Member, Contractor
 - Project Roles: Lead, Core Contributor, Reviewer, Observer
 - Access Levels: Viewer, Editor, Admin
 - Employment Status: Probation, Full-Time, Notice Period, Relieved
