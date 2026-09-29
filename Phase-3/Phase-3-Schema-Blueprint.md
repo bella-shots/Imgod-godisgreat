@@ -53,7 +53,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   4. `Owner` (Email address of project lead, Required)
   5. `Start_Date` (Date, Format: `YYYY-MM-DD`, Required)
   6. `Event_Date` (Date, Format: `YYYY-MM-DD`, Target/delivery date)
-  7. `Status` (Dropdown: `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`. Apply these approved values locally in the workbook; do not depend on a cross-workbook validation range.)
+  9. `Status` (Dropdown: `Draft`, `Active`, `On Hold`, `Completed`, `Cancelled`. Apply these approved values locally in the workbook; do not depend on a cross-workbook validation range.)
   8. `Drive_Folder_URL` (URL to Phase 1 folder `MASTER COMPANY/Projects/PROJECT_XXX`)
   9. `Notes` (Text)
   10. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
@@ -67,15 +67,16 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
   4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Manager`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
-  5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed 6-month CTC/stipend)
-  6. `Active` (Boolean: `TRUE` / `FALSE`, Required)
-  7. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
-  8. `Project_Access` (Text, Comma-delimited `Project_ID` values or role tag)
-  9. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
-  10. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
-  11. `HR_Notes` (Text, Confidential internal notes)
-  12. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
-  13. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
+  5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed compensation basis; for standard employees this is the agreed 6-month CTC/stipend)
+  6. `Payment_Frequency` (Dropdown: `Monthly`, `One-Time`, Required)
+  7. `Active` (Boolean: `TRUE` / `FALSE`, Required)
+  8. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
+  9. `Project_Access` (Text, Comma-delimited `Project_ID` values or role tag)
+  10. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
+  11. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
+  12. `HR_Notes` (Text, Confidential internal notes)
+  13. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
+  14. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
 
 ### Tab 3: `Project_Members` (Projects Mapping)
 - **Workbook:** `MASTER_COMPANY_OPERATIONS`
@@ -169,20 +170,22 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   11. `Paid_Date` (Date, Format: `YYYY-MM-DD`)
   12. `OOP_Rule_Flag` (Text, Reserved for Phase 4 ₹5,000 threshold evaluation)
 
-### Tab 9: `Salary_Admin` (Administrative Payroll Ledger)
+### Tab 9: `Salary_Admin` (Administrative Payroll & Compensation Ledger)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
-- **Purpose:** Monthly administrative compensation, payout, and carry-forward balances.
+- **Purpose:** Administrative compensation, payout, and carry-forward balances for both recurring monthly compensation and one-time payments.
 - **Sensitivity:** Extreme (Admin only).
 - **Columns:**
   1. `Salary_Record_ID` (Text, Format: `SAL-XXX`, Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
-  3. `Month` (Text, Format: `YYYY-MM`, Required)
-  4. `Due_Amount` (Currency INR, Format: `₹#,##0.00`, Agreed base CTC)
-  5. `Paid_Amount` (Currency INR, Format: `₹#,##0.00`, Actual disburse)
-  6. `Pending_Carry_Forward` (Currency INR, Format: `₹#,##0.00`, Remaining debt to employee)
+  3. `Payment_Frequency` (Dropdown: `Monthly`, `One-Time`, Required)
+  4. `Month` (Text, Format: `YYYY-MM`; Required for Monthly records, blank for One-Time records)
+  5. `Payment_Date` (Date, Format: `YYYY-MM-DD`; required for One-Time records and populated when payment is recorded)
+  6. `Due_Amount` (Currency INR, Format: `₹#,##0.00`, Agreed base CTC)
+  7. `Paid_Amount` (Currency INR, Format: `₹#,##0.00`, Actual disburse)
+  8. `Pending_Carry_Forward` (Currency INR, Format: `₹#,##0.00`, Remaining debt to employee)
   7. `Status` (Dropdown: `Pending`, `Partial`, `Paid`, `Carry-Forward`)
-  8. `Notes` (Text)
-  9. `Updated_At` (Timestamp)
+  10. `Notes` (Text)
+  11. `Updated_At` (Timestamp)
 
 ### Tab 10: `Investments` (Administrative Capital Ledger)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
@@ -967,3 +970,21 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+
+## R45 — Compensation and payroll architecture correction
+**Date:** 2026-09-29
+
+The compensation model now supports both recurring monthly compensation and one-time payments.
+
+- Employees.Salary_Basis remains the agreed compensation basis; for standard employees this remains the agreed 6-month CTC/stipend.
+- Add Employees.Payment_Frequency with exact values: Monthly, One-Time.
+- Salary_Admin is expanded from a monthly-only payroll ledger into an administrative compensation/payroll ledger.
+- Salary_Admin.Payment_Frequency records the applicable payment arrangement.
+- Salary_Admin.Month is required for Monthly records and blank for One-Time records.
+- Salary_Admin.Payment_Date is required for One-Time records and records the payment date when populated.
+- Monthly arrangements generate recurring SAL-XXX records.
+- One-Time arrangements generate a single compensation/payment obligation and must not be represented as artificial monthly payroll records.
+- An employee may view their own Salary_Basis/CTC and Payment_Frequency; HR Admin/Administrator may view them within authorized scope; other employees require separate authorization.
+
+R45 changes the Phase-3 compensation schema and supersedes the monthly-only assumptions in R23. No salary Form or response tab is introduced.
