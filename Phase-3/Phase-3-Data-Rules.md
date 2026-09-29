@@ -99,7 +99,7 @@ The same literals must be used for the HR_Admin Request_Type workflow field. No 
 
 ### D3-21 — FRM-06 respondent-facing field controls
 
-FRM-06 must collect only the report-request data defined by the current R34 Forms Map:
+FRM-06 must collect only the report-request data defined by the current R35 Forms Map:
 - Employee Email ID: required Short answer used to identify the requester; Phase 4 resolves it against `Employees.Email` to canonical `Employee_ID` and `Role`.
 - Period: required text in reporting-period form such as 2026-09 or 2026-Q3; do not use a full Date field.
 - Project Name: human-facing Short answer, used only when the requested report is project-specific; do not request Project_ID or hard-code current project names.
@@ -176,11 +176,11 @@ The Download path must reuse the authorized report result; it must not independe
 This rule applies equally to Company Summary, Project Report, Finance Report and HR Report. Report requests never grant additional permissions.
 \n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification did not change the field types or reporting-period semantics at the time. R34 subsequently revises the FRM-06 field set by adding the required Employee Email ID requester-identity field.
 
-### R34 — FRM-06 requester identity and alternate-account handling
+### R34 — FRM-06 requester identity and alternate-account handling (historical; superseded by R35)
 
-R27 is revised for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
+R34 revised R27 for FRM-06 requester identity. The Form must explicitly capture the requester's **Employee Email ID** because the Google account used to open/submit the Form may differ from the employee's company identity.
 
-The authoritative respondent-facing FRM-06 field set is now:
+The R34 historical respondent-facing FRM-06 field set was:
 
 | # | Field | Type | Required |
 |---|---|---|---|
