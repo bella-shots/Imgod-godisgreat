@@ -154,7 +154,6 @@ The authoritative respondent-facing FRM-06 field set is now:
 | 2 | Report Type | Multiple choice | Yes |
 | 3 | Period | Short answer | Yes |
 | 4 | Project Name | Short answer | Conditional / only when a project-specific report is requested |
-| 5 | Recipient Email | Short answer | Yes |
 
 **Employee Email ID description:**
 > Enter your company Employee Email ID. This is used to identify your employee record for report authorization. Do not enter your Employee ID.
@@ -174,8 +173,8 @@ If Google Forms captures a signed-in Google account email and it differs from th
 
 **Project Name** remains a conditional Short answer for project-specific reports. It is a human-facing project name; do not ask for Project_ID or provide a hard-coded project-name choice list.
 
-**Recipient Email** remains a required Short answer for report delivery/distribution.
+There is no respondent-facing Recipient Email field. Reports are displayed in the system and may be downloaded by the requester; report delivery to an arbitrary email address is not part of FRM-06.
 
 Do not add respondent-facing Employee_ID, Designation/Role, Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4 processing fields.
 
-This revision changes the FRM-06 respondent-facing field count from four to five. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
+This revision changes the FRM-06 respondent-facing field count from five to four. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
