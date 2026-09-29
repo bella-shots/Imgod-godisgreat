@@ -82,3 +82,12 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - FRM-04 respondent-facing fields are Employee Email ID (required), Request Type (required), Relevant Details (required), and optional Attachment / Supporting Document.
 - No Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By is requested from the respondent.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R27 session note
+- Reconciled FRM-06 against the authoritative Phase 3 Forms Map and Schema Blueprint.
+- Locked the respondent-facing FRM-06 fields: Report Type (required multiple choice), Period (required short answer), conditional Project Name (short answer for project-specific reports), and Recipient Email (required short answer).
+- Locked Report Type to exactly Executive Summary; Project Status; Finance Audit; HR Rollup.
+- Explicitly prohibited internal/report-processing fields such as Report_ID, Project_ID, Drive_URL, Status, Generated_Date and Submission_ID from the Form.
+- Phase 4 remains responsible for Project Name resolution and report compilation/cataloguing.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
