@@ -313,3 +313,19 @@ Acceptance criterion for Company Summary presentation is now:
 6. Access Notice
 
 A separate “Period Activity / Key Counts” section must **not** appear. Period-specific metrics must remain within their relevant sections.
+
+
+### R39 — Project Report acceptance criteria
+FRM-06 Project Report is accepted as Phase-3 SPEC READY only when Phase 4 satisfies all of the following:
+1. Report header shows Report Type, Project Name, Period, Generated Date and Requested By.
+2. Project Overview uses the authoritative Projects record and treats Status as a current snapshot.
+3. Project Team is derived from Project_Members + Employees and does not expose restricted HR fields.
+4. Project Notes are limited to the requested period and Published status.
+5. Project MOMs are limited to the requested period and Published/Revised status.
+6. Project Finance Summary includes only authorized project-linked Budget_Given, Employee_Spending and OOP_Claims records for the requested period.
+7. Salary/Payroll and Investments are not exposed merely because Project Report was selected.
+8. Project Name is resolved by the frozen exact, case-sensitive Projects.Project_Name rule.
+9. Requesting a report does not grant project, Finance or HR permissions.
+10. On-screen and downloaded Project Reports contain the same authorized content.
+11. No raw source workbook export is presented as the Project Report.
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until Phase 4 implementation and permission tests exist.
