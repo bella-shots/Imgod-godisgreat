@@ -445,3 +445,6 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 **Date:** 2026-09-29
 
 Expanded the compensation architecture to support recurring monthly compensation and one-time payments. Added Employees.Payment_Frequency and Salary_Admin.Payment_Frequency; made Salary_Admin.Month conditional for Monthly records and added Salary_Admin.Payment_Date for One-Time records. Preserved Employees.Salary_Basis as the agreed compensation basis and clarified self-service CTC visibility. No salary Form/response tab was added.
+
+
+| R46 | Running Change — corrected the employee master distinction between functional Role and company Designation/level. `Employees.Role` now means what the employee does / functional responsibility; `Employees.Designation` means the employee's company level/position. Added `Designation` to the authoritative Employees schema and HR Report profile. Explicitly separated both fields from authorization/access classification. No new Form field or salary response tab was introduced. |
