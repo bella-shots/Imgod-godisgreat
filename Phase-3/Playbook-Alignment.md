@@ -228,3 +228,19 @@ No report request, Period, Project Name, or download action may expand permissio
 
 ### R38 — Company Summary presentation correction
 Phase 4 must not create a separate “Period Activity / Key Counts” section. Period-specific activity is displayed inside the relevant Company Summary sections. This is a presentation correction only; no source schema or Form field changes.
+
+
+### R39 — Project Report implementation alignment
+The Phase-4 implementation contract for Project Report is now frozen.
+
+Implementation sequence:
+1. Identify/authenticate requester.
+2. Resolve the submitted Project Name using the exact case-sensitive Projects.Project_Name rule.
+3. Resolve canonical Project_ID.
+4. Verify requester already has authorized access to that project.
+5. Select only authorized project, project-member, documentation and project-linked finance records.
+6. Generate the frozen six-section Project Report.
+7. Display it in the system.
+8. Provide optional Download Report containing the same authorized content.
+
+Do not use Project Report to grant project access, bypass Finance/HR restrictions, expose raw workbook tabs, or invent new business fields.
