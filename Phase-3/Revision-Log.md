@@ -69,7 +69,6 @@ The authoritative respondent-facing FRM-06 field set is now:
 | 2 | Report Type | Multiple choice | Yes |
 | 3 | Period | Short answer | Yes |
 | 4 | Project Name | Short answer | Conditional / only when a project-specific report is requested |
-| 5 | Recipient Email | Short answer | Yes |
 
 **Employee Email ID description:**
 > Enter your company Employee Email ID. This is used to identify your employee record for report authorization. Do not enter your Employee ID.
@@ -89,8 +88,47 @@ If Google Forms captures a signed-in Google account email and it differs from th
 
 **Project Name** remains a conditional Short answer for project-specific reports. It is a human-facing project name; do not ask for Project_ID or provide a hard-coded project-name choice list.
 
-**Recipient Email** remains a required Short answer for report delivery/distribution.
+There is no respondent-facing Recipient Email field. Reports are displayed in the system and may be downloaded by the requester; report delivery to an arbitrary email address is not part of FRM-06.
 
 Do not add respondent-facing Employee_ID, Designation/Role, Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4 processing fields.
 
-This revision changes the FRM-06 respondent-facing field count from four to five. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
+This revision changes the FRM-06 respondent-facing field count from five to four. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
+
+
+## R35 — Remove Recipient Email from FRM-06
+
+### Problem corrected
+R34 required both Employee Email ID and Recipient Email. The current report contract displays the authorized report in the system and provides optional user-initiated download; it does not require email delivery.
+
+### Authoritative correction
+FRM-06 now has exactly four respondent-facing fields:
+1. Employee Email ID — Short answer, Required
+2. Report Type — Multiple choice, Required
+3. Period — Short answer, Required
+4. Project Name — Short answer, Conditional / only when a project-specific report is requested
+
+Remove Recipient Email from FRM-06. Do not add an email-recipient substitute field.
+
+Employee Email ID remains the requester-identity input because the Google account used to submit the Form may differ from the employee's company identity. Phase 4 resolves Employee Email ID against authoritative `Employees.Email` to the canonical `Employee_ID` and authoritative `Role`. Captured Google login email, if available, remains audit metadata only and must not silently override the explicit Employee Email ID.
+
+Reports continue to follow R32: authenticate the requester, apply authorization, generate the authorized report, display it in the system, and provide optional Download Report. No email delivery is implied by FRM-06.
+
+### Scope firewall
+Do not:
+- add Recipient Email back to FRM-06;
+- add an arbitrary email-recipient field under another name;
+- allow report requests to expand permissions;
+- change Report_Index schema;
+- implement Phase 4 or Apps Script during this Phase 3 revision.
+
+### Verification
+Confirm:
+1. FRM-06 has exactly four respondent-facing fields.
+2. Employee Email ID is required.
+3. Report Type is required with the four locked report types.
+4. Period is required and uses the locked YYYY-MM / YYYY-QN description.
+5. Project Name is conditional only for Project Report.
+6. Recipient Email is absent from the current FRM-06 specification.
+7. Reports remain View + optional Download in Phase 4.
+8. Report_Index schema is unchanged.
+9. Historical R34 remains identifiable as historical; current FRM-06 uses R35.
