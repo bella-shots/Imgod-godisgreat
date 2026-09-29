@@ -325,3 +325,23 @@ No report request, Period, Project Name, or download action may expand permissio
 FRM-06 Company Summary does not produce a separate “Period Activity / Key Counts” section.
 
 Period-specific results are presented within Projects & Operations, Finance Summary, and HR Summary. No respondent-facing Form field is changed.
+
+
+### R39 — Project Report output definition
+FRM-06 respondent-facing fields do not change.
+
+When Project Report is selected:
+- Employee Email ID identifies the requester.
+- Period supplies the requested reporting period.
+- Project Name is required for Project Report and follows the frozen exact, case-sensitive matching rule.
+- Phase 4 resolves Project Name to Project_ID and verifies existing project authorization before report generation.
+
+The frozen Project Report output order is:
+1. Report Header
+2. Project Overview
+3. Project Team
+4. Project Activity & Documentation
+5. Project Finance Summary — authorized project-linked finance only
+6. Access Notice
+
+Project Report uses only existing Phase-3 schemas. It does not create new workbook tabs, Form questions, lookup tables or configuration records.
