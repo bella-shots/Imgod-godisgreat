@@ -55,3 +55,4 @@
 - Raw source workbooks are not report outputs.
 - Exact download file format remains a Phase 4 implementation decision; View + Download behavior is frozen now.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+\n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification does not change the FRM-06 field set, report types, Project Name behavior, Recipient Email requirement, workbook structure, or Phase 4 boundary.
