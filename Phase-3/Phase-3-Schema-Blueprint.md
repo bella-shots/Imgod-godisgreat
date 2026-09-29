@@ -672,3 +672,43 @@ The frozen Company Summary presentation order is now:
 Period-specific activity remains inside the relevant section. For example, project activity belongs in Projects & Operations, finance activity belongs in Finance Summary, and HR activity belongs in HR Summary. No separate catch-all period-activity section is generated.
 
 This supersedes only the redundant R37 presentation item. All other R37 Company Summary content, source mappings, authorization rules, exclusions, and View + Download behavior remain unchanged.
+
+
+### R39 — Project Report definition is frozen
+**Date:** 2026-09-29
+
+**Purpose:** Freeze exactly what FRM-06 Project Report displays and what the requester can download after authorization.
+
+#### Frozen Project Report presentation order
+1. **Report Header** — Report Type, Project Name, Requested Period, Generated Date, Requested By.
+2. **Project Overview** — Project_ID, Project_Name, Description, Owner, Start_Date, Event_Date, current Status, Created_At.
+3. **Project Team** — authorized active project-member count and authorized members resolved through Project_Members → Employees; show project-context identity, Project_Role, Active and Assigned_Date only.
+4. **Project Activity & Documentation** — period-relevant published Project_Notes and published/revised Project_MOM_Index records.
+5. **Project Finance Summary — authorized project-linked finance only** — authorized Budget_Given, Employee_Spending and OOP_Claims records linked to the project.
+6. **Access Notice** — report contains only information permitted by the requester's existing authorization.
+
+Project Overview uses the current authoritative Projects record. Current Status is a current master-data snapshot, not historical status reconstruction.
+Project Notes are reportable only when linked to the project and Status = Published. Show Date, authorized author identity and Note content.
+Project MOMs are reportable only when linked to the project and Status = Published or Revised. Show Meeting_Date, Title, Participants, Version and Status. Raw document/attachment URLs are not used as a permission bypass.
+For Project Finance Summary: Budget_Given shows record count, total Amount and Status breakdown; Employee_Spending shows record count, total Amount and Status breakdown; OOP_Claims shows record count, total claimed Amount, total Approved_Amount and Status breakdown, with paid amount only where determinable.
+Salary/Payroll and Investments are not ordinary Project Report content. They require their own existing authorization and are not exposed merely because Project Report was selected.
+
+#### Project Report period rules
+- Monthly YYYY-MM: applicable project activity within that calendar month.
+- Quarterly YYYY-QN: applicable project activity within that calendar quarter.
+- Projects.Created_At, Start_Date and Event_Date support project lifecycle activity.
+- Project_Members.Assigned_Date supports team-assignment activity.
+- Project_Notes.Date is the note activity date.
+- Project_MOM_Index.Meeting_Date is the MOM activity date.
+- Budget_Given.Date, Employee_Spending.Date and OOP_Claims.Date are project-linked finance activity dates; OOP_Claims.Month remains authoritative and must be consistent with the claim date.
+- Project master snapshot fields are shown as current values; no historical project-status reconstruction is permitted.
+
+#### Project Report authorization and identity
+- FRM-06 supplies human-facing Project Name; respondents do not enter Project_ID.
+- Phase 4 resolves Project Name to canonical Project_ID using the existing exact, case-sensitive Projects.Project_Name rule.
+- The requester must already be authorized to view the requested project. A report request cannot create project access.
+- Team Member/Contractor access is limited to authorized project membership/scope; Project Lead/Manager access is limited to explicitly authorized project scope; Administrator/Site Admin access remains subject to existing administrator authorization.
+- Project Report does not override Finance or HR restrictions.
+
+#### Project Report View + Download
+Project Report follows the global R32 View + Download contract. The report is displayed in the system and may be downloaded. The downloaded report must contain the same authorized content shown on screen and must not expose additional source records or fields. Raw source workbooks are not report outputs.
