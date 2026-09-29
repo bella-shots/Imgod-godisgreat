@@ -372,3 +372,7 @@ FRM-06 Period: FROZEN exact date range (R40).
 
 All completed report contracts must remain frozen until a new revision is explicitly approved. Phase 3 remains HUMAN ACTION REQUIRED for live Google Sheet/Form verification. Phase 4 implementation remains blocked until the remaining Phase 3 gate is satisfied.
 
+## R43 — Finance Report OOP Claims presentation correction
+Finance Report R41 has been updated by R43 to remove the redundant user-facing `OOP_Claims.Month` field. The report displays Claim Date instead. `OOP_Claims.Month` remains in the authoritative source schema for internal processing/reconciliation.
+
+R43 does not change FRM-06 fields, workbook schemas, period filtering, authorization, or the Phase 4 boundary.
