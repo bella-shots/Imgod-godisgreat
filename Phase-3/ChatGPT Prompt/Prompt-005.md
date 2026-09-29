@@ -235,3 +235,19 @@ FRM-04 must be implemented exactly as follows:
 - Attachment / Supporting Document — File upload, Optional.
 
 Do not invent additional Request Type values. Do not ask for Employee_ID or HR_Request_ID. Keep HR_Admin as the workflow target and Phase 4 responsible for employee identity resolution and workflow processing.
+
+
+### R27 — FRM-06 Report Request field lock
+
+Before human instantiation of FRM-06, use this exact respondent-facing specification:
+
+- Report Type — Multiple choice, Required. Exact options: Executive Summary, Project Status, Finance Audit, HR Rollup.
+- Period — Short answer, Required. Use reporting-period text such as 2026-09 or 2026-Q3; do not use a Date question.
+- Project Name — Short answer, conditional/only when a project-specific report is requested. Do not provide a hard-coded project-name choice list and do not ask for Project_ID.
+- Recipient Email — Short answer, Required.
+
+Do not add respondent-facing Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing fields.
+
+The native response destination is Report_Requests_Responses in MASTER_COMPANY_ADMIN; the authoritative target is Report_Index.
+
+Phase 4 remains responsible for resolving Project Name to canonical Project_ID when applicable and compiling/cataloguing the requested report. Do not implement Phase 4 or Apps Script during this Phase 3 change.
