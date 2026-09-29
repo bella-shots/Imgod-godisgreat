@@ -63,18 +63,21 @@ Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
 
 ### P3-21 — Verify FRM-06 Report Request
 
-Verify the live FRM-06 Form contains exactly these respondent-facing fields (R34):
-- Employee Email ID — Short answer, Required; used for requester identity resolution. Do not ask for Employee_ID or Designation/Role.
-- Period — Short answer, Required.
-- Project Name — Short answer, conditional/only when a project-specific report is requested; no hard-coded project-name list and no Project_ID.
+Verify the live FRM-06 Form contains exactly these four respondent-facing fields:
+
+1. **Employee Email ID** — Short answer, Required; used for requester identity resolution. Do not ask for Employee_ID or Designation/Role.
+2. **Report Type** — Multiple choice, Required; exactly: Company Summary, Project Report, Finance Report, HR Report.
+3. **Period** — Short answer, Required; exact format `YYYY-MM-DD to YYYY-MM-DD`, inclusive.
+4. **Project Name** — Short answer, Conditional; required only when Project Report is requested. It must be an exact, case-sensitive match to `Projects.Project_Name`; no hard-coded project-name list and no Project_ID.
 
 Also verify:
-- Native response destination is Report_Requests_Responses in MASTER_COMPANY_ADMIN.
-- No Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing field is respondent-facing.
-- Report_Index remains the authoritative catalog.
+- Native response destination is `Report_Requests_Responses` in `MASTER_COMPANY_ADMIN`.
+- No Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, Recipient Email, View/Download choice, or other Phase 4 processing field is respondent-facing.
+- `Report_Index` remains the authoritative report catalog.
+- R40 is the current Period rule; older monthly/quarterly Period wording is historical and superseded.
+- R44 and R46 do not add any respondent-facing Role or Designation field.
 
-Status: SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
-
+**Status:** SPEC READY / HUMAN ACTION REQUIRED until the live Form is verified.
 
 ### P3-22 — Verify Finance Report authorization and contents
 
@@ -91,10 +94,10 @@ Verify that the report can contain, subject to authorization and period: Budget 
 **Status:** SPEC READY / HUMAN ACTION REQUIRED until Phase 4 implementation and permission tests exist.
 ### P3-23 — Verify HR Report exact contents and authorization
 
-Verify that **FRM-06 → HR Report** is compiled only from the current authoritative Employees and HR_Admin schemas.
+Verify that **FRM-06 → HR Report** is compiled only from the current authoritative `Employees` and `HR_Admin` schemas.
 
 Verify that the report compiler recognizes these Employees fields:
-Employee_ID, Name, Email, Role, Salary_Basis, Active, Reimbursement_Eligible, Project_Access, Joining_Date, Employment_Status, HR_Notes, Reimbursement_Settings, Created_At.
+Employee_ID, Name, Email, Role, Designation, Salary_Basis, Payment_Frequency, Active, Reimbursement_Eligible, Project_Access, Joining_Date, Employment_Status, HR_Notes, Reimbursement_Settings, Created_At.
 
 Verify that the report compiler recognizes these HR_Admin fields:
 HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, Processed_By.
@@ -103,7 +106,10 @@ Verify:
 - Submitted_At is the primary period field for HR request records.
 - Processed_At and Processed_By are included only when populated and authorized.
 - Attachment_URL is exposed only when the requester is authorized to access the underlying document.
-- Salary_Basis/CTC is visible to the employee for their own record; HR Admin/Administrator may access it within authorized scope; HR_Notes remain restricted from ordinary Team Member/Contractor and unauthorized Project Lead/Manager requesters.
+- Salary_Basis/CTC and Payment_Frequency are visible to the employee for their own record; HR Admin/Administrator may access them within authorized scope; other employees require separate authorization.
+- Role means functional responsibility / what the employee does.
+- Designation means company level/position.
+- Neither Role nor Designation is an authorization field.
 - Team Member/Contractor requests return only the requester's own authorized HR information.
 - Project Lead/Manager requests are limited to explicitly authorized scope.
 - HR Admin and Administrator/Site Admin receive only the company-wide fields permitted by their authorization.
