@@ -64,3 +64,4 @@ The Phase 3 contract now requires the Phase 4 Apps Script reporting layer to tre
 For every FRM-06 report type, Phase 4 must implement: authorization → report generation → in-system display → user-initiated download of the same authorized report.
 
 The implementation must not create separate weaker/stronger authorization paths for View and Download. The exact download format is intentionally left open for Phase 4 unless separately approved.
+\n\n### R33 — FRM-06 Period field description clarification\n\nFor the respondent-facing FRM-06 **Period** field:\n\n> **Enter the reporting period for which you want the report. Use YYYY-MM for a monthly report (e.g., 2026-09) or YYYY-QN for a quarterly report (e.g., 2026-Q3).**\n\nThe field remains a **required Short answer** and is not a Date question. This clarification does not change the FRM-06 field set, report types, Project Name behavior, Recipient Email requirement, workbook structure, or Phase 4 boundary.
