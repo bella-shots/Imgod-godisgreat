@@ -281,3 +281,20 @@ No report request, Period, Project Name, or download action may expand permissio
 6. Access Notice
 
 **Not changed:** Company Summary source mappings, authorization rules, exclusions, View + Download contract, FRM-06 fields, or workbook schemas.
+
+
+### R39 — Project Report definition frozen
+**Date:** 2026-09-29
+
+Defined and froze the complete FRM-06 Project Report output contract:
+- six-section presentation order;
+- Project Overview source mapping;
+- project-member display boundary;
+- project notes and MOM period/status rules;
+- authorized project-linked finance summary;
+- exclusion of Salary/Payroll and Investments from ordinary Project Report content;
+- exact Project Name → Project_ID resolution using the existing case-sensitive rule;
+- project authorization requirement;
+- global View + Download behavior.
+
+No FRM-06 respondent-facing field, workbook schema, Phase boundary or existing Company Summary/Finance/HR rule was changed.
