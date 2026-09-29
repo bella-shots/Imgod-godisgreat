@@ -412,6 +412,15 @@ Use only the existing Finance schemas. Apply R40 exact inclusive date-range filt
 
 **R41 is frozen. Changes require a new revision and explicit approval.**
 
+### R43 — Finance Report OOP Claims presentation correction
+**Date:** 2026-09-29
+
+The user-facing Finance Report must **not display `OOP_Claims.Month`**. Show Claim Date instead, together with Purpose, Project, Claimed Amount, Approved Amount, Status, and Paid Date when applicable.
+
+`OOP_Claims.Month` remains in the authoritative source schema and remains an internal processing/reconciliation field. It must remain consistent with `OOP_Claims.Date`.
+
+R43 changes presentation only; it does not remove or rename the authoritative `OOP_Claims.Month` column.**
+
 ## R42 — HR Report definition — DRAFT / NOT FROZEN
 **Status:** Draft pending user review and explicit approval.
 
