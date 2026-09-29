@@ -451,3 +451,6 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+## R45 — Compensation/payroll acceptance
+The Phase-3 schema must support both Monthly and One-Time compensation. Employees.Payment_Frequency and Salary_Admin.Payment_Frequency must use only those exact values. Salary_Admin.Month is required for Monthly records and blank for One-Time records; Payment_Date is required for One-Time records. Employees may view their own Salary_Basis/CTC and Payment_Frequency; broader compensation visibility requires authorization. No salary Form/response tab is introduced.
