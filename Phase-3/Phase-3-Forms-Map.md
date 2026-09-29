@@ -84,10 +84,10 @@ FRM-06 respondent-facing fields are locked as follows:
 | Recipient Email | Short answer | Yes |
 
 Report Type must use exactly these four approved Report_Index.Report_Type values:
-1. Executive Summary
-2. Project Status
-3. Finance Audit
-4. HR Rollup
+1. Company Summary
+2. Project Report
+3. Finance Report
+4. HR Report
 
 Period is a text reporting period such as 2026-09 or 2026-Q3; it is not a Date question.
 
