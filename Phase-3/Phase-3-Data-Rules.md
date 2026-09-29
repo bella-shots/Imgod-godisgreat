@@ -100,7 +100,7 @@ The same literals must be used for the HR_Admin Request_Type workflow field. No 
 ### D3-21 — FRM-06 respondent-facing field controls
 
 FRM-06 must collect only the report-request data defined by the current R34 Forms Map:
-- Report Type: required controlled multiple-choice value using exactly Company Summary, Project Report, Finance Report, HR Report.
+- Employee Email ID: required Short answer used to identify the requester; Phase 4 resolves it against `Employees.Email` to canonical `Employee_ID` and `Role`.
 - Period: required text in reporting-period form such as 2026-09 or 2026-Q3; do not use a full Date field.
 - Project Name: human-facing Short answer, used only when the requested report is project-specific; do not request Project_ID or hard-code current project names.
 - Recipient Email: required Short answer for report delivery/distribution.
