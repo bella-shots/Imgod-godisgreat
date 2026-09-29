@@ -111,3 +111,10 @@ Do not mark a phase complete because documentation exists. Completion requires o
 ## R30 session note
 - Added Manager to the controlled Employees.Role values because Finance Report recipient authorization now explicitly uses Manager as a designation/access category.
 - Manager remains subject to authorized management/data scope; Manager status alone does not grant restricted salary/payroll or investment access.
+## R31 session note
+- Corrected the HR Report definition after identifying that earlier wording used vague, non-schema labels.
+- Locked the exact HR_Admin report fields: HR_Request_ID, Employee_ID, Request_Type, Relevant_Details, Attachment_URL, Status, Submitted_At, Processed_At, Processed_By.
+- Locked Employees as the only source for employee/HR master information; HR_Admin remains workflow-only.
+- Defined period handling, authorization scope and restricted treatment of Salary_Basis and HR_Notes.
+- Prohibited invented HR fields such as Department, Manager, Leave Balance, Attendance, Performance Score, Employee Phone or Address unless separately added by documented schema revision.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
