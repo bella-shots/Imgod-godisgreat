@@ -332,3 +332,23 @@ For **FRM-02 — Employee Spending / Expense**, the respondent-facing employee i
 - No additional employee-login/email field is required merely to handle this mismatch.
 
 This is a focused correction to the R21 human-facing identity rule for FRM-02 and does not change the authoritative Employee_Spending.Employee_ID field or the Phase 4 identity-resolution boundary.
+
+### R26 — FRM-04 Request Type controlled values
+
+For FRM-04 — Employee Update / HR Request, the respondent-facing Form fields are locked as:
+
+1. Employee Email ID — Short answer, Required.
+2. Request Type — Multiple choice, Required, with exactly these controlled values:
+   - Personal Information Update
+   - Bank / Payment Details Update
+   - Leave / Attendance Request
+   - Employment / HR Document Request
+   - Salary / Payroll Query
+   - Reimbursement / Benefits Query
+   - Project / Role Update
+   - Resignation / Exit Request
+   - Other
+3. Relevant Details — Paragraph, Required.
+4. Attachment / Supporting Document — File upload, Optional.
+
+The Form must not ask for Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By. Those remain workflow fields handled by the response pipeline and Phase 4. HR_Admin.Request_Type uses the same nine approved literal values.
