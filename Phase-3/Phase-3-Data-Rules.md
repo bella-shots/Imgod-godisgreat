@@ -106,3 +106,20 @@ FRM-06 must collect only the report-request data defined by the Forms Map:
 - Recipient Email: required Short answer for report delivery/distribution.
 
 System/catalog fields such as Report_ID, Project_ID, Drive_URL, Status, and Generated_Date remain non-respondent fields. Phase 4 resolves Project Name to canonical Project_ID when applicable and catalogs the generated output in Report_Index.
+
+
+### D3-22 — Report requests cannot expand data permissions
+
+A report request does not grant the requester any new access. Finance Report and other report types must be compiled only from records and fields the requester is already authorized to access. Phase 4 must evaluate authenticated requester identity, role/designation and authorized data scope before selecting report records or fields.
+
+### D3-23 — Finance Report recipient scope is role-controlled
+
+The Finance Report recipient scope is controlled by the requester's role/designation and authorization scope:
+- Team Member / Contractor: self only for employee-linked finance records.
+- Project Lead: authorized project scope, where permitted.
+- Manager: authorized management/data scope; Manager status alone does not grant restricted salary/payroll or investment access.
+- Finance Admin: company-wide Finance data permitted to Finance Admin.
+- HR Admin: salary/payroll data where authorized; investment data is not granted merely by HR role.
+- Administrator / Site Admin: company-wide data within authorized administrator scope.
+
+Recipient must not be an unrestricted free-text lookup. Manual entry of another employee's name/email must not bypass authorization. Restricted salary, investment and other sensitive Finance records must remain inaccessible unless the requester's role explicitly permits them.
