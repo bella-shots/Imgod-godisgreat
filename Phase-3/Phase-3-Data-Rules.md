@@ -32,7 +32,9 @@ There is no `Lists_Config` workbook/tab. Controlled values are maintained as loc
 
 Approved controlled values include:
 - Project Report: Draft, Active, On Hold, Completed, Cancelled
-- Employee Roles: Administrator, Finance Admin, HR Admin, Manager, Project Lead, Team Member, Contractor
+- Employee Role: functional responsibility / what the employee does; values are maintained as the company's approved functional-role vocabulary.
+- Employee Designation: company level/position; values are maintained as the company's approved designation/level vocabulary.
+- Employee Role and Designation must not be used as substitutes for authorization/access classification.
 - Project Roles: Lead, Core Contributor, Reviewer, Observer
 - Access Levels: Viewer, Editor, Admin
 - Employment Status: Probation, Full-Time, Notice Period, Relieved
@@ -510,3 +512,14 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - One-Time compensation must not be represented as artificial monthly payroll.
 - Employees may view their own Salary_Basis/CTC and Payment_Frequency. HR Admin/Administrator may view them within authorized scope; other employees require separate authorization.
 - No salary Form or response tab is introduced.
+
+
+## R46 — Employee Role vs Designation data rules
+
+- `Employees.Role` is the employee's functional responsibility: what the person does.
+- `Employees.Designation` is the employee's company level/position.
+- Both are required employee-master attributes.
+- Do not populate `Role` with authorization labels solely to represent system access.
+- Do not treat `Designation` as an access-control field.
+- Phase 4 authorization must be evaluated independently of Role and Designation.
+- HR Report may show both fields when the requester is authorized to see the employee profile.
