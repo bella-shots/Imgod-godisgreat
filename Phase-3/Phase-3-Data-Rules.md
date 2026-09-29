@@ -404,3 +404,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41 — Frozen Finance Report data rules
+Finance Report uses only the existing Finance schemas and authorization model. FRM-06 Period is YYYY-MM-DD to YYYY-MM-DD, inclusive. Use Budget_Given.Date, Employee_Spending.Date, OOP_Claims.Date, Salary_Admin.Month, and applicable Investments.Taken_Date / Actual_Return_Date. Unauthorized categories, records, and fields are omitted. Standard output uses authorized aggregates rather than unrestricted employee-level or investment-level rows. Salary/Payroll is role-restricted; Manager does not automatically receive it. Investments are not granted merely by HR Admin role. Proof/attachment URLs are not report output.
+
+## R42 — Frozen HR Report data rules
+HR Report uses only Employees and HR_Admin. Use Employees.Joining_Date for joiner activity, HR_Admin.Submitted_At for submitted-request activity, and Processed_At with Status = Completed for completion activity. Current employee counts/status counts remain current snapshots because no employee-history table exists. Salary_Basis, HR_Notes, attachments, and restricted employee-level records are not exposed merely by requesting HR Report. Authorization is resolved before record selection.
