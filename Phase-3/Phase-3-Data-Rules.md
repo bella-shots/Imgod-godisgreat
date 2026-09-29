@@ -39,7 +39,7 @@ Approved controlled values include:
 - Access Levels: Viewer, Editor, Admin
 - Employment Status: Probation, Full-Time, Notice Period, Relieved
 - Reimbursement Settings: Standard, Executive, Contractor-Direct
-- Finance Status: Submitted, Approved, Rejected, Reimbursed, Partially Reconciled
+- Finance status values are table-specific and must be defined locally in the authoritative table. For `Employee_Spending`: Submitted, Approved, Rejected, Reimbursed. For `OOP_Claims`: Submitted, Pending Review, Approved, Rejected, Paid. For `Salary_Admin`: Pending, Partial, Paid, Carry-Forward. For `Investments`: Active, Returned, Rolled Over, Defaulted. `Budget_Given.Status` is automatically calculated and uses exactly: Pending Return, Fully Returned, No Return Required.
 - Report Types: Company Summary, Project Report, Finance Report, HR Report
 
 Where the same controlled value is used in multiple workbooks, the approved literal values are repeated locally; no second authoritative business record is created.
@@ -523,3 +523,41 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - Do not treat `Designation` as an access-control field.
 - Phase 4 authorization must be evaluated independently of Role and Designation.
 - HR Report may show both fields when the requester is authorized to see the employee profile.
+
+
+## D3-25 — Budget_Given spending and return tracking
+
+`Budget_Given` uses a simple two-stage money-flow model: spending determines the amount that must be returned; actual returns determine the remaining return obligation.
+
+### Authoritative fields
+
+- `Amount Given INR`: total amount originally provided.
+- `Used Amount INR`: amount actually spent/used.
+- `To Be Returned INR`: native Sheet-calculated amount equal to `MAX(0, Amount Given INR - Used Amount INR)`.
+- `Returned Amount INR`: amount actually returned to the company.
+- `Pending Return Amount INR`: native Sheet-calculated amount equal to `MAX(0, To Be Returned INR - Returned Amount INR)`.
+- `Status`: native Sheet-calculated state, not a manually selected dropdown.
+
+### Status rules
+
+- If `Pending Return Amount INR > 0`, even by ₹1, Status = `Pending Return`.
+- If `Pending Return Amount INR = 0` and `To Be Returned INR > 0`, Status = `Fully Returned`.
+- If `To Be Returned INR = 0`, Status = `No Return Required`.
+
+Therefore:
+- ₹50,000 given, ₹0 used → To Be Returned = ₹50,000; until returned, Pending Return = ₹50,000 and Status = Pending Return.
+- ₹50,000 given, ₹20,000 used → To Be Returned = ₹30,000.
+- If ₹10,000 of that ₹30,000 is returned → Pending Return = ₹20,000; Status remains Pending Return.
+- If the remaining ₹20,000 is returned → Pending Return = ₹0; Status = Fully Returned.
+- ₹50,000 given and ₹50,000 used → To Be Returned = ₹0; Status = No Return Required.
+
+### Validation / integrity rules
+
+- `Used Amount INR` must be numeric and non-negative, and must not exceed `Amount Given INR`.
+- `Returned Amount INR` must be numeric and non-negative, and must not exceed `To Be Returned INR`.
+- Calculated amounts must never be negative.
+- A pending amount of even ₹1 means Status remains `Pending Return`.
+- `Recipient Email / Name` accepts either a legitimate name or an email address; it must not be configured as email-only validation.
+- `Status` must not be manually edited; it is derived from the calculated return state.
+- This model replaces the previous accounting terminology `Disbursed`, `Partially Reconciled`, `Reconciled`, and `Returned` for `Budget_Given`.
+- These calculations are native Sheet logic defined in Phase 3. They do not introduce Apps Script, cross-workbook lookups, or Phase 4 processing.
