@@ -37,3 +37,12 @@ This preserves the R21 rule while preventing stale hard-coded Form choices. No l
 ### R23 — Salary is recurring payroll, not a monthly Form
 
 FRM-08 / `Salary_Responses` is removed from the Phase 3 Form architecture. `Employees.Salary_Basis` stores the agreed **6-month CTC/stipend**. Phase 4 derives monthly salary for each applicable active employee and creates the monthly `SAL-XXX` record in `Salary_Admin`. HR/Finance does not fill a salary Form for every employee every month. `Salary_Admin` is the authoritative payroll ledger and no `Salary_Responses` tab is created.
+
+
+### R25 — FRM-02 Employee Email ID and alternate-login handling
+
+FRM-02 respondent-facing employee identity is now explicitly **Employee Email ID** (required), rather than Employee_ID or an ambiguous generic employee-identity label.
+
+Phase 4 resolves the submitted Employee Email ID against authoritative Employees.Email to obtain Employee_ID.
+
+If the respondent is signed into Google Forms with a different email address, the signed-in address is retained only as submission/audit metadata where platform capture is enabled. It must not override the explicit Employee Email ID. A mismatch must not be silently mapped to another employee; Phase 4 places the submission into validation failure/manual review or the defined correction workflow before authoritative transfer.
