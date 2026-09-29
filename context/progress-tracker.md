@@ -129,3 +129,14 @@ Do not mark a phase complete because documentation exists. Completion requires o
 - Download uses the same authorized report result and cannot expose more data than the displayed report.
 - Raw source workbooks are not report outputs.
 - Exact download format remains a Phase 4 implementation detail.
+
+
+## R32 — Current reporting contract
+
+- **Status:** FROZEN FOR PHASE 4 IMPLEMENTATION
+- All FRM-06 report types must be generated as authorized human-readable reports.
+- Reports are displayed directly in the system; users are not required to download to view them.
+- Each displayed report provides a user-initiated Download Report action.
+- Download uses the same authorized report result and cannot expose more data than the displayed report.
+- Raw source workbooks are not report outputs.
+- Exact download format remains a Phase 4 implementation detail.
