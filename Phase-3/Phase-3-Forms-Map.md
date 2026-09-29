@@ -70,3 +70,31 @@ Request Type must use exactly these nine controlled values:
 9. Other
 
 Do not add Employee_ID, HR_Request_ID, Status, Submitted_At, Processed_At, or Processed_By to the Form. Phase 4 resolves Employee Email ID to canonical Employee_ID and creates/updates the HR workflow record.
+
+
+### R27 — FRM-06 Report Request field lock
+
+FRM-06 respondent-facing fields are locked as follows:
+
+| Field | Type | Required |
+|---|---|---|
+| Report Type | Multiple choice | Yes |
+| Period | Short answer | Yes |
+| Project Name | Short answer | Conditional / only when a project-specific report is requested |
+| Recipient Email | Short answer | Yes |
+
+Report Type must use exactly these four approved Report_Index.Report_Type values:
+1. Executive Summary
+2. Project Status
+3. Finance Audit
+4. HR Rollup
+
+Period is a text reporting period such as 2026-09 or 2026-Q3; it is not a Date question.
+
+Project Name is a human-facing free-text input. Do not ask for Project_ID, do not hard-code a project-name choice list, and do not create a lookup/configuration tab. Phase 4 resolves the supplied Project Name to canonical Project_ID when applicable.
+
+Recipient Email is required because the Forms Map explicitly requires FRM-06 to capture recipient email for Phase 4 report delivery/distribution.
+
+Do not ask respondents for Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4/system fields.
+
+The native response destination remains Report_Requests_Responses in MASTER_COMPANY_ADMIN; Report_Index remains the authoritative catalog.
