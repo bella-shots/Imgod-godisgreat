@@ -602,3 +602,16 @@ Before implementing FRM-06 Finance Report generation, Phase 4 must treat R41 as 
 ## R42 — HR Report implementation status
 HR Report is still draft and must not be implemented as a final frozen contract until separately approved by the user. Do not infer approval from prior draft text.
 
+## R43 — Finance Report OOP Claims presentation correction
+For the Finance Report OOP Claims section, display:
+- Claim Date
+- Purpose
+- Project
+- Claimed Amount
+- Approved Amount
+- Status
+- Paid Date when applicable
+
+Do **not** display `OOP_Claims.Month` in the user-facing report. It remains in the authoritative `OOP_Claims` source schema for internal processing/reconciliation and must remain consistent with `OOP_Claims.Date`.
+
+R43 is a presentation correction only. It does not change FRM-06 fields, workbook schemas, period filtering, authorization, or the Phase 4 boundary.
