@@ -141,3 +141,127 @@ The current FRM-06 **Project Name** field is explicitly **case-sensitive**. When
 Phase 4 must resolve the submitted Project Name using an exact match against Projects.Project_Name. No case-insensitive, fuzzy, trimmed, normalized, or approximate match may silently select a different project. Do not ask for or enter Project_ID, and do not provide a hard-coded project-name choice list in FRM-06.
 
 This revision clarifies the existing human-facing Project Name rule and does not change the four-field FRM-06 structure, report types, workbook schemas, authorization boundary, or Phase 4 ownership of identity resolution.
+
+### R37 — Company Summary report definition is frozen
+
+**Date:** 2026-09-29
+
+**Purpose:** Freeze exactly what FRM-06 **Company Summary** displays and what the user can download.
+
+#### 1. Report Header
+Show:
+- Report Title: Company Summary
+- Reporting Period: exact FRM-06 Period value
+- Generated Date
+- Requested By: authorized employee identity resolved from Employee Email ID
+
+Do not expose Report_ID, Submission_ID, canonical Employee_ID, or source-workbook URLs in the ordinary user-facing report.
+
+#### 2. Executive Company Snapshot / Projects & Operations
+Show:
+- Total projects currently registered in Projects.
+- Current project count by Status: Draft, Active, On Hold, Completed, Cancelled.
+- Projects created during the requested period, using Projects.Created_At.
+- Projects with Start_Date in the requested period.
+- Projects with Event_Date in the requested period.
+- Published/revised MOM count for the period, using Project_MOM_Index.Meeting_Date and reportable status.
+- Published project-note count for the period, using Project_Notes.Date with Status = Published.
+
+**Historical-status rule:** Projects.Status is a current master field and Phase 3 has no status-history table. Therefore current Status counts are a **current snapshot**, not a reconstruction of the selected period. The report must never claim otherwise.
+
+#### 3. Finance Summary — authorization controlled
+Only show Finance categories already authorized for the requester.
+
+**Budget Given:** record count; total Amount; count/amount by Status, using Budget_Given.Date for period filtering.
+
+**Employee Spending:** record count; total Amount; count/amount by Status, using Employee_Spending.Date.
+
+**OOP Claims:** record count; total claimed Amount; total Approved_Amount; count/amount by Status; paid amount where determinable from the authoritative schema and Status = Paid, using OOP_Claims.Date.
+
+**Salary / Payroll:** only for roles already authorized for salary/payroll. Show period Due_Amount, Paid_Amount, Pending_Carry_Forward totals; payroll record count; Status breakdown. Do not expose employee-level salary rows unless separately authorized.
+
+**Investments:** only for roles already authorized for investment information. Show period-relevant record count, total Amount, and Status breakdown. Do not expose Source_Person, Notes, or individual rows in the standard Company Summary unless separately authorized.
+
+Unauthorized Finance categories are omitted; they are never substituted with unrestricted source data.
+
+#### 4. HR Summary — authorization controlled
+Only show HR information within the requester's existing authorization.
+
+**Employee snapshot:**
+- Current Active employee count.
+- Current employee count by Employment_Status.
+- Current employee count by approved Role where role-level aggregates are authorized.
+- Employees whose Joining_Date falls within the requested period.
+- Reimbursement-eligible employee count where authorized.
+
+**HR workflow activity:**
+- HR requests submitted during the period using HR_Admin.Submitted_At.
+- Request count by Request_Type.
+- Request count by Status.
+- Completed HR requests during the period using Processed_At and Status = Completed.
+
+Never expose Salary_Basis, HR_Notes, employee-level confidential HR records, attachments, or other restricted fields merely because Company Summary was selected.
+
+#### 5. Required presentation order
+1. Report Header
+2. Executive Company Snapshot
+3. Projects & Operations
+4. Finance Summary — authorized categories only
+5. HR Summary — authorized categories only
+6. Period Activity / Key Counts
+7. Access Notice
+
+Access Notice: the report contains only information permitted by the requester's existing authorization scope.
+
+Unauthorized sections/categories are omitted rather than shown as empty restricted placeholders.
+
+#### 6. What Company Summary must NOT contain
+- Raw workbook tabs or workbook exports.
+- Unrestricted employee-level Finance or HR records.
+- Unauthorized Salary_Basis.
+- HR_Notes.
+- Unauthorized individual salary records.
+- Unauthorized individual investment records.
+- Drive proof/attachment URLs.
+- Internal processing fields.
+- Invented fields absent from the authoritative Phase 3 schemas.
+
+#### 7. Period rules
+- Monthly YYYY-MM: applicable dated activity within that calendar month.
+- Quarterly YYYY-QN: applicable dated activity within that calendar quarter.
+- Projects.Created_At = project creation activity.
+- Projects.Start_Date = project-start activity.
+- Projects.Event_Date = event/delivery-date activity.
+- Project_MOM_Index.Meeting_Date = MOM activity.
+- Project_Notes.Date = note activity.
+- Budget_Given.Date = Budget Given activity.
+- Employee_Spending.Date = Employee Spending activity.
+- OOP_Claims.Date = OOP activity; OOP_Claims.Month remains authoritative and must be consistent with the claim date.
+- Salary_Admin.Month = payroll activity.
+- Investments.Taken_Date and Actual_Return_Date = applicable investment activity.
+- HR_Admin.Submitted_At = HR-request activity; Processed_At = processing/completion activity.
+- Employees.Joining_Date = joiner activity. Current employee snapshot counts are not retroactively reconstructed for past periods because no employee-history table exists.
+
+#### 8. View + Download
+After generation, Company Summary must be viewable directly in the system and provide **Download Report**.
+
+The downloaded report must contain the **same authorized content and values shown on screen**. It must not add rows, fields, hidden data, workbook tabs, or unrestricted source information.
+
+Exact download file format remains a Phase 4 implementation choice under R32. PDF is permitted and fits the existing Report_Index.Drive_URL cataloguing model.
+
+#### 9. Authorization invariant
+Company Summary is a reporting view, not an authorization mechanism.
+
+Phase 4 must:
+1. resolve requester from Employee Email ID;
+2. determine authoritative employee record and role;
+3. determine authorized data scope;
+4. select only permitted source records/fields;
+5. calculate the report from that authorized dataset;
+6. display the authorized result;
+7. generate the download from that same authorized result; and
+8. register the generated report in Report_Index.
+
+No report request, Period, Project Name, or download action may expand permissions.
+
+**R37 closes the previously undefined Company Summary content. It does not change the FRM-06 respondent-facing fields, workbook schemas, R32 View + Download contract, R29 Finance authorization, R31 HR authorization, or Phase 4 ownership of implementation.**
