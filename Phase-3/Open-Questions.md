@@ -21,7 +21,7 @@
 | Q12 | What controlled values should FRM-04 Request Type use? | Nine locked values: Personal Information Update; Bank / Payment Details Update; Leave / Attendance Request; Employment / HR Document Request; Salary / Payroll Query; Reimbursement / Benefits Query; Project / Role Update; Resignation / Exit Request; Other. | Prevents the Form builder from inventing categories and defines the HR workflow taxonomy. | 29-Sep | Medium | Resolved |
 
 
-| Q13 | What exact respondent-facing fields should FRM-06 use? | Report Type (4 locked values), Period (text), conditional Project Name (free text), Recipient Email (required). | Prevents the Form builder from inventing fields or exposing internal report/workflow columns. | 29-Sep | Medium | Resolved |
+| Q13 | What exact respondent-facing fields should FRM-06 use? | Employee Email ID (required), Report Type (4 locked values), Period (required text), conditional Project Name (free text). Recipient Email is not used. | Prevents the Form builder from inventing fields or exposing internal report/workflow columns. | 29-Sep | Medium | Resolved |
 
 
 | Q14 | What should Finance Report return and who may receive it? | Finance Report is a permission-controlled consolidated report. Budget Given, Employee Spending, OOP Claims, authorized Salary/Payroll, authorized Investments, authorized financial totals and authorized project-wise financial information may be included according to requester role/designation and scope. Recipient selection is role-controlled and cannot bypass permissions. | Prevents a report request from exposing restricted salary, investment or other employee financial records. | 29-Sep | Critical | Resolved |
