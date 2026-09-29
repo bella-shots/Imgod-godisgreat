@@ -30,3 +30,5 @@
 
 
 | R27 | Running Change — resolved the previously underspecified FRM-06 respondent-facing field definition. Locked Report Type (required multiple choice with four approved values), Period (required short answer), conditional human-facing Project Name (short answer), and required Recipient Email. Explicitly excluded internal report/workflow fields and kept Project Name resolution/report compilation in Phase 4. Updated the Phase 3 schema, Forms map, data rules, acceptance gate, execution prompt, playbook alignment, open questions and progress tracking. No workbook partition, Phase boundary, or Phase 4 automation was changed. |
+
+| R28 | Simplified the FRM-06 Report Type labels for ordinary users. Replaced the formal labels with: Company Summary, Project Report, Finance Report, HR Report. Updated the Phase 3 Forms Map, Schema Blueprint, Data Rules, Acceptance, Prompt-005, Playbook Alignment, Open Questions and progress tracking. The four report categories remain unchanged in meaning; only respondent-facing names were simplified. |
