@@ -366,3 +366,31 @@ For the Phase 3 human-instantiation of FRM-06, use this exact respondent-facing 
 Do not expose Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or Phase 4 processing fields to respondents.
 
 Report_Requests_Responses remains the native intake destination in MASTER_COMPANY_ADMIN; Report_Index remains the authoritative report catalog.
+
+
+### R29 — Finance Report definition and role-based access
+
+Finance Report is a consolidated report of company financial activity for the requested Period, subject to the requester's authorization. It is **not** an unrestricted export of MASTER_COMPANY_FINANCE.
+
+The Phase 4 report compiler must first identify the requester and determine the requester's approved role/designation and data scope. It must then determine the permitted recipient scope and permitted fields before reading/selecting Finance records for the report.
+
+Approved role-based scope for the Finance Report:
+- Team Member / Contractor: self-only employee-linked finance records.
+- Project Lead: employee-linked finance records within authorized project scope, where permitted.
+- Manager: employee-linked finance records within the manager's authorized management/data scope. Manager status alone does not grant restricted salary/payroll or investment access.
+- Finance Admin: company-wide Finance data permitted to Finance Admin, including restricted Finance categories.
+- HR Admin: salary/payroll information where HR authorization permits; Finance investment information is not granted merely by HR role.
+- Administrator / Site Admin: company-wide data within the administrator's authorized scope.
+
+The Finance Report can include these categories, filtered by authorization and period:
+- **Budget Given:** Date, Recipient, Amount, Purpose, Project, Status.
+- **Employee Spending:** Employee/recipient, Date, Amount, Vendor, Purpose, Project, Status.
+- **OOP Claims:** Employee/recipient, Month/Date, Amount, Purpose, Project, Status, Approved Amount, Paid Date.
+- **Salary / Payroll:** only for roles explicitly authorized to access salary/payroll data.
+- **Investments:** only for roles explicitly authorized to access investment data.
+- **Financial totals/aggregations:** calculated only from authorized records/fields.
+- **Project-wise financial information:** only for an authorized project scope.
+
+Recipient must never be an unrestricted free-text mechanism for bypassing access control. Phase 4 must derive/validate recipient options from the requester's role/designation and authorized scope. Manually entering another employee's email/name must not grant access to that employee's restricted data.
+
+A report request grants no new permission. The requester can receive only data that the requester was already authorized to access through the company's access model.
