@@ -22,7 +22,7 @@
 | Focused correction / HR request taxonomy | R26 locks FRM-04 Request Type to nine controlled values and defines the exact respondent-facing field set, eliminating the previously unspecified controlled-value gap. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log; progress-tracker | Prevents implementation agents from inventing HR request categories and keeps the Form/workflow boundary explicit. | Applied |
 
 
-| Focused correction / FRM-06 report-request field lock | R27 locks the respondent-facing FRM-06 fields to Report Type, Period, conditional Project Name and Recipient Email, with exact report-type values and no internal/Phase 4 fields. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log; progress-tracker | Prevents the Form builder from inventing report categories, identity fields or workflow fields and keeps report compilation in Phase 4. | Applied |
+| Focused correction / FRM-06 report-request field lock | R35 supersedes the historical R27/R34 field lock. Current FRM-06 fields are Employee Email ID, Report Type, Period, and conditional Project Name; Recipient Email is removed. | Phase-3-Schema-Blueprint; Phase-3-Forms-Map; Phase-3-Data-Rules; Phase-3-Acceptance; Prompt-005; Revision-Log; progress-tracker | Prevents the Form builder from inventing report categories, identity fields or workflow fields and keeps report compilation in Phase 4. | Applied |
 
 
 ### R29 — Finance Report security alignment
