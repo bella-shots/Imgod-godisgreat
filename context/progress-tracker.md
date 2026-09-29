@@ -315,3 +315,12 @@ No report request, Period, Project Name, or download action may expand permissio
 The redundant standalone “Period Activity / Key Counts” section has been removed. Period-specific information remains embedded in the relevant Projects & Operations, Finance Summary, and HR Summary sections.
 
 R38 does not advance Phase 3 to Phase 4. Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED.
+
+
+## R39 session note — Project Report frozen
+- Project Report is now fully defined and frozen for Phase 4.
+- Frozen output order: Report Header; Project Overview; Project Team; Project Activity & Documentation; Project Finance Summary; Access Notice.
+- Project Report uses only existing Phase-3 schemas and existing authorization.
+- Project Name exact case-sensitive resolution remains mandatory.
+- Project Report does not grant project/Finance/HR permissions.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Finance Report and HR Report are not being finalized in R39.
