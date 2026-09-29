@@ -80,3 +80,18 @@ Rationale: a hard-coded Form choice list can become stale and would incorrectly 
 For FRM-02, the respondent-facing employee field is **Employee Email ID** and is required. The value is resolved against Employees.Email to obtain the canonical Employee_ID.
 
 If Google Forms captures a signed-in respondent email and it differs from the submitted Employee Email ID, the captured login email is audit metadata only and must not override the explicit Employee Email ID. Phase 4 must not guess or silently substitute an employee. The submission must enter validation failure/manual review or the defined correction workflow before an authoritative Employee_Spending record is created.
+
+### D3-20 — FRM-04 Request Type controlled values
+
+FRM-04 Request_Type is a controlled Form value. The approved literal values are:
+- Personal Information Update
+- Bank / Payment Details Update
+- Leave / Attendance Request
+- Employment / HR Document Request
+- Salary / Payroll Query
+- Reimbursement / Benefits Query
+- Project / Role Update
+- Resignation / Exit Request
+- Other
+
+The same literals must be used for the HR_Admin Request_Type workflow field. No additional category may be introduced during Phase 3 without a documented specification revision. Other is the catch-all for requests outside the defined categories.
