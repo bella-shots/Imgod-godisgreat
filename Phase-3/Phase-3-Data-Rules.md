@@ -103,7 +103,7 @@ FRM-06 must collect only the report-request data defined by the current R34 Form
 - Employee Email ID: required Short answer used to identify the requester; Phase 4 resolves it against `Employees.Email` to canonical `Employee_ID` and `Role`.
 - Period: required text in reporting-period form such as 2026-09 or 2026-Q3; do not use a full Date field.
 - Project Name: human-facing Short answer, used only when the requested report is project-specific; do not request Project_ID or hard-code current project names.
-- Recipient Email: required Short answer for report delivery/distribution.
+- Project Name: conditional Short answer, only when a project-specific report is requested.
 
 System/catalog fields such as Report_ID, Project_ID, Drive_URL, Status, and Generated_Date remain non-respondent fields. Phase 4 resolves Project Name to canonical Project_ID when applicable and catalogs the generated output in Report_Index.
 
