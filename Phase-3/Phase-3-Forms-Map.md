@@ -20,7 +20,7 @@ The Forms layer must be usable by ordinary respondents. Stable internal IDs rema
 | FRM-03 OOP Claim | Employee identity + Project Name | Resolve to `Employee_ID` and `Project_ID`. |
 | FRM-04 Employee Update / HR Request | Employee identity (prefer respondent email where available) | Resolve to `Employee_ID`. |
 | FRM-05 MOM Input | Project Name | Resolve to `Project_ID`. |
-| FRM-06 Report Request | Project Name when a project-specific report is requested | Resolve to `Project_ID` when supplied. |
+| FRM-06 Report Request | Employee Email ID; Project Name when a project-specific report is requested | Resolve Employee Email ID to `Employee_ID` and authoritative `Role`; resolve Project Name to `Project_ID` when supplied. |
 | FRM-07 Investment Entry | Source Person name/entity | No employee/project foreign-key resolution is required by the authoritative schema. |
  |
 
