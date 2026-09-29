@@ -269,5 +269,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
-## R41/R42 closure — Finance Report and HR Report
-The previously open definition question for Finance Report and HR Report is closed as of 2026-09-29. Content, source tables, period handling, authorization boundary, exclusions, and View + Download behavior are frozen by R41 and R42. Remaining questions are Phase 4 implementation details and must not change the frozen report contract without a new revision.
+## R41 closure — Finance Report
+The Finance Report definition is closed and frozen as of 2026-09-29 following explicit user approval. The frozen seven-section content, source schemas, salary self-access rule, Investment exclusion, period handling, authorization boundary, exclusions, and View + Download behavior are authoritative. Any change requires a new revision and explicit approval.
+
+## R42 — HR Report remains open
+HR Report is **not frozen**. Its content and authorization proposal remains pending user review and explicit approval. No Phase 4 implementation may treat the current HR Report proposal as final.
+
