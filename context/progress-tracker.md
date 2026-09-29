@@ -455,3 +455,11 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 
 ## R45 — Compensation/payroll architecture correction
 The compensation model now supports Monthly and One-Time arrangements. Employees.Payment_Frequency and Salary_Admin.Payment_Frequency are authoritative; Salary_Admin.Month applies to Monthly records, while Payment_Date supports One-Time payments. Employee self-service includes their own Salary_Basis/CTC and Payment_Frequency.
+
+
+## R46 session note
+- Corrected the Employees schema so `Role` means the employee's functional responsibility / what they do.
+- Added `Designation` as the employee's company level/position.
+- HR Report Employee / HR Profile now includes both Role and Designation when authorized.
+- Role and Designation are not authorization/access fields; Phase 4 must not infer permissions from either alone.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
