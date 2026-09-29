@@ -383,3 +383,6 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41/R42 — Report Form impact
+Finance Report and HR Report are frozen without changing FRM-06. The respondent-facing FRM-06 field set remains exactly four fields: Employee Email ID, Report Type, Period, and conditional Project Name. No Finance Report or HR Report question is added. R40 remains the universal Period format: YYYY-MM-DD to YYYY-MM-DD.
