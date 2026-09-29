@@ -317,3 +317,18 @@ This is a focused correction to the R21 human-facing identity rule and applies s
 `Employees.Salary_Basis` is the agreed **6-month CTC/stipend**, not monthly CTC. Monthly payroll is derived from that stored six-month CTC for each applicable active employee during Phase 4.
 
 `Salary_Admin` is the authoritative monthly payroll ledger. HR/Finance must not re-enter every employee's salary through a Form every month. The former FRM-08 / `Salary_Responses` model is removed from Phase 3; no `Salary_Responses` tab is to be created. Phase 4 will generate monthly `SAL-XXX` records and handle due, paid, carry-forward and status values. Exceptional payroll adjustments must be explicitly designed in Phase 4 rather than reintroducing a repetitive monthly salary-entry Form.
+
+
+### R25 — FRM-02 Employee Email ID and alternate-login handling
+
+For **FRM-02 — Employee Spending / Expense**, the respondent-facing employee identity field is explicitly:
+
+- **Employee Email ID** — required human-facing input.
+- Do not ask for or require Employee_ID (for example, EMP-001).
+- The submitted Employee Email ID is resolved in Phase 4 against the authoritative Employees.Email value to obtain the canonical Employee_ID.
+- If Google Forms automatically captures the signed-in respondent email, that platform-captured address may be retained as audit metadata/Submitted_By, but it must **not override** the explicit Employee Email ID field.
+- If the signed-in Google account uses a different email from the Employee Email ID entered by the respondent, Phase 4 must not silently substitute the signed-in email or guess the employee identity.
+- The submission must be held for validation failure/manual review or corrected through the defined workflow before an authoritative Employee_Spending record is written.
+- No additional employee-login/email field is required merely to handle this mismatch.
+
+This is a focused correction to the R21 human-facing identity rule for FRM-02 and does not change the authoritative Employee_Spending.Employee_ID field or the Phase 4 identity-resolution boundary.
