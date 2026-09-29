@@ -385,6 +385,8 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
 
 ## R41 — Finance Report Form impact — frozen
+
+**R43 does not change FRM-06.** The OOP Claims presentation correction is report-output-only; no respondent-facing Form field is added or changed.
 R41 does not change FRM-06. The respondent-facing field set remains exactly four fields: Employee Email ID, Report Type, Period, and conditional Project Name. No Finance Report-specific question is added. R40 remains the universal Period format: `YYYY-MM-DD to YYYY-MM-DD`.
 
 ## R42 — HR Report Form impact — draft / not frozen
