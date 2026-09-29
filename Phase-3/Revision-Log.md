@@ -46,3 +46,12 @@
 - Raw source workbooks are not report outputs.
 - Exact download file format remains a Phase 4 implementation decision; View + Download behavior is frozen now.
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
+
+
+## R32 session note
+- Locked a **global report-delivery contract** for all four FRM-06 report types: Company Summary, Project Report, Finance Report and HR Report.
+- A generated report must be directly **viewable in the system**; downloading is optional and user-initiated through a Download Report action.
+- The downloaded artifact must contain the same authorized report content shown on screen and must never bypass authorization or expose additional source fields/records.
+- Raw source workbooks are not report outputs.
+- Exact download file format remains a Phase 4 implementation decision; View + Download behavior is frozen now.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
