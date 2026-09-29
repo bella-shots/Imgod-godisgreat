@@ -272,6 +272,9 @@ This is a required **Short answer** field, not a Google Forms Date question.
 ## R41 closure — Finance Report
 The Finance Report definition is closed and frozen as of 2026-09-29 following explicit user approval. The frozen seven-section content, source schemas, salary self-access rule, Investment exclusion, period handling, authorization boundary, exclusions, and View + Download behavior are authoritative. Any change requires a new revision and explicit approval.
 
+## R43 — Finance Report OOP Claims presentation correction
+The OOP Claims section must show Claim Date rather than the internal `OOP_Claims.Month` field. `OOP_Claims.Month` remains authoritative in the source schema and is retained for internal processing/reconciliation. No Form field or source schema changes.
+
 ## R42 — HR Report remains open
 HR Report is **not frozen**. Its content and authorization proposal remains pending user review and explicit approval. No Phase 4 implementation may treat the current HR Report proposal as final.
 
