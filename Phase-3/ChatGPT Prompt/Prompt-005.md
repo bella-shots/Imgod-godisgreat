@@ -595,3 +595,6 @@ This is a required **Short answer** field, not a Google Forms Date question.
 **Validation:** Phase 4 must validate the Period format before report generation. Invalid dates, impossible calendar dates, reversed ranges, or malformed separators must fail validation/manual review according to the existing submission workflow.
 
 **No new Form field is added.** The existing FRM-06 Period field is simply standardized to the R40 date-range format.
+
+## R41/R42 — Frozen report implementation contract
+Before implementing FRM-06 report generation, Phase 4 must treat Finance Report (R41) and HR Report (R42) as frozen contracts. Do not invent report fields, add Forms questions, expose unrestricted source workbooks, or broaden authorization. Finance Report uses existing Finance tables and role-based scope; HR Report uses Employees and HR_Admin and role-based scope. Both use the R40 inclusive YYYY-MM-DD to YYYY-MM-DD period and R32 View + Download behavior. Any behavior outside R41/R42 requires a new revision before implementation.
