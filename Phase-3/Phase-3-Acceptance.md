@@ -103,7 +103,7 @@ Verify:
 - Submitted_At is the primary period field for HR request records.
 - Processed_At and Processed_By are included only when populated and authorized.
 - Attachment_URL is exposed only when the requester is authorized to access the underlying document.
-- Salary_Basis and HR_Notes are not exposed to ordinary Team Member/Contractor or unauthorized Project Lead/Manager requesters.
+- Salary_Basis/CTC is visible to the employee for their own record; HR Admin/Administrator may access it within authorized scope; HR_Notes remain restricted from ordinary Team Member/Contractor and unauthorized Project Lead/Manager requesters.
 - Team Member/Contractor requests return only the requester's own authorized HR information.
 - Project Lead/Manager requests are limited to explicitly authorized scope.
 - HR Admin and Administrator/Site Admin receive only the company-wide fields permitted by their authorization.
@@ -401,7 +401,7 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
    - Employment_Status
    - Reimbursement_Settings, only where authorized
    - Created_At, only where authorized
-   - Salary_Basis only where the requester is explicitly authorized
+   - Salary_Basis — the employee's own agreed compensation basis/CTC may be shown to that employee; HR Admin/Administrator may view it within authorized scope; other employees require separate authorization
    - HR_Notes only for explicitly authorized HR/Admin users; not ordinary employee/manager report content
 
 3. **HR Requests**
