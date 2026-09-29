@@ -178,3 +178,12 @@ There is no respondent-facing Recipient Email field. Reports are displayed in th
 Do not add respondent-facing Employee_ID, Designation/Role, Report_ID, Project_ID, Drive_URL, Status, Generated_Date, Submission_ID, or other Phase 4 processing fields.
 
 This revision changes the FRM-06 respondent-facing field count from five to four. It does not change the authoritative workbook schemas, Report_Index schema, report types, or the Phase 4 authorization boundary.
+
+
+## R36 session note
+
+- Added an explicit **CAUTION — CASE-SENSITIVE** rule for FRM-06 Project Name.
+- The respondent must enter the project name exactly as it appears in authoritative Projects.Project_Name, including capitalization, spaces, spelling, and punctuation.
+- Phase 4 must require an exact match for Project Name resolution; no silent case-insensitive, fuzzy, trimmed, normalized, or approximate project selection is permitted.
+- FRM-06 remains four respondent-facing fields: Employee Email ID, Report Type, Period, and conditional Project Name.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked.
