@@ -55,3 +55,12 @@ The Phase 3 contract now requires the Phase 4 Apps Script reporting layer to tre
 For every FRM-06 report type, Phase 4 must implement: authorization → report generation → in-system display → user-initiated download of the same authorized report.
 
 The implementation must not create separate weaker/stronger authorization paths for View and Download. The exact download format is intentionally left open for Phase 4 unless separately approved.
+
+
+## R32 — Required Phase 4 reporting behavior
+
+The Phase 3 contract now requires the Phase 4 Apps Script reporting layer to treat reports as **generated presentation outputs**, not raw Sheet exports.
+
+For every FRM-06 report type, Phase 4 must implement: authorization → report generation → in-system display → user-initiated download of the same authorized report.
+
+The implementation must not create separate weaker/stronger authorization paths for View and Download. The exact download format is intentionally left open for Phase 4 unless separately approved.
