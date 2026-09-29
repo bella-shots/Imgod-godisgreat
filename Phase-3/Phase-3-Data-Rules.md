@@ -499,3 +499,14 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - No report request, Period, Project Name or download action can expand permissions.
 
 **R44 is frozen. Phase 4 may implement the HR Report only according to this contract. Further changes require a new revision and explicit approval.**
+
+## R45 — Compensation and payroll architecture correction
+- Employees.Salary_Basis remains the agreed compensation basis; for standard employees this is the agreed 6-month CTC/stipend.
+- Employees.Payment_Frequency uses only Monthly or One-Time.
+- Salary_Admin.Payment_Frequency identifies the arrangement for each compensation record.
+- Salary_Admin.Month is required for Monthly records and blank for One-Time records.
+- Salary_Admin.Payment_Date is required for One-Time records and records the payment date when applicable.
+- Monthly arrangements generate recurring payroll records; One-Time arrangements generate a single compensation/payment obligation.
+- One-Time compensation must not be represented as artificial monthly payroll.
+- Employees may view their own Salary_Basis/CTC and Payment_Frequency. HR Admin/Administrator may view them within authorized scope; other employees require separate authorization.
+- No salary Form or response tab is introduced.
