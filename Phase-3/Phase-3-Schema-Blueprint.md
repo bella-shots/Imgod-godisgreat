@@ -60,23 +60,24 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 
 ### Tab 2: `Employees` (Unified Employee + HR Master Data)
 - **Workbook:** `MASTER_COMPANY_HR_ADMIN`
-- **Purpose:** Single authoritative employee and people/HR master record. Employee identity, employment status, HR attributes, reimbursement eligibility and project-access baseline are kept together here to avoid splitting one person's master record across `Employees` and `HR_Admin`.
+- **Purpose:** Single authoritative employee and people/HR master record. Employee identity, functional role, company designation/level, employment status, HR attributes, reimbursement eligibility and project-access baseline are kept together here to avoid splitting one person's master record across `Employees` and `HR_Admin`.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
   1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. Required)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
-  4. `Role` (Dropdown: `Administrator`, `Finance Admin`, `HR Admin`, `Manager`, `Project Lead`, `Team Member`, `Contractor`. Apply these approved values locally.)
-  5. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed compensation basis; for standard employees this is the agreed 6-month CTC/stipend)
-  6. `Payment_Frequency` (Dropdown: `Monthly`, `One-Time`, Required)
-  7. `Active` (Boolean: `TRUE` / `FALSE`, Required)
-  8. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
-  9. `Project_Access` (Text, Comma-delimited `Project_ID` values or role tag)
-  10. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
-  11. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
-  12. `HR_Notes` (Text, Confidential internal notes)
-  13. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
-  14. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
+  4. `Role` (Text/controlled functional value, Required; describes **what the employee does / their functional responsibility**, e.g., ADAS Test Engineer, Finance Executive, HR Executive, Developer, Project Manager. It is **not** the employee's company level and is **not** the authorization/access role.)
+  5. `Designation` (Text/controlled company-level value, Required; describes the employee's **level/position in the company**, e.g., Intern, Executive, Senior Executive, Lead, Manager, Senior Manager, Director. It is distinct from `Role`.)
+  6. `Salary_Basis` (Currency INR, Format: `₹#,##0.00`, Agreed compensation basis; for standard employees this is the agreed 6-month CTC/stipend)
+  7. `Payment_Frequency` (Dropdown: `Monthly`, `One-Time`, Required)
+  8. `Active` (Boolean: `TRUE` / `FALSE`, Required)
+  9. `Reimbursement_Eligible` (Boolean: `TRUE` / `FALSE`, Required)
+  10. `Project_Access` (Text, Comma-delimited `Project_ID` values or approved access scope)
+  11. `Joining_Date` (Date, Format: `YYYY-MM-DD`, Required)
+  12. `Employment_Status` (Dropdown: `Probation`, `Full-Time`, `Notice Period`, `Relieved`)
+  13. `HR_Notes` (Text, Confidential internal notes)
+  14. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
+  15. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
 
 ### Tab 3: `Project_Members` (Projects Mapping)
 - **Workbook:** `MASTER_COMPANY_OPERATIONS`
@@ -912,7 +913,8 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
    - Employee_ID
    - Name
    - Email
-   - Role
+   - Role — functional responsibility / what the employee does
+   - Designation — company level/position
    - Active
    - Reimbursement_Eligible
    - Project_Access, only where authorized
@@ -953,11 +955,13 @@ HR Report is now explicitly reviewed, defined and approved as a frozen Phase-3 c
 - Current employee fields such as Active and Employment_Status are current snapshots; the report does not reconstruct historical employee status because no status-history table exists.
 
 ### Authorization
+- Authorization/access classification is separate from the employee's functional `Role` and company-level `Designation`.
 - Team Member / Contractor: own authorized employee profile information and own HR requests only.
-- Project Lead: only explicitly authorized project/scope information and permitted fields; role alone does not grant salary/CTC, HR Notes or unrestricted HR access.
-- Manager: authorized management scope only; role alone does not grant unrestricted salary/CTC, HR Notes or all employee records.
-- HR Admin: authorized company-wide HR information, including HR workflow records and restricted fields where the HR role permits them.
+- Project Lead: only explicitly authorized project/scope information and permitted fields; functional Role or Designation alone does not grant salary/CTC, HR Notes or unrestricted HR access.
+- Manager: authorized management scope only; functional Role or Designation alone does not grant unrestricted salary/CTC, HR Notes or all employee records.
+- HR Admin: authorized company-wide HR information, including HR workflow records and restricted fields where the authorization policy permits them.
 - Administrator / Site Admin: company-wide information within administrator authorization.
+- Phase 4 must not infer authorization from `Employees.Role` or `Employees.Designation` alone.
 - Requester identity is resolved from the submitted Employee Email ID and authenticated account context; supplying another employee's email/name cannot expand access.
 - Selecting HR Report cannot grant or expand permissions.
 - The report is a permission-controlled HR report, not an export of MASTER_COMPANY_HR_ADMIN.
@@ -988,3 +992,17 @@ The compensation model now supports both recurring monthly compensation and one-
 - An employee may view their own Salary_Basis/CTC and Payment_Frequency; HR Admin/Administrator may view them within authorized scope; other employees require separate authorization.
 
 R45 changes the Phase-3 compensation schema and supersedes the monthly-only assumptions in R23. No salary Form or response tab is introduced.
+
+
+## R46 — Employee Role vs Designation correction
+
+**Date:** 2026-09-29
+
+The employee master now distinguishes **functional Role** from **company Designation/level**.
+
+- `Employees.Role` means **what the employee does / their functional responsibility**. It must not be populated with permission labels such as Administrator, HR Admin, Manager, Team Member, or Contractor merely to represent access.
+- `Employees.Designation` means the employee's **level/position in the company hierarchy**, such as Intern, Executive, Senior Executive, Lead, Manager, Senior Manager, or Director.
+- `Role` and `Designation` are separate authoritative employee attributes and both are included in the Employees master and HR Report profile.
+- Authorization/access is a separate concern. Phase 4 must not infer authorization from Role or Designation alone.
+- R44's HR Report profile is corrected accordingly: both Role and Designation are displayed subject to the same existing authorization scope; neither field grants access to restricted HR, salary, finance, or administrative information.
+- No new Form field is added. No salary Form/response tab is introduced.
