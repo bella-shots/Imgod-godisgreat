@@ -17,3 +17,12 @@
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - For Project_Members, Project_Notes, Budget_Given and Salary_Admin, ID generation is explicitly user/system initiated through the designated Generate-ID control. Generic onEdit/autosave events must never issue a business ID. The generator validates the pending row, serializes issuance with LockService, writes the ID, locks the ID field, and only then permits commit/save. Salary supports controlled bulk generation for validated payroll imports/entries. Employee_ID retains its frozen dedicated workflow.
+
+
+## R54 — Form attachment Drive routing business rules
+- FRM-02 Employee Spending and FRM-03 OOP Claims proofs/receipts are project-linked files and must be routed to the exact existing Phase 1 project subfolder '03_Expenses'.
+- FRM-04 HR supporting documents must be routed to the existing 'MASTER COMPANY/HR' folder; do not invent employee-specific subfolders.
+- FRM-05 has no file-upload field. MOM artifacts are stored in the existing project '04_MOM' subfolder and the resulting URL is recorded in Project_MOM_Index.Drive_URL.
+- Routing uses the exact human-facing Project Name to resolve the canonical project and its Drive folder; it must not guess a project.
+- Destination-folder permissions remain authoritative. No public sharing or permission broadening is allowed.
+- Routing must be idempotent; retries must not create duplicate business copies.
