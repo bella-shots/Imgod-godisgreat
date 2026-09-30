@@ -22,3 +22,14 @@
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - A4-14 — Explicit Generate-ID controls for Sheet-originated records: implement controlled Generate-ID actions for Project Member, Project Note, Budget and Salary records. The action validates the pending record, invokes A4-00, writes the generated ID, locks the ID field, and enables/permits commit only after successful generation. Salary must support controlled bulk generation for validated payroll imports/entries. Do not use generic row-edit/autosave triggers to generate these IDs. Employee_ID remains on its dedicated Generate Employee ID workflow. Submission_ID remains system/index-generated.
+
+
+## R54 — Form attachment Drive routing
+- **Project-linked receipts/proofs:** FRM-02 Employee Spending and FRM-03 OOP Claims attachments are routed to the exact Phase 1 project folder path 'MASTER COMPANY/Projects/PROJECT_<ProjectName>/03_Expenses'. Phase 4 must resolve the human-facing Project Name to the canonical Project_ID, locate the authoritative project folder, and move the uploaded file from the Form upload location into '03_Expenses'.
+- **HR supporting documents:** FRM-04 attachments are routed to 'MASTER COMPANY/HR'. No employee-specific HR subfolder is invented unless a future approved Phase 1/Phase 3 revision creates one.
+- **MOM artifacts:** FRM-05 has no file-upload question. The MOM processing module creates/updates the approved MOM artifact in 'MASTER COMPANY/Projects/PROJECT_<ProjectName>/04_MOM' and records the resulting Drive URL in Project_MOM_Index.Drive_URL.
+- **Forms without attachments:** FRM-01 Projects, FRM-06 Report Requests and FRM-07 Investment Input do not receive an attachment-routing workflow because their current respondent-facing schemas contain no file-upload field.
+- **Move vs copy:** the processed file is moved to the authoritative destination; do not leave duplicate business copies in the Form upload location unless Google Forms/platform behavior requires a retained source reference. The authoritative record stores the final destination URL/reference.
+- **Access boundary:** Drive permissions of the destination folder govern access. Automation must never make an attachment public or broaden access to restricted Finance/HR material.
+- **Idempotency:** retries must detect an already-routed file/record and must not create duplicate destination copies.
+- **Failure:** if the destination project/folder cannot be resolved or the file cannot be moved, preserve the source submission, mark processing as failed/pending, retain the original uploaded-file reference for controlled retry, and do not mark the authoritative business record as successfully processed.
