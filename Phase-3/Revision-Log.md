@@ -462,3 +462,9 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 - Canonical employee references in authoritative business records use Employee_ID; employee names remain display attributes.
 - Budget_Given employee recipient field is Recipient Employee_ID instead of Recipient Email / Name.
 - Phase 4 Apps Script owns enforcement; Phase 3 freezes the requirement.
+
+
+### R48 clarification — Global Employee_ID canonical reference rule
+- Expanded the Employee_ID rule beyond Budget_Given.
+- Employee-linked authoritative records and internal lookups use Employee_ID, including Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and future employee-related tables.
+- Explicitly preserved non-employee Name fields and entity references: Employees.Name, Recipient_Vendor, and Investments.Source_Person.
