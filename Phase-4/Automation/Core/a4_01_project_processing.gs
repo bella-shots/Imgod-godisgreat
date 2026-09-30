@@ -27,7 +27,7 @@ const A4_01_CONFIG = {
 function processA401ProjectSubmission(e) {
   if (!e || !e.range || !e.namedValues) throw new Error('A4_01_INVALID_EVENT: installable onFormSubmit event required');
   const responseSheet = e.range.getSheet();
-  if (responseSheet.getName() !== A4_01_CONFIG.responseSheetName) throw new Error('A4_01_WRONG_SHEET: ' + responseSheet.getName());
+  if (responseSheet.getName() !== A4_01_CONFIG.responseSheetName) return {status:'IGNORED', sheet:responseSheet.getName()};
 
   const eventKey = buildA401EventKey_(e);
   const reservation = claimA401Event_(eventKey);
