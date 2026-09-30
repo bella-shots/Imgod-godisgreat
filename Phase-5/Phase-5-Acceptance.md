@@ -14,3 +14,5 @@
 | P5-12 | FINAL PROJECT CLOSURE. | PHASE_5_COMPLETE is true and the Master Website is ready for internal operational use. | NOT STARTED |
 | P5-13 | Employee My Records retrieval | After an applicable Form submission is processed and receives an authoritative business ID, the submitting/authorized employee can open My Records and see that record and its generated ID. | NOT STARTED |
 | P5-14 | My Records authorization isolation | Employee A cannot retrieve Employee B's restricted record by changing record ID, Employee_ID, email, URL/query parameters, or other request inputs. | NOT STARTED |
+
+| P5-15 | Universal generated-ID visibility | Every authoritative record type displays its generated canonical ID in the corresponding authorized website/module view, subject to existing permissions. | NOT STARTED |
