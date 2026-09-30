@@ -474,3 +474,6 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 
 
 | R50 | Architecture change — frozen employee self-service retrieval contract. After an applicable Form submission is processed and an authoritative business record receives its system-generated ID, the employee must be able to retrieve the authorized record and view its generated ID through the company website's My Records area. This does not add Form fields, change workbook schemas, expose restricted source workbooks, or move implementation into Phase 3. Phase 4 owns processing/linkage; Phase 5 owns the employee-facing retrieval experience and end-to-end verification. |
+
+
+| R51 | Architecture change — expanded generated-ID visibility to all 13 authoritative record types. Every generated ID (PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT, SUB) must be viewable in the corresponding authorized website/module record view. This is a visibility/reference requirement, not a permission expansion or Apps Script implementation. |
