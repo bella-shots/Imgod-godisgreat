@@ -492,3 +492,8 @@ Employee creation is intentionally handled directly in the authoritative Employe
 The employee-entry sheet must expose a mandatory **GENERATE EMPLOYEE ID** control followed by **SAVE EMPLOYEE**. The record cannot be committed until a valid system-generated EMP-XXX exists. The control logic is a Phase 4 Apps Script implementation requirement.
 
 This does not alter the existing respondent-facing Forms. Their currently frozen human-facing identity fields remain as specified; Phase 4 resolves employee identity to canonical Employee_ID before writing authoritative employee-linked records.
+
+
+## R48 clarification — Employee reference handling across Forms
+
+Existing human-facing Form identity fields may remain as currently frozen (for example, Employee Email ID) where the Form specification requires them. Phase 4 must resolve those inputs to canonical Employee_ID before writing employee-linked authoritative records. No Form response or internal lookup may use an employee name as the canonical employee key.
