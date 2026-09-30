@@ -47,3 +47,15 @@
 | P4-36 | Test misplaced-asset normalization | An existing misplaced control asset is moved to MASTER COMPANY when technically supported, preserving identity/content/permissions; otherwise a visible manual-review failure is recorded. | NOT STARTED |
 | P4-37 | Test duplicate prevention | Placement verification/normalization never creates a second workbook, Form or Site for an existing authoritative asset. | NOT STARTED |
 | P4-38 | Test access preservation after placement | Moving/normalizing assets does not broaden restricted Finance, HR/Admin or Site access. | NOT STARTED |
+
+
+## R55 — Master Drive asset placement acceptance tests
+| ID | Acceptance test | Expected result | Status |
+|---|---|---|---|
+| P4-33 | Verify Google Site file location | Existing MASTER COMPANY Google Site file is located at `MASTER COMPANY/MASTER COMPANY`; published/access state is not changed merely by placement. | NOT STARTED |
+| P4-34 | Verify four master workbook locations | OPERATIONS, FINANCE, HR_ADMIN and ADMIN workbooks are each in their exact frozen R55 destinations. | NOT STARTED |
+| P4-35 | Verify seven Form locations | FRM-01 through FRM-07 are each in their exact frozen R55 destinations. | NOT STARTED |
+| P4-36 | Relocate a misplaced existing master asset | Existing asset is moved to its exact authoritative destination without creating a duplicate and without altering its business content. | NOT STARTED |
+| P4-37 | Retry asset placement | Correctly placed assets remain unchanged; no duplicate assets are created. | NOT STARTED |
+| P4-38 | Missing/ambiguous/inaccessible asset | Placement does not create a silent replacement; the condition is surfaced as HUMAN ACTION REQUIRED / failed placement. | NOT STARTED |
+| P4-39 | Verify response-destination integrity | Form response tabs continue writing to their approved authoritative workbooks; no unauthorized response workbook/tab is introduced. | NOT STARTED |
