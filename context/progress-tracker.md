@@ -467,3 +467,11 @@ The compensation model now supports Monthly and One-Time arrangements. Employees
 
 ## R47 — Budget_Given spending and return tracking
 Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`) with a simple calculated money-flow model. `Amount Given INR` and `Used Amount INR` determine calculated `To Be Returned INR`; `Returned Amount INR` determines calculated `Pending Return Amount INR`; Status is automatically derived as `Pending Return`, `Fully Returned`, or `No Return Required`. Any positive pending amount, including ₹1, remains `Pending Return`. Used Amount cannot exceed Amount Given and Returned Amount cannot exceed To Be Returned. `Recipient Email / Name` is name-or-email, not email-only. No Form, workbook-boundary, Lists_Config, cross-workbook validation, or Phase 4 architecture change.
+
+
+### Phase 3 R48 — Employee creation workflow frozen
+- **Employee entry surface:** MASTER_COMPANY_HR_ADMIN → Employees sheet.
+- **Mandatory sequence:** enter details → **GENERATE EMPLOYEE ID** → generated EMP-XXX locked → **SAVE EMPLOYEE**.
+- **Save gate:** no employee record may be committed without a valid generated Employee_ID.
+- **Canonical reference:** employee-linked authoritative records use Employee_ID; names are display-only for employee identity.
+- **Phase 4 dependency:** Apps Script must implement and enforce the Generate-ID and Save controls.
