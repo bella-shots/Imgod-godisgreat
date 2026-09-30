@@ -14,3 +14,5 @@
 | E2E-12 | Automation failure/retry | Controlled test failure | Failure is visible, source data is preserved, and retry does not duplicate side effects. | High | NOT STARTED |
 | E2E-13 | Employee retrieves generated record | Employee submits an applicable Form → processing completes → employee opens My Records | The authoritative record appears with its generated business ID and permitted details. | Critical | NOT STARTED |
 | E2E-14 | Cross-employee retrieval denial | Employee A attempts to retrieve Employee B's record by manipulating identifier/identity inputs | Access is denied and no restricted record data is disclosed. | Critical | NOT STARTED |
+
+| E2E-15 | Universal generated-ID visibility | Create/process one representative record of each authoritative type and open its authorized module view | The correct canonical generated ID is displayed for each record type; no ID is missing or substituted with row number/form timestamp. | Critical | NOT STARTED |
