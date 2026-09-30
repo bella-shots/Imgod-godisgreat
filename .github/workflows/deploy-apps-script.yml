@@ -1,0 +1,42 @@
+name: Deploy Phase 4 Apps Script
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Phase-4/Automation/**'
+      - '.github/workflows/deploy-apps-script.yml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install clasp
+        run: npm install --global @google/clasp
+
+      - name: Configure clasp credentials
+        env:
+          CLASP_CREDENTIALS: ${{ secrets.CLASP_CREDENTIALS }}
+          APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
+        run: |
+          test -n "$CLASP_CREDENTIALS" || { echo "Missing CLASP_CREDENTIALS secret"; exit 1; }
+          test -n "$APPS_SCRIPT_ID" || { echo "Missing APPS_SCRIPT_ID secret"; exit 1; }
+          mkdir -p "$HOME"
+          printf '%s' "$CLASP_CREDENTIALS" > "$HOME/.clasprc.json"
+          printf '%s\n' '{"scriptId":"'"$APPS_SCRIPT_ID"'","rootDir":"Phase-4/Automation"}' > .clasp.json
+
+      - name: Push GitHub source to existing Apps Script project
+        run: clasp push --force --non-interactive
+
+      - name: Verify deployed source
+        run: clasp status
