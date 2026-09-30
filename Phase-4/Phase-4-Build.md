@@ -13,16 +13,16 @@
 
 ## R55 — Master Drive asset placement and verification
 
-Phase 4 includes a controlled **Master Asset Placement / Verification** step. This step does not redesign Phase 1 or create a new Drive hierarchy. It ensures the already-created Google Site, Phase 3 master workbooks, and Phase 3 Forms are stored in their frozen authoritative Drive locations.
+Phase 4 includes a controlled **Master Asset Placement / Verification** step. This step follows the revised Drive hierarchy established on 30-Sep-2026. It ensures the already-created Google Site, Phase 3 master workbooks, and Phase 3 Forms are stored in their frozen authoritative Drive locations.
 
 ### Frozen destinations
 | Asset | Authoritative Drive location |
 |---|---|
-| Google Site file | `MASTER COMPANY` (the Phase 1 authoritative root; Phase 1 defines no nested MASTER COMPANY folder) |
+| Google Site file | `MASTER COMPANY/Site` |
 | MASTER_COMPANY_OPERATIONS | `MASTER COMPANY/Projects/MASTER_COMPANY_OPERATIONS` |
 | MASTER_COMPANY_FINANCE | `MASTER COMPANY/Finance/MASTER_COMPANY_FINANCE` |
 | MASTER_COMPANY_HR_ADMIN | `MASTER COMPANY/HR/MASTER_COMPANY_HR_ADMIN` |
-| MASTER_COMPANY_ADMIN | `MASTER COMPANY/MASTER_COMPANY_ADMIN` |
+| MASTER_COMPANY_ADMIN | `MASTER COMPANY/Admin/MASTER_COMPANY_ADMIN` |
 | FRM-01 Projects | `MASTER COMPANY/Projects/FRM-01 Projects` |
 | FRM-02 Employee Spending | `MASTER COMPANY/Finance/FRM-02 Employee Spending` |
 | FRM-03 OOP Claims | `MASTER COMPANY/Finance/FRM-03 OOP Claims` |
