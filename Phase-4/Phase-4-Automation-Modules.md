@@ -15,3 +15,6 @@
 
 
 | A4-12 | Employee Record Self-Service Linkage | Successful authoritative record creation/update | Submission_ID + generated Record_ID + canonical Employee_ID + authorization scope | Preserve the submission-to-record linkage and expose the record only through the authorized Phase 5 self-service retrieval contract; do not broaden source-workbook permissions | Employee can retrieve authorized record and generated business ID through My Records |
+
+
+| A4-13 | Generated-ID Persistence and Visibility Linkage | Successful authoritative record creation/update | Record type + generated Record_ID + Submission_ID where applicable | Persist the canonical generated ID with the authoritative record and preserve linkage required for the corresponding authorized website/module view | Generated ID available in the correct module; no permission expansion |
