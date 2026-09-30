@@ -382,3 +382,10 @@ Do not use either field as a permission/access-role substitute. HR Report Employ
 
 ## R47 — Budget_Given money-flow alignment
 The Phase 3 playbook alignment now uses the simplified Budget_Given money-flow model: Amount Given INR → Used Amount INR → calculated To Be Returned INR; Returned Amount INR → calculated Pending Return Amount INR; derived Status = Pending Return / Fully Returned / No Return Required. The model explicitly avoids the previous `Reconciled` terminology and remains a Phase 3 native-Sheets calculation, not Apps Script or Phase 4 processing.
+
+
+## R48 — Employee creation control alignment
+
+The playbook's Phase 3 employee-master workflow must treat Employees as the direct HR/Admin entry surface. The specification now requires a mandatory **GENERATE EMPLOYEE ID** step before **SAVE EMPLOYEE**.
+
+No separate employee-creation Form is required. Phase 4 Apps Script is responsible for enforcing validation, ID generation, ID locking, and the Save gate. All authoritative employee references use Employee_ID.
