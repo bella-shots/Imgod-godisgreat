@@ -732,3 +732,8 @@ Apply the frozen R48 employee-master rule:
 - Lock the generated Employee_ID and prevent Save until it exists.
 - Treat Employee_ID as the canonical employee reference key in authoritative business records.
 - Implement the actual button/trigger enforcement in Phase 4 Apps Script; do not silently substitute a different Phase 3 mechanism.
+
+
+## R48 clarification — Global Employee_ID reference rule
+
+Apply Employee_ID as the canonical employee key whenever a business record identifies or references an employee. This includes Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and any future employee-related authoritative table. Do not replace every Name field: preserve Employees.Name as display data, Recipient_Vendor as vendor/entity name, and Investments.Source_Person as a potentially non-employee capital source. Reports may display Name but must internally resolve/use Employee_ID.
