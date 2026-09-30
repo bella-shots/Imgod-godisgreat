@@ -4,15 +4,15 @@
 Repository is under the playbook-controlled five-phase architecture.
 
 ## Current state
-**PHASE 3 COMPLETE & VERIFIED — PHASE 4 UNBLOCKED**
+**PHASE 3 COMPLETE & VERIFIED — PHASE 4 IN PROGRESS**
 
-The user has confirmed that all required Phase 3 workbooks and Forms have been live-verified.
+The user has confirmed that all required Phase 3 workbooks and Forms have been live-verified. Phase 4 implementation and verification are in progress.
 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED
 - 02 Master Google Site: COMPLETE & VERIFIED
 - 03 Sheets + Forms: COMPLETE & VERIFIED
-- 04 Apps Script automation: READY TO START
+- 04 Apps Script automation: IN PROGRESS
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
 
 ## Verified Phase 3 workbooks
@@ -43,7 +43,7 @@ The user has confirmed that all required Phase 3 workbooks and Forms have been l
 - No new folders, tabs, Forms, fields, or alternate schemas may be invented without an approved revision.
 
 ## Phase 4 entry condition
-Phase 4 is now authorized to begin.
+Phase 4 is now authorized and actively being implemented.
 
 Implementation source of truth:
 1. Phase-4/Phase-4-Build.md
@@ -53,15 +53,47 @@ Implementation source of truth:
 5. Phase-4/Phase-4-Acceptance.md
 6. Frozen Phase 3 schemas, Forms map, revision log, and Drive contracts
 
+## Phase 4 R55 master asset placement status
+
+### Verified
+- **P4-33 — Google Site placement: VERIFIED**
+  - `imgod_godisgreat` is `ALREADY_CORRECT` at the Phase 1 root `MASTER COMPANY`.
+  - The verified Site asset ID is `1sx5s9r1CNjz86ljbQgmbv_Dvu6vHj5oO`.
+- **P4-34 — Four master workbooks: VERIFIED**
+  - MASTER_COMPANY_OPERATIONS → `MASTER COMPANY/Projects`
+  - MASTER_COMPANY_FINANCE → `MASTER COMPANY/Finance`
+  - MASTER_COMPANY_HR_ADMIN → `MASTER COMPANY/HR`
+  - MASTER_COMPANY_ADMIN → `MASTER COMPANY`
+- **P4-35 — Seven Forms: VERIFIED**
+  - FRM-01 → Projects
+  - FRM-02 → Finance
+  - FRM-03 → Finance
+  - FRM-04 → HR
+  - FRM-05 → MOM
+  - FRM-06 → Reports
+  - FRM-07 → Finance
+- **P4-36 — Relocate misplaced asset: VERIFIED/DEMONSTRATED**
+- **P4-37 — Retry/idempotency: VERIFIED/DEMONSTRATED**
+- **P4-38 — Missing/ambiguous/inaccessible handling: VERIFIED/DEMONSTRATED**
+  - Missing/inaccessible handling was observed during earlier execution.
+  - Ambiguous Google Site matching was observed and then resolved by filtering to the native Google Site MIME type.
+- **P4-39 — Response-destination integrity: PENDING**
+
+### R55 overall status
+**OPEN — P4-39 remains pending.**
+
+The R55 asset-placement work must not be marked fully complete until response-destination integrity is verified.
+
 ## Phase 4 immediate focus
-1. Master asset placement/verification under R55.
-2. Apps Script foundation and configuration.
-3. Stable-ID generation and reconciliation.
-4. Form submission processing and authoritative-record creation.
-5. Drive attachment routing under R54.
-6. Business rules and validation.
-7. Reporting and authorization workflows.
-8. Error handling, idempotency, audit trail, and acceptance tests.
+1. Complete P4-39 response-destination integrity verification.
+2. Close R55 only after P4-39 passes.
+3. Apps Script foundation and configuration.
+4. Stable-ID generation and reconciliation.
+5. Form submission processing and authoritative-record creation.
+6. Drive attachment routing under R54.
+7. Business rules and validation.
+8. Reporting and authorization workflows.
+9. Error handling, idempotency, audit trail, and acceptance tests.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
