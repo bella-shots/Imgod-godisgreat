@@ -35,3 +35,15 @@
 | P4-30 | Retry an already-routed attachment event | No duplicate business copy is created. | NOT STARTED |
 | P4-31 | Use invalid/unresolved project name for an attachment submission | No guessed destination is used; submission is marked failed/manual review. | NOT STARTED |
 | P4-32 | Simulate destination/move failure | Source submission remains intact, original file reference is retained, and processing is visibly failed/pending. | NOT STARTED |
+
+
+## R55 — Control-asset Drive placement acceptance tests
+
+| ID | Acceptance test | Expected result | Status |
+|---|---|---|---|
+| P4-33 | Verify four master workbooks | MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN and MASTER_COMPANY_ADMIN are located in MASTER COMPANY root; no duplicate is created. | NOT STARTED |
+| P4-34 | Verify FRM-01 through FRM-07 | All seven authoritative Forms are located in MASTER COMPANY root; no duplicate Form is created. | NOT STARTED |
+| P4-35 | Verify Master Google Site placement | The authoritative MASTER COMPANY Site document is located in MASTER COMPANY root; its Site identity and access model remain unchanged. | NOT STARTED |
+| P4-36 | Test misplaced-asset normalization | An existing misplaced control asset is moved to MASTER COMPANY when technically supported, preserving identity/content/permissions; otherwise a visible manual-review failure is recorded. | NOT STARTED |
+| P4-37 | Test duplicate prevention | Placement verification/normalization never creates a second workbook, Form or Site for an existing authoritative asset. | NOT STARTED |
+| P4-38 | Test access preservation after placement | Moving/normalizing assets does not broaden restricted Finance, HR/Admin or Site access. | NOT STARTED |
