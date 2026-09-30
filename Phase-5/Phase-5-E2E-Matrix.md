@@ -16,3 +16,7 @@
 | E2E-14 | Cross-employee retrieval denial | Employee A attempts to retrieve Employee B's record by manipulating identifier/identity inputs | Access is denied and no restricted record data is disclosed. | Critical | NOT STARTED |
 
 | E2E-15 | Universal generated-ID visibility | Create/process one representative record of each authoritative type and open its authorized module view | The correct canonical generated ID is displayed for each record type; no ID is missing or substituted with row number/form timestamp. | Critical | NOT STARTED |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- E2E-16 — Sheet-originated Generate-ID → persistence → visibility: authorized user enters record data → invokes explicit Generate-ID control → central generator issues unique ID → ID is locked/persisted → record is committed → authorized website/module displays the same ID. Verify concurrent users receive distinct IDs and generic autosave/edit events never allocate IDs.
