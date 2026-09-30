@@ -28,3 +28,14 @@
 | Sensitive master Sheets (salary, investments, full finance/admin records) remain restricted to admins. |  |  |  |  |  |  |
 | Employees submit or view permitted information through Forms, shared project pages/files, or controlled Apps Script interfaces. |  |  |  |  |  |  |
 | Do not assume Google Sites page-level access is equivalent to database-level RBAC. Sensitive record-level controls must be enforced by restricting the underlying Sheets/Drive assets and, where necessary, by Apps Script workflow checks. |  |  |  |  |  |  |
+
+### R50 — Employee My Records authorization
+
+| My Records / record detail | Admin | Standard User with Access | Employee Self | Server Enforcement | Sensitive Data | Test |
+|---|---|---|---|---|---|---|
+| View own submitted/assigned records | Yes | According to existing scope | Yes, only authorized self/assigned records | Yes | Depends on record | Submit as Employee A; attempt Employee B record |
+| View generated business ID | Yes | According to existing scope | Yes for authorized records | Yes | Depends on record | Verify ID appears; attempt guessed/other ID |
+| View another employee's restricted record | According to admin authorization | No unless separately authorized | No | Yes | Yes | Change record ID / Employee_ID / query parameters |
+| Direct access to restricted source workbook | According to admin authorization | According to existing matrix | No | Yes | Yes | Direct source access test |
+
+My Records is a controlled retrieval interface. UI filtering alone is insufficient; authorization must be enforced at the retrieval boundary.
