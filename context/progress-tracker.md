@@ -483,6 +483,24 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 - Names remain display attributes; vendor and non-employee investment-source fields are not converted.
 
 
+### Phase 3 — Finance Budget_Given verification recorded
+
+**Verified / PASS — 2026-09-30:** MASTER_COMPANY_FINANCE → Budget_Given
+
+Verified against the current Phase-3-Schema-Blueprint.md:
+- 13-column structure and order
+- canonical Recipient Employee_ID
+- Used Amount validation
+- automatic To Be Returned calculation
+- Returned Amount validation
+- automatic Pending Return calculation
+- automatic Status with the three approved values
+- ₹1 pending-return behavior
+- returning money does not reduce Used Amount
+
+The remaining Finance authoritative tabs — Employee_Spending, OOP_Claims, Salary_Admin, and Investments — remain pending separate live-sheet verification. Overall Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED.
+
+
 ### Phase 3 — Operations workbook verification recorded
 
 **Verified / PASS:** MASTER_COMPANY_OPERATIONS
