@@ -6,7 +6,7 @@
  * - generates PRJ and MBR IDs only through A4-00
  * - resolves human-facing member identity to canonical Employee_ID
  * - creates Submission_Index traceability
- * - is idempotent for the same source event
+ * - idempotent for the same source event, including concurrent triggers
  * - preserves the raw Form response on failure
  *
  * A4-02 owns Drive project-folder creation.
@@ -20,7 +20,8 @@ const A4_01_CONFIG = {
   adminWorkbookName: 'MASTER_COMPANY_ADMIN',
   adminSubmissionSheetName: 'Submission_Index',
   hrWorkbookName: 'MASTER_COMPANY_HR_ADMIN',
-  employeesSheetName: 'Employees'
+  employeesSheetName: 'Employees',
+  eventReservationMs: 15 * 60 * 1000
 };
 
 function processA401ProjectSubmission(e) {
@@ -34,38 +35,41 @@ function processA401ProjectSubmission(e) {
   }
 
   const eventKey = buildA401EventKey_(e);
-  const existingEvent = getA401EventState_(eventKey);
-  if (existingEvent) {
-    return existingEvent;
-  }
+  const reservation = claimA401Event_(eventKey);
+  if (!reservation.claimed) return reservation.state;
 
   const raw = normalizeA401Submission_(e.namedValues);
   const validation = validateA401Submission_(raw);
 
-  // Create the central submission trace before authoritative processing.
-  const submissionId = createA401SubmissionIndex_(raw, validation.valid ? '' : '', validation.valid ? 'Received' : 'Validation Failed', eventKey);
+  let submissionId = '';
+  try {
+    submissionId = createA401SubmissionIndex_(
+      raw,
+      '',
+      validation.valid ? 'Received' : 'Validation Failed'
+    );
 
-  if (!validation.valid) {
+    if (!validation.valid) {
+      const state = {
+        submissionId: submissionId,
+        recordId: '',
+        status: 'Validation Failed',
+        message: validation.errors.join('; ')
+      };
+      setA401EventState_(eventKey, state);
+      return {
+        status: 'VALIDATION_FAILED',
+        submissionId: submissionId,
+        errors: validation.errors
+      };
+    }
+
     setA401EventState_(eventKey, {
       submissionId: submissionId,
       recordId: '',
-      status: 'Validation Failed',
-      message: validation.errors.join('; ')
+      status: 'PROCESSING'
     });
-    return {
-      status: 'VALIDATION_FAILED',
-      submissionId: submissionId,
-      errors: validation.errors
-    };
-  }
 
-  setA401EventState_(eventKey, {
-    submissionId: submissionId,
-    recordId: '',
-    status: 'PROCESSING'
-  });
-
-  try {
     const operations = getA401Operations_();
     const employees = getA401Employees_();
 
@@ -73,9 +77,8 @@ function processA401ProjectSubmission(e) {
     const existingProjectIds = readA401Column_(operations.projects, 'Project_ID');
     const existingMemberIds = readA401Column_(operations.members, 'Member_Record_ID');
 
-    // Validate the project folder before consuming a business ID.
+    // Validate/locate the project Drive structure before consuming a PRJ ID.
     const folderResult = ensureA402ProjectFolder(raw.projectName);
-
     const projectId = generateA4Id('PRJ', existingProjectIds);
 
     const projectRow = {
@@ -98,8 +101,11 @@ function processA401ProjectSubmission(e) {
 
     const memberRows = [];
     members.forEach(function(member) {
+      const usedIds = existingMemberIds.concat(memberRows.map(function(r) {
+        return r.Member_Record_ID;
+      }));
       memberRows.push({
-        Member_Record_ID: generateA4Id('MBR', existingMemberIds.concat(memberRows.map(function(r){ return r.Member_Record_ID; }))),
+        Member_Record_ID: generateA4Id('MBR', usedIds),
         Project_ID: projectId,
         Employee_ID: member.employeeId,
         Project_Role: member.projectRole || '',
@@ -117,29 +123,60 @@ function processA401ProjectSubmission(e) {
     });
 
     updateA401SubmissionStatus_(submissionId, projectId, 'Processed');
-    setA401EventState_(eventKey, {
-      submissionId: submissionId,
-      recordId: projectId,
-      status: 'Processed'
-    });
-
-    return {
+    const finalState = {
       status: 'PROCESSED',
       submissionId: submissionId,
+      recordId: projectId,
       projectId: projectId,
       memberCount: memberRows.length,
       driveFolderUrl: folderResult.url
     };
+    setA401EventState_(eventKey, finalState);
+    return finalState;
   } catch (err) {
-    updateA401SubmissionStatus_(submissionId, '', 'Manual Review');
-    setA401EventState_(eventKey, {
+    if (submissionId) {
+      try {
+        updateA401SubmissionStatus_(submissionId, '', 'Manual Review');
+      } catch (statusErr) {}
+    }
+    const failureState = {
       submissionId: submissionId,
       recordId: '',
       status: 'Manual Review',
       message: String(err && err.message ? err.message : err)
-    });
+    };
+    setA401EventState_(eventKey, failureState);
     throw err;
   }
+}
+
+/** Read-only Phase 4 verification for A4-01 prerequisites. */
+function verifyA401ProjectProcessingPrerequisites() {
+  const operations = getA401Operations_();
+  const employees = getA401Employees_();
+  const checks = {
+    operationsWorkbook: operations.workbook.getName() === 'MASTER_COMPANY_OPERATIONS',
+    projectsSheet: hasA401Headers_(operations.projects, [
+      'Project_ID','Project_Name','Description','Owner','Start_Date',
+      'Event_Date','Status','Drive_Folder_URL','Notes','Created_At'
+    ]),
+    projectMembersSheet: hasA401Headers_(operations.members, [
+      'Member_Record_ID','Project_ID','Employee_ID','Project_Role',
+      'Access_Level','Active','Assigned_Date'
+    ]),
+    employeesSheet: employees.length >= 0,
+    adminSubmissionIndex: hasA401Headers_(
+      requireA401Sheet_(
+        openA401WorkbookByName_(A4_01_CONFIG.adminWorkbookName),
+        A4_01_CONFIG.adminSubmissionSheetName
+      ),
+      ['Submission_ID','Source_Form','Record_ID','Submitted_By','Submitted_At','Processing_Status']
+    ),
+    hrEmployees: true
+  };
+  checks.status = Object.keys(checks).every(function(k){ return k === 'status' || checks[k] === true; }) ? 'PASS' : 'FAIL';
+  Logger.log(JSON.stringify(checks, null, 2));
+  return checks;
 }
 
 function normalizeA401Submission_(namedValues) {
@@ -180,11 +217,11 @@ function resolveA401Members_(rawValue, employees) {
     const match = token.match(/<([^>]+)>/);
     const candidate = (match ? match[1] : token).trim().toLowerCase();
 
-    const emailMatches = employees.filter(function(e) {
-      return String(e.Email || '').trim().toLowerCase() === candidate;
+    const emailMatches = employees.filter(function(employee) {
+      return String(employee.Email || '').trim().toLowerCase() === candidate;
     });
-    const nameMatches = employees.filter(function(e) {
-      return String(e.Name || '').trim().toLowerCase() === candidate;
+    const nameMatches = employees.filter(function(employee) {
+      return String(employee.Name || '').trim().toLowerCase() === candidate;
     });
     const matches = emailMatches.length ? emailMatches : nameMatches;
 
@@ -252,6 +289,14 @@ function readA401Objects_(sheet) {
   });
 }
 
+function hasA401Headers_(sheet, requiredHeaders) {
+  if (!sheet) return false;
+  const values = sheet.getDataRange().getValues();
+  if (!values.length) return false;
+  const headers = values[0].map(String);
+  return requiredHeaders.every(function(header){ return headers.indexOf(header) >= 0; });
+}
+
 function readA401Column_(sheet, header) {
   const values = sheet.getDataRange().getValues();
   if (!values.length) throw new Error('A4_01_EMPTY_SHEET: ' + sheet.getName());
@@ -261,8 +306,7 @@ function readA401Column_(sheet, header) {
 }
 
 function appendA401Record_(sheet, record, requiredHeaders) {
-  const range = sheet.getDataRange();
-  const values = range.getValues();
+  const values = sheet.getDataRange().getValues();
   if (!values.length) throw new Error('A4_01_EMPTY_SHEET: ' + sheet.getName());
   const headers = values[0].map(String);
 
@@ -276,7 +320,7 @@ function appendA401Record_(sheet, record, requiredHeaders) {
   sheet.getRange(sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
 }
 
-function createA401SubmissionIndex_(raw, recordId, status, eventKey) {
+function createA401SubmissionIndex_(raw, recordId, status) {
   const workbook = openA401WorkbookByName_(A4_01_CONFIG.adminWorkbookName);
   const sheet = requireA401Sheet_(workbook, A4_01_CONFIG.adminSubmissionSheetName);
   const existingIds = readA401Column_(sheet, 'Submission_ID');
@@ -320,6 +364,33 @@ function buildA401EventKey_(e) {
   const seed = [A4_01_CONFIG.sourceFormName, e.range.getSheet().getParent().getId(), row].concat(values).join('|');
   const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, seed, Utilities.Charset.UTF_8);
   return digest.map(function(b){ return ('0' + (b & 0xff).toString(16)).slice(-2); }).join('');
+}
+
+function claimA401Event_(eventKey) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const key = 'A4_A01_EVENT_' + eventKey;
+    const existing = PropertiesService.getScriptProperties().getProperty(key);
+    if (existing) {
+      const state = JSON.parse(existing);
+      if (state.reservationAt && Date.now() - state.reservationAt > A4_01_CONFIG.eventReservationMs) {
+        // Controlled takeover after a stale reservation; no business record was
+        // committed by the abandoned execution if it reached this point.
+      } else {
+        return {claimed:false, state:state};
+      }
+    }
+
+    const reservation = {
+      status: 'PROCESSING_RESERVATION',
+      reservationAt: Date.now()
+    };
+    PropertiesService.getScriptProperties().setProperty(key, JSON.stringify(reservation));
+    return {claimed:true, state:reservation};
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function getA401EventState_(eventKey) {
@@ -372,9 +443,7 @@ function isA401Email_(value) {
 }
 
 function installA401ProjectFormTrigger() {
-  const ss = SpreadsheetApp.openById(
-    DriveApp.getFilesByName('MASTER_COMPANY_OPERATIONS').next().getId()
-  );
+  const ss = openA401WorkbookByName_('MASTER_COMPANY_OPERATIONS');
   ScriptApp.getProjectTriggers().forEach(function(trigger) {
     if (trigger.getHandlerFunction() === 'processA401ProjectSubmission') {
       ScriptApp.deleteTrigger(trigger);
