@@ -38,5 +38,24 @@ jobs:
       - name: Push GitHub source to existing Apps Script project
         run: clasp push --force --non-interactive
 
+      - name: Pull live Apps Script source for verification
+        run: |
+          rm -rf /tmp/live-apps-script
+          mkdir -p /tmp/live-apps-script
+          cp .clasp.json /tmp/live-apps-script/.clasp.json
+          cp "$HOME/.clasprc.json" /tmp/live-apps-script/.clasprc.json
+          cd /tmp/live-apps-script
+          clasp pull --force
+
+      - name: Verify direct employee workflow is actually deployed
+        run: |
+          FILE="/tmp/live-apps-script/employee_creation_workflow.gs"
+          test -f "$FILE" || { echo "FAIL: live employee_creation_workflow.gs was not retrieved"; exit 1; }
+          grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow is NOT in the live Apps Script source"; exit 1; }
+          grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl is NOT in the live Apps Script source"; exit 1; }
+          if grep -q "function onOpen" "$FILE"; then echo "FAIL: obsolete onOpen remains in live Apps Script source"; exit 1; fi
+          if grep -q "function showEmployeeCreationSidebar" "$FILE"; then echo "FAIL: obsolete sidebar function remains in live Apps Script source"; exit 1; fi
+          echo "PASS: live Apps Script contains the direct Employees-sheet workflow and no obsolete sidebar functions."
+
       - name: Verify deployed source
         run: clasp status
