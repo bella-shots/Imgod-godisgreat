@@ -503,3 +503,9 @@ Changes:
 - No new Form field is added.
 
 This is a schema revision only; it does not change the OOP ₹5,000 threshold rule, approval workflow, status values, stable Claim_ID format, or permissions.
+
+
+## R54 — Form attachment Drive routing contract
+**Date:** 2026-09-30
+
+Frozen the missing Drive-routing behavior for Form-uploaded files using only the existing Phase 1 folder manifest. FRM-02 Employee Spending and FRM-03 OOP Claims proofs/receipts route to the exact project `03_Expenses` folder. FRM-04 HR supporting documents route to `MASTER COMPANY/HR`. FRM-05 has no file-upload field; MOM artifacts are stored in the project's `04_MOM` folder and indexed through `Project_MOM_Index.Drive_URL`. FRM-01, FRM-06 and FRM-07 have no attachment-routing workflow because their current Forms contain no file-upload field. Routing is Phase 4 Apps Script behavior; destination permissions remain authoritative; retries are idempotent; failures preserve the source reference and do not silently choose alternate folders.
