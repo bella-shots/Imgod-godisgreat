@@ -18,7 +18,7 @@ Phase 4 includes a controlled **Master Asset Placement / Verification** step. Th
 ### Frozen destinations
 | Asset | Authoritative Drive location |
 |---|---|
-| Google Site file | `MASTER COMPANY/MASTER COMPANY` |
+| Google Site file | `MASTER COMPANY` (the Phase 1 authoritative root; Phase 1 defines no nested MASTER COMPANY folder) |
 | MASTER_COMPANY_OPERATIONS | `MASTER COMPANY/Projects/MASTER_COMPANY_OPERATIONS` |
 | MASTER_COMPANY_FINANCE | `MASTER COMPANY/Finance/MASTER_COMPANY_FINANCE` |
 | MASTER_COMPANY_HR_ADMIN | `MASTER COMPANY/HR/MASTER_COMPANY_HR_ADMIN` |
