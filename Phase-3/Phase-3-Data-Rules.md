@@ -561,3 +561,27 @@ Therefore:
 - `Status` must not be manually edited; it is derived from the calculated return state.
 - This model replaces the previous accounting terminology `Disbursed`, `Partially Reconciled`, `Reconciled`, and `Returned` for `Budget_Given`.
 - These calculations are native Sheet logic defined in Phase 3. They do not introduce Apps Script, cross-workbook lookups, or Phase 4 processing.
+
+
+### D3-26 — Employee_ID generation and controlled employee creation
+
+Employees is the authoritative employee-entry surface. HR/Admin enters employee details directly in the Employees sheet. A new employee record must not be committed until a valid system-generated Employee_ID exists.
+
+The mandatory workflow is:
+1. Enter all required employee details.
+2. Select **GENERATE EMPLOYEE ID**.
+3. Validate required fields and duplicate-identity constraints.
+4. Generate a unique EMP-XXX ID.
+5. Lock the generated ID against manual editing.
+6. Enable **SAVE EMPLOYEE** only after successful ID generation.
+7. Commit the employee record only through the Save action.
+
+Employee_ID must never be derived from the employee name, manually invented/overwritten, or reused after separation. Phase 4 Apps Script implements the controls; Phase 3 defines the invariant.
+
+### D3-27 — Canonical employee references use Employee_ID
+
+Whenever an authoritative business record needs to reference an employee, the canonical stored/reference key is Employee_ID. Employee names are display attributes and must not be used as employee foreign keys or lookup keys because names are not guaranteed unique.
+
+This rule applies to employee-linked authoritative fields including Project_Members.Employee_ID, Employee_Spending.Employee_ID, OOP_Claims.Employee_ID, Salary_Admin.Employee_ID, HR_Admin.Employee_ID, and employee recipients in Budget_Given (Recipient Employee_ID).
+
+Human-facing Form identity inputs may continue to use the currently frozen email-based fields where specified; Phase 4 resolves those inputs to the canonical Employee_ID before writing authoritative records. This rule does not rename the Employees.Name display field or non-employee entity fields such as vendor names.
