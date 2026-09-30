@@ -94,3 +94,17 @@ This does not change the ID-generation algorithm or Phase 3 schema.
 ## R51 — Universal generated-ID visibility
 
 The stable ID contract applies to all 13 authoritative record types. After authoritative creation, the generated ID must be persisted with the record and displayed in the corresponding authorized website/module view. The canonical IDs are: PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT and SUB. Visibility is authorization-controlled and does not grant access to the underlying record.
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+The universal ID generator remains the authoritative generator, but its trigger differs by record origin. For direct Sheet-originated records, the generator is invoked only by an explicit controlled Generate-ID action—not by generic edit triggers or autosave.
+
+### Sheet-originated records
+- Project Member: **GENERATE PROJECT MEMBER ID**
+- Project Note: **GENERATE PROJECT NOTE ID**
+- Budget: **GENERATE BUDGET ID**
+- Salary: **GENERATE SALARY ID(S)**; controlled bulk generation is required for validated payroll imports/entries.
+
+Workflow: enter required data → validate pending record → explicit Generate-ID action → acquire LockService → reconcile counter → generate unique ID → write ID → lock/read-only ID field → allow commit/save. A record must not be committed without its valid generated ID.
+
+This prevents simultaneous users from obtaining IDs through competing row-edit/autosave events. The central generator's existing PropertiesService counters, reconciliation, idempotency, collision and no-reuse rules remain unchanged. Employee_ID keeps its already-frozen dedicated workflow. Submission_ID remains system/index generated.
