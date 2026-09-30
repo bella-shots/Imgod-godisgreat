@@ -3,8 +3,7 @@ name: Deploy Phase 4 Apps Script
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'Phase-4/Automation/**'
       - '.github/workflows/deploy-apps-script.yml'
@@ -13,74 +12,57 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install clasp
         run: npm install --global @google/clasp
 
-      - name: Configure credentials and target
+      - name: Configure clasp
         env:
           CLASPRC: ${{ secrets.CLASP_CREDENTIALS }}
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
-          test -n "$CLASPRC" || { echo "Missing CLASPRC"; exit 1; }
-          test "$APPS_SCRIPT_ID" = "1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W" || {
-            echo "FAIL: APPS_SCRIPT_ID is not the approved MASTER COMPANY Apps Script project."
-            exit 1
-          }
+          test -n "$CLASPRC"
+          test "$APPS_SCRIPT_ID" = "1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W"
           printf '%s' "$CLASPRC" > "$HOME/.clasprc.json"
 
-      - name: Validate GitHub source
+      - name: Prepare exact Apps Script source
         run: |
-          test -f Phase-4/Automation/.clasp.json
-          grep -q '"scriptId": "1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W"' Phase-4/Automation/.clasp.json
-          grep -q '"rootDir": "."' Phase-4/Automation/.clasp.json
-          test -f Phase-4/Automation/Core/employee_creation_workflow.gs
-          grep -q "function setupEmployeeDirectSheetWorkflow" Phase-4/Automation/Core/employee_creation_workflow.gs
+          rm -rf "$RUNNER_TEMP/apps-script"
+          mkdir -p "$RUNNER_TEMP/apps-script"
+          cp Phase-4/Automation/.clasp.json "$RUNNER_TEMP/apps-script/.clasp.json"
+          find Phase-4/Automation/Core Phase-4/Automation/Drive-Placement Phase-4/Automation/Verification -type f -name '*.gs' -exec cp {} "$RUNNER_TEMP/apps-script/" \;
+          find Phase-4/Automation/Core Phase-4/Automation/Drive-Placement Phase-4/Automation/Verification -type f -name '*.html' -exec cp {} "$RUNNER_TEMP/apps-script/" \;
+          test -f "$RUNNER_TEMP/apps-script/employee_creation_workflow.gs"
+          grep -q "function setupEmployeeDirectSheetWorkflow" "$RUNNER_TEMP/apps-script/employee_creation_workflow.gs"
 
-      - name: Build a flat Apps Script deployment source
+      - name: Push to existing MASTER COMPANY Apps Script
         run: |
-          rm -rf /tmp/apps-script-deploy
-          mkdir -p /tmp/apps-script-deploy
-          cp Phase-4/Automation/.clasp.json /tmp/apps-script-deploy/.clasp.json
-          find Phase-4/Automation/Core Phase-4/Automation/Drive-Placement Phase-4/Automation/Verification -type f \( -name '*.gs' -o -name '*.html' \) -exec cp {} /tmp/apps-script-deploy/ \;
-          echo "=== DEPLOYMENT FILES ==="
-          find /tmp/apps-script-deploy -maxdepth 1 -type f -printf '%f\n' | sort
-          test -f /tmp/apps-script-deploy/employee_creation_workflow.gs
-          test -f /tmp/apps-script-deploy/a4_00_central_id_generator.gs
-
-      - name: Push exact flat source to existing Apps Script project
-        working-directory: /tmp/apps-script-deploy
-        run: |
+          cd "$RUNNER_TEMP/apps-script"
           clasp push --force --non-interactive
-          echo "=== PUSH COMPLETE ==="
           clasp status --json
 
-      - name: Pull exact live project for verification
+      - name: Pull live Apps Script source
         run: |
-          rm -rf /tmp/apps-script-live
-          mkdir -p /tmp/apps-script-live
-          cp /tmp/apps-script-deploy/.clasp.json /tmp/apps-script-live/.clasp.json
-          cp "$HOME/.clasprc.json" /tmp/apps-script-live/.clasprc.json
-          cd /tmp/apps-script-live
+          rm -rf "$RUNNER_TEMP/apps-script-live"
+          mkdir -p "$RUNNER_TEMP/apps-script-live"
+          cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/apps-script-live/.clasp.json"
+          cd "$RUNNER_TEMP/apps-script-live"
           clasp pull --force
-          echo "=== LIVE FILES ==="
-          find . -maxdepth 1 -type f -printf '%f\n' | sort
+          find . -maxdepth 1 -type f -print | sort
 
-      - name: Verify live Apps Script
+      - name: Verify live direct employee workflow
         run: |
-          FILE=/tmp/apps-script-live/employee_creation_workflow.gs
-          test -f "$FILE" || { echo "FAIL: employee_creation_workflow.gs is absent from live Apps Script"; exit 1; }
+          FILE="$RUNNER_TEMP/apps-script-live/employee_creation_workflow.gs"
+          test -f "$FILE" || { echo "FAIL: live employee_creation_workflow.gs missing"; exit 1; }
           grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow missing"; exit 1; }
           grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl missing"; exit 1; }
           ! grep -q "function onOpen" "$FILE" || { echo "FAIL: obsolete onOpen remains"; exit 1; }
-          ! grep -q "function showEmployeeCreationSidebar" "$FILE" || { echo "FAIL: obsolete showEmployeeCreationSidebar remains"; exit 1; }
+          ! grep -q "function showEmployeeCreationSidebar" "$FILE" || { echo "FAIL: obsolete sidebar remains"; exit 1; }
           ! grep -q "function generatePendingEmployeeId" "$FILE" || { echo "FAIL: obsolete generatePendingEmployeeId remains"; exit 1; }
           ! grep -q "function saveEmployee(" "$FILE" || { echo "FAIL: obsolete saveEmployee remains"; exit 1; }
-          echo "PASS: exact live Apps Script source is the new direct Employees-sheet workflow."
+          echo "PASS: live MASTER COMPANY Apps Script is the direct Employees-sheet workflow."
