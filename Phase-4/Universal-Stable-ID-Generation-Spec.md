@@ -89,3 +89,8 @@ For employee-linked authoritative records, generation of the business ID is not 
 The generated business ID remains the canonical displayed record identifier. Phase 4 must preserve the linkage between the Form submission, Submission_Index.Record_ID, and the authoritative business record so Phase 5 can retrieve the record without exposing restricted source workbooks.
 
 This does not change the ID-generation algorithm or Phase 3 schema.
+
+
+## R51 — Universal generated-ID visibility
+
+The stable ID contract applies to all 13 authoritative record types. After authoritative creation, the generated ID must be persisted with the record and displayed in the corresponding authorized website/module view. The canonical IDs are: PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT and SUB. Visibility is authorization-controlled and does not grant access to the underlying record.
