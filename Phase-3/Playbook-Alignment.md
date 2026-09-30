@@ -389,3 +389,8 @@ The Phase 3 playbook alignment now uses the simplified Budget_Given money-flow m
 The playbook's Phase 3 employee-master workflow must treat Employees as the direct HR/Admin entry surface. The specification now requires a mandatory **GENERATE EMPLOYEE ID** step before **SAVE EMPLOYEE**.
 
 No separate employee-creation Form is required. Phase 4 Apps Script is responsible for enforcing validation, ID generation, ID locking, and the Save gate. All authoritative employee references use Employee_ID.
+
+
+## R48 clarification — Global employee reference alignment
+
+The playbook must apply Employee_ID as the canonical key whenever a business record identifies an employee. This includes Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and future employee-related tables. Display names remain permitted; employee names are not canonical keys. Vendor names and non-employee investment source entities remain separate.
