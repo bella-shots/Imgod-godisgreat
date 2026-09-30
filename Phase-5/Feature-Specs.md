@@ -35,3 +35,8 @@
 ### R50 — Employee Record Self-Service
 
 Add the employee-facing **My Records** capability as an architectural requirement. After a Form submission is processed into an authoritative business record, the employee must be able to retrieve the authorized record through the company website and see its generated business ID. The website must resolve the current employee to canonical Employee_ID and enforce record-level authorization. This is not direct access to restricted Sheets and does not require a new Phase 3 schema or Form field.
+
+
+### R51 — Universal Generated-ID Visibility
+
+All 13 authoritative record types must expose their generated canonical ID in the corresponding authorized website/module view: Projects, Employees, Project Members, Project Notes, MOM/MOM Index, Budget Given, Employee Spending, OOP Claims, Salary/Payroll, Investments, HR Requests, Reports, and Submission/Processing History. This is not a new data schema and does not alter permissions.
