@@ -13,3 +13,7 @@
 | B4-11 | Failure safety | A failed automation must leave the source record intact and visibly marked as failed/pending. | Never silently mark a failed transaction as completed. |
 | B4-12 | Auditability | Important automated actions should have timestamp, record ID, action/result and error information when applicable. | Use the Phase 3 audit/submission structure. |
 | B4-00 | Universal stable ID generation | Generate every authoritative record ID through the central Apps Script ID generator using the record-type prefix and six-digit zero-padded sequence. | IDs must never depend on row position or business attributes; never reuse an issued ID. |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- For Project_Members, Project_Notes, Budget_Given and Salary_Admin, ID generation is explicitly user/system initiated through the designated Generate-ID control. Generic onEdit/autosave events must never issue a business ID. The generator validates the pending row, serializes issuance with LockService, writes the ID, locks the ID field, and only then permits commit/save. Salary supports controlled bulk generation for validated payroll imports/entries. Employee_ID retains its frozen dedicated workflow.
