@@ -143,3 +143,77 @@ This architecture requirement is frozen but currently:
 **NOT IMPLEMENTED / NOT VERIFIED — HUMAN ACTION REQUIRED**
 
 Implementation and live verification belong to the existing Phase 4/Phase 5 execution boundaries.
+
+
+## 14. Universal generated-ID visibility matrix — R51
+
+The generated-ID visibility requirement applies to **every authoritative record type**, not only employee-submitted or employee-linked records.
+
+| Record | Generated ID | Authoritative record | Website/module where ID can be viewed |
+|---|---|---|---|
+| Project | `PRJ-000001` | Projects | Projects |
+| Employee | `EMP-000001` | Employees | Employees |
+| Project Member | `MBR-000001` | Project_Members | Project Members |
+| Project Note | `NOT-000001` | Project_Notes | Project Notes |
+| MOM | `MOM-000001` | Project_MOM_Index / MOM content | MOM / MOM Index |
+| Budget | `BDG-000001` | Budget_Given | Budget Given |
+| Spending | `SPN-000001` | Employee_Spending | Employee Spending |
+| OOP Claim | `CLM-000001` | OOP_Claims | OOP Claims |
+| Salary | `SAL-000001` | Salary_Admin | Salary / Payroll |
+| Investment | `INV-000001` | Investments | Investments |
+| HR Request | `HRR-000001` | HR_Admin | HR Requests |
+| Report | `RPT-000001` | Report_Index | Reports |
+| Submission | `SUB-000001` | Submission_Index | Submission / Processing History |
+
+### Universal rule
+
+Whenever an authoritative record exists, its generated business ID must be displayed in the corresponding authorized website/module view of that record.
+
+The ID must not be hidden merely because it was generated automatically. It is the canonical record identifier and must be available for reference, search, support, audit and authorized navigation.
+
+### Authorization rule
+
+"Where it can be viewed" means **where an authorized user can view it**. It does not mean every employee can view every ID or every underlying record.
+
+Existing authorization rules remain unchanged:
+- Employees may see only records/data already authorized for them.
+- Admins may see records within their administrative scope.
+- Sensitive Salary, Investment, HR and Finance data remain restricted according to the existing permissions model.
+- The generated ID itself must never be used to bypass authorization.
+
+### Retrieval/search rule
+
+Where the corresponding module supports record lookup/search, the generated ID must be a supported canonical lookup/reference value.
+
+A user must not need to know or manually construct an ID to create a record. The system generates it. After creation, authorized users can see and reference it in the relevant module.
+
+### Record-creation rule
+
+This universal visibility requirement does not change when IDs are generated:
+- Phase 4 generates the authoritative business ID during controlled authoritative record creation.
+- The generated ID is persisted with the authoritative record.
+- The website/module reads the persisted ID when displaying the record.
+
+### Submission_ID clarification
+
+`SUB-000001` is the canonical identifier for the Submission_Index record. It is visible in the authorized Submission/Processing History view and is also the linkage key used to trace an intake submission to its resulting authoritative business record where applicable.
+
+### Employee_ID clarification
+
+`EMP-000001` is both the authoritative Employee record ID and the canonical employee key used by employee-linked business records. Its display in Employees is subject to employee-directory visibility rules; its use internally must not be exposed as an authorization mechanism.
+
+### R51 scope boundary
+
+R51 changes the architecture from a **partial employee self-service record-visibility requirement** to a **universal generated-ID visibility requirement for all 13 authoritative record types**.
+
+It does not:
+- add new Phase 3 Forms;
+- add new workbook tabs;
+- change ID formats;
+- change ID-generation timing/algorithm;
+- grant additional data permissions;
+- expose restricted Sheets directly;
+- implement Apps Script;
+- implement the website.
+
+Status: **ARCHITECTURE FROZEN / IMPLEMENTATION PENDING / HUMAN VERIFICATION REQUIRED**
