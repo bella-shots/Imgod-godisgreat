@@ -585,3 +585,10 @@ Whenever an authoritative business record needs to reference an employee, the ca
 This rule applies to employee-linked authoritative fields including Project_Members.Employee_ID, Employee_Spending.Employee_ID, OOP_Claims.Employee_ID, Salary_Admin.Employee_ID, HR_Admin.Employee_ID, and employee recipients in Budget_Given (Recipient Employee_ID).
 
 Human-facing Form identity inputs may continue to use the currently frozen email-based fields where specified; Phase 4 resolves those inputs to the canonical Employee_ID before writing authoritative records. This rule does not rename the Employees.Name display field or non-employee entity fields such as vendor names.
+
+
+## R48 clarification — Global canonical employee reference rule
+
+Whenever a field identifies or references an employee as a business record, the canonical reference is `Employee_ID`. Employee names are display attributes, not employee keys. This applies to `Employee_Spending.Employee_ID`, `OOP_Claims.Employee_ID`, `Salary_Admin.Employee_ID`, `HR_Admin.Employee_ID`, `Project_Members.Employee_ID`, employee identity in Reports/internal lookups, `Budget_Given.Recipient Employee_ID`, and any future employee-related authoritative table.
+
+This is not a blanket replacement of every `Name` field. `Employees.Name` remains the employee display name; `Recipient_Vendor` remains a vendor/entity name; `Investments.Source_Person` remains a person/entity field because the source of investment capital is not necessarily an employee. Reports may display employee `Name`, but internal joins, lookups, authorization and record references must resolve/use `Employee_ID`.
