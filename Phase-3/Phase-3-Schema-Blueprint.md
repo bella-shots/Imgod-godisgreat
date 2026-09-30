@@ -47,7 +47,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Purpose:** Authoritative project registry.
 - **Sensitivity:** Moderate.
 - **Columns:**
-  1. `Project_ID` (Text, Format: `PRJ-XXX`, e.g., `PRJ-001`. Stable unique ID. Required)
+  1. `Project_ID` (Text, Format: `PRJ-000001` (prefix + 6-digit sequence). Stable unique ID. System-generated and required)
   2. `Project_Name` (Text, Required)
   3. `Description` (Text)
   4. `Owner` (Email address of project lead, Required)
@@ -63,7 +63,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Purpose:** Single authoritative employee and people/HR master record. Employee identity, functional role, company designation/level, employment status, HR attributes, reimbursement eligibility and project-access baseline are kept together here to avoid splitting one person's master record across `Employees` and `HR_Admin`.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
-  1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. System-generated and required; HR must not manually assign or overwrite it)
+  1. `Employee_ID` (Text, Format: `EMP-000001` (prefix + 6-digit sequence). Stable unique ID. System-generated and required; HR must not manually assign or overwrite it)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
   4. `Role` (Text/controlled functional value, Required; describes **what the employee does / their functional responsibility**, e.g., ADAS Test Engineer, Finance Executive, HR Executive, Developer, Project Manager. It is **not** the employee's company level and is **not** the authorization/access role.)
@@ -88,7 +88,7 @@ Before a new employee record may be saved/committed:
 1. HR/Admin enters all required employee details.
 2. HR/Admin uses the sheet control **GENERATE EMPLOYEE ID**.
 3. The system validates the required employee fields and duplicate-identity constraints.
-4. Only after validation succeeds, the system generates a unique EMP-XXX Employee_ID.
+4. Only after validation succeeds, the system generates a unique `EMP-000001`-style Employee_ID.
 5. The generated Employee_ID is written to the pending employee record and becomes read-only/locked for HR/Admin.
 6. **SAVE EMPLOYEE** becomes available only after a valid Employee_ID has been generated.
 7. The employee record is committed only through the Save action.
@@ -101,7 +101,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Relational junction table mapping employees to projects.
 - **Sensitivity:** High (Managed by Admin/Lead).
 - **Columns:**
-  1. `Member_Record_ID` (Text, Format: `MBR-XXX`, Stable unique ID)
+  1. `Member_Record_ID` (Text, Format: `MBR-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
   3. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   4. `Project_Role` (Dropdown: `Lead`, `Core Contributor`, `Reviewer`, `Observer`)
@@ -114,7 +114,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Structured operational updates and project documentation notes.
 - **Sensitivity:** Moderate.
 - **Columns:**
-  1. `Note_ID` (Text, Format: `NOT-XXX`, Stable unique ID)
+  1. `Note_ID` (Text, Format: `NOT-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
   3. `Date` (Date, Format: `YYYY-MM-DD`, Required)
   4. `Author_Email` (Email, Submitter address)
@@ -127,7 +127,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Index catalog of meeting minutes, participants, and published Doc references.
 - **Sensitivity:** Moderate.
 - **Columns:**
-  1. `MOM_ID` (Text, Format: `MOM-XXX`, Stable unique ID)
+  1. `MOM_ID` (Text, Format: `MOM-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
   3. `Meeting_Date` (Date, Format: `YYYY-MM-DD`, Required)
   4. `Title` (Text, Meeting subject, Required)
@@ -144,7 +144,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Track money given for project execution, how much has been used, how much remains to be returned, how much has actually been returned, and the remaining return obligation.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
-  1. `Budget_ID` (Text, Format: `BDG-XXX`, Stable unique ID)
+  1. `Budget_ID` (Text, Format: `BDG-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Date` (Date, Format: `YYYY-MM-DD`, Date money was given, Required)
   3. `Recipient Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required; employee recipient references must use canonical Employee_ID, not employee name or email)
   4. `Amount Given INR` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
@@ -177,7 +177,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Employee direct expense records and vendor spending claims.
 - **Sensitivity:** High (Restricted source tab).
 - **Columns:**
-  1. `Spending_ID` (Text, Format: `SPN-XXX`, Stable unique ID)
+  1. `Spending_ID` (Text, Format: `SPN-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   3. `Date` (Date, Format: `YYYY-MM-DD`, Incurred date, Required)
   4. `Amount` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
@@ -193,7 +193,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Monthly out-of-pocket claims submitted by employees.
 - **Sensitivity:** High (Restricted source tab).
 - **Columns:**
-  1. `Claim_ID` (Text, Format: `CLM-XXX`, Stable unique ID)
+  1. `Claim_ID` (Text, Format: `CLM-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   3. `Month` (Text, Format: `YYYY-MM`, e.g., `2026-09`, Required)
   4. `Date` (Date, Format: `YYYY-MM-DD`, Date of claim, Required)
@@ -211,7 +211,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Administrative compensation, payout, and carry-forward balances for both recurring monthly compensation and one-time payments.
 - **Sensitivity:** Extreme (Admin only).
 - **Columns:**
-  1. `Salary_Record_ID` (Text, Format: `SAL-XXX`, Stable unique ID)
+  1. `Salary_Record_ID` (Text, Format: `SAL-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   3. `Payment_Frequency` (Dropdown: `Monthly`, `One-Time`, Required)
   4. `Month` (Text, Format: `YYYY-MM`; Required for Monthly records, blank for One-Time records)
@@ -228,7 +228,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Loans, capital infusions, and investment returns tracking.
 - **Sensitivity:** Extreme (Admin only).
 - **Columns:**
-  1. `Investment_ID` (Text, Format: `INV-XXX`, Stable unique ID)
+  1. `Investment_ID` (Text, Format: `INV-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Source_Person` (Text, Investor/Entity name, Required)
   3. `Amount` (Currency INR, Format: `₹#,##0.00`, Capital amount, Required)
   4. `Taken_Date` (Date, Format: `YYYY-MM-DD`, Required)
@@ -242,7 +242,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Controlled HR request/workflow queue. It is not a second employee master and must not duplicate employee profile fields. The authoritative employee/HR profile remains `Employees`.
 - **Sensitivity:** High (Admin / HR only).
 - **Columns:**
-  1. `HR_Request_ID` (Text, Format: `HRR-XXX`, Stable unique request ID)
+  1. `HR_Request_ID` (Text, Format: `HRR-000001` (prefix + 6-digit sequence). Stable unique request ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   3. `Request_Type` (Controlled value, Required)
   4. `Relevant_Details` (Text, Request/update details, Required)
@@ -257,7 +257,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Register of generated management, financial, and operational reports.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
-  1. `Report_ID` (Text, Format: `RPT-XXX`, Stable unique ID)
+  1. `Report_ID` (Text, Format: `RPT-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Report_Type` (Dropdown: `Company Summary`, `Project Report`, `Finance Report`, `HR Report`)
   3. `Period` (Text, Format: `YYYY-MM-DD to YYYY-MM-DD`, inclusive exact reporting date range, e.g., `2026-07-01 to 2026-09-30`)
   4. `Project_ID` (Text, Optional, Foreign Key -> `Projects.Project_ID`)
@@ -270,7 +270,7 @@ Before a new employee record may be saved/committed:
 - **Purpose:** Audit log of all incoming Form submissions and Phase 4 processing states.
 - **Sensitivity:** High.
 - **Columns:**
-  1. `Submission_ID` (Text, Format: `SUB-XXX`, Stable unique ID)
+  1. `Submission_ID` (Text, Format: `SUB-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Source_Form` (Text, Name of Google Form submitted)
   3. `Record_ID` (Text, Generated/Mapped target business record ID)
   4. `Submitted_By` (Email of submitter)
@@ -278,6 +278,45 @@ Before a new employee record may be saved/committed:
   6. `Processing_Status` (Dropdown: `Received`, `Processed`, `Validation Failed`, `Manual Review`)
 
 ---
+
+## 2A. Universal Stable ID Generation Standard
+
+All authoritative record IDs use the following frozen format:
+
+| Record | Prefix | Format |
+|---|---|---|
+| Project | PRJ | `PRJ-000001` |
+| Employee | EMP | `EMP-000001` |
+| Project Member | MBR | `MBR-000001` |
+| Project Note | NOT | `NOT-000001` |
+| MOM | MOM | `MOM-000001` |
+| Budget | BDG | `BDG-000001` |
+| Spending | SPN | `SPN-000001` |
+| OOP Claim | CLM | `CLM-000001` |
+| Salary | SAL | `SAL-000001` |
+| Investment | INV | `INV-000001` |
+| HR Request | HRR | `HRR-000001` |
+| Report | RPT | `RPT-000001` |
+| Submission | SUB | `SUB-000001` |
+
+### Generation rules
+
+1. IDs are system-generated; users never choose or invent IDs during normal record creation.
+2. Each prefix has an independent numeric sequence.
+3. The numeric portion is six digits, zero-padded.
+4. IDs are never derived from spreadsheet row numbers, names, dates, email addresses or other business attributes.
+5. IDs are stable and immutable after assignment.
+6. IDs are never reused, including after deletion, cancellation, employee exit or failed record creation.
+7. Sequence gaps are allowed and are not errors.
+8. Concurrent creation must be serialized using Apps Script `LockService`.
+9. Apps Script `PropertiesService` stores the independent next-sequence counters.
+10. Before issuing an ID after initialization/recovery, the generator must reconcile the stored counter with the highest valid existing ID for that prefix so a counter rollback cannot create a duplicate.
+11. A generated ID must be validated against the expected prefix + six-digit pattern before the record is committed.
+12. Duplicate-trigger/idempotency checks must prevent the same source event from creating a second authoritative record.
+13. Employee_ID is the canonical employee key wherever an authoritative record references an employee.
+14. The exact Apps Script implementation belongs to Phase 4; Phase 3 freezes this contract and format only.
+
+The six-digit sequence is intentionally used instead of a three-digit limit so high-volume records such as monthly Salary and Employee Spending records do not hit a 999-record ceiling.
 
 ### 3. Human-Facing Form Identity vs Authoritative IDs
 
