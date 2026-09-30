@@ -12,3 +12,4 @@
 | B4-10 | Drive links | Write/maintain stable Drive URLs or IDs for relevant project/report/MOM artifacts. | Do not rely on manually copied links where automation can maintain them. |
 | B4-11 | Failure safety | A failed automation must leave the source record intact and visibly marked as failed/pending. | Never silently mark a failed transaction as completed. |
 | B4-12 | Auditability | Important automated actions should have timestamp, record ID, action/result and error information when applicable. | Use the Phase 3 audit/submission structure. |
+| B4-00 | Universal stable ID generation | Generate every authoritative record ID through the central Apps Script ID generator using the record-type prefix and six-digit zero-padded sequence. | IDs must never depend on row position or business attributes; never reuse an issued ID. |
