@@ -497,3 +497,10 @@ This does not alter the existing respondent-facing Forms. Their currently frozen
 ## R48 clarification — Employee reference handling across Forms
 
 Existing human-facing Form identity fields may remain as currently frozen (for example, Employee Email ID) where the Form specification requires them. Phase 4 must resolve those inputs to canonical Employee_ID before writing employee-linked authoritative records. No Form response or internal lookup may use an employee name as the canonical employee key.
+
+
+## R55 — Form asset placement
+
+FRM-01 through FRM-07 are authoritative Google Form assets stored in the root MASTER COMPANY Drive folder. Native response destinations remain the workbook/tab destinations specified in the Forms map. Form placement and response-destination placement are separate concerns.
+
+Phase 4 must verify/normalize the Form assets to the canonical MASTER COMPANY root without creating duplicate Forms.
