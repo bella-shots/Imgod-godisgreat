@@ -1041,3 +1041,12 @@ The employee master now distinguishes **functional Role** from **company Designa
 - Authorization/access is a separate concern. Phase 4 must not infer authorization from Role or Designation alone.
 - R44's HR Report profile is corrected accordingly: both Role and Designation are displayed subject to the same existing authorization scope; neither field grants access to restricted HR, salary, finance, or administrative information.
 - No new Form field is added. No salary Form/response tab is introduced.
+
+
+### Global employee reference rule — R48
+
+Whenever a field identifies or references an employee as a business record, the canonical reference is `Employee_ID`. Employee names are display attributes, not employee keys.
+
+This applies to `Employee_Spending.Employee_ID`, `OOP_Claims.Employee_ID`, `Salary_Admin.Employee_ID`, `HR_Admin.Employee_ID`, `Project_Members.Employee_ID`, employee identity in Reports/internal lookups, `Budget_Given.Recipient Employee_ID`, and any future employee-related authoritative table.
+
+Do not blindly replace every occurrence of `Name`. `Employees.Name` remains the employee display name. `Recipient_Vendor` remains a vendor/entity name. `Investments.Source_Person` remains a person/entity field because the source of investment capital is not necessarily an employee. Reports may display employee `Name`, but internal joins, lookups, authorization and record references must resolve/use `Employee_ID`.
