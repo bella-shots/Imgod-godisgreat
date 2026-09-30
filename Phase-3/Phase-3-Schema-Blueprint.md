@@ -63,7 +63,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Purpose:** Single authoritative employee and people/HR master record. Employee identity, functional role, company designation/level, employment status, HR attributes, reimbursement eligibility and project-access baseline are kept together here to avoid splitting one person's master record across `Employees` and `HR_Admin`.
 - **Sensitivity:** High (Restricted).
 - **Columns:**
-  1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. Required)
+  1. `Employee_ID` (Text, Format: `EMP-XXX`, Stable unique ID. System-generated and required; HR must not manually assign or overwrite it)
   2. `Name` (Text, Required)
   3. `Email` (Email address, Unique, Required)
   4. `Role` (Text/controlled functional value, Required; describes **what the employee does / their functional responsibility**, e.g., ADAS Test Engineer, Finance Executive, HR Executive, Developer, Project Manager. It is **not** the employee's company level and is **not** the authorization/access role.)
@@ -78,6 +78,23 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
   13. `HR_Notes` (Text, Confidential internal notes)
   14. `Reimbursement_Settings` (Dropdown: `Standard`, `Executive`, `Contractor-Direct`)
   15. `Created_At` (Timestamp, Format: `YYYY-MM-DD HH:mm:ss`)
+
+
+### Employee creation workflow — mandatory Generate ID before Save
+
+Employees is the authoritative employee-entry surface. HR/Admin enters the new employee's details directly in the Employees sheet; a separate employee-creation Google Form is not required.
+
+Before a new employee record may be saved/committed:
+1. HR/Admin enters all required employee details.
+2. HR/Admin uses the sheet control **GENERATE EMPLOYEE ID**.
+3. The system validates the required employee fields and duplicate-identity constraints.
+4. Only after validation succeeds, the system generates a unique EMP-XXX Employee_ID.
+5. The generated Employee_ID is written to the pending employee record and becomes read-only/locked for HR/Admin.
+6. **SAVE EMPLOYEE** becomes available only after a valid Employee_ID has been generated.
+7. The employee record is committed only through the Save action.
+8. Saving without first generating a valid Employee_ID is prohibited.
+9. Employee_IDs are never generated from employee names, never manually invented/overwritten, and never reused after an employee leaves.
+10. The Generate ID and Save controls are Phase 4 Apps Script functionality; Phase 3 freezes this behavior and acceptance criteria.
 
 ### Tab 3: `Project_Members` (Projects Mapping)
 - **Workbook:** `MASTER_COMPANY_OPERATIONS`
@@ -129,7 +146,7 @@ Phase 3 defines **13 authoritative/support schema tabs** across the four workboo
 - **Columns:**
   1. `Budget_ID` (Text, Format: `BDG-XXX`, Stable unique ID)
   2. `Date` (Date, Format: `YYYY-MM-DD`, Date money was given, Required)
-  3. `Recipient Email / Name` (Email or Name, Required; do not force email-only validation)
+  3. `Recipient Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required; employee recipient references must use canonical Employee_ID, not employee name or email)
   4. `Amount Given INR` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
   5. `Used Amount INR` (Currency INR, Format: `₹#,##0.00`, Number >= 0; entered/updated by Finance Admin)
   6. `To Be Returned INR` (Currency INR, Format: `₹#,##0.00`; automatically calculated as `Amount Given INR - Used Amount INR`; never negative)
