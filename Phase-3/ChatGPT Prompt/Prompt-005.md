@@ -719,3 +719,16 @@ When creating or validating the authoritative `Employees` tab and HR Report:
 
 ## R47 — Budget_Given implementation change
 Prompt-005 must implement the revised Budget_Given model exactly: Amount Given INR, Used Amount INR, calculated To Be Returned INR = MAX(0, Given - Used), Returned Amount INR, calculated Pending Return Amount INR = MAX(0, To Be Returned - Returned), and derived Status = Pending Return when Pending Return > 0, Fully Returned when Pending Return = 0 and To Be Returned > 0, and No Return Required when To Be Returned = 0. Used Amount cannot exceed Amount Given; Returned Amount cannot exceed To Be Returned. Remove old Budget_Given statuses Disbursed, Partially Reconciled, Reconciled and Returned. Recipient Email / Name accepts name or email and is not email-only. No Form changes, Lists_Config, cross-workbook validation, Apps Script, or Phase 4 processing are introduced by R47.
+
+
+## R48 — Employee creation and canonical Employee_ID workflow
+
+Apply the frozen R48 employee-master rule:
+- Use the Employees sheet as the HR/Admin employee-entry surface.
+- Do not create a separate employee-creation Form for this workflow.
+- Require **GENERATE EMPLOYEE ID** after required employee details are entered and before **SAVE EMPLOYEE**.
+- Validate required fields and duplicate identity constraints before generating the ID.
+- Generate a unique stable EMP-XXX Employee_ID; never derive it from Name, manually overwrite it, or reuse it.
+- Lock the generated Employee_ID and prevent Save until it exists.
+- Treat Employee_ID as the canonical employee reference key in authoritative business records.
+- Implement the actual button/trigger enforcement in Phase 4 Apps Script; do not silently substitute a different Phase 3 mechanism.
