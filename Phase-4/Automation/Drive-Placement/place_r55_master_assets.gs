@@ -1,6 +1,6 @@
 /** Phase 4 A4-15 — R55 Master Asset Placement / Verification */
 const R55_ASSETS = [
-  {label:'Google Site', match:'MASTER COMPANY', exact:true, dest:'MASTER COMPANY'},
+  {label:'Google Site', match:'imgod_godisgreat', exact:true, dest:'MASTER COMPANY/MASTER COMPANY'},
   {label:'MASTER_COMPANY_OPERATIONS', match:'MASTER_COMPANY_OPERATIONS', exact:true, dest:'Projects'},
   {label:'MASTER_COMPANY_FINANCE', match:'MASTER_COMPANY_FINANCE', exact:true, dest:'Finance'},
   {label:'MASTER_COMPANY_HR_ADMIN', match:'MASTER_COMPANY_HR_ADMIN', exact:true, dest:'HR'},
@@ -19,7 +19,7 @@ function placeR55MasterAssets() {
   const out = [];
   try {
     const root = uniqueFolder_('MASTER COMPANY');
-    R55_ASSETS.forEach(a => out.push(processR55_(a, a.dest === 'MASTER COMPANY' ? root : uniqueChild_(root, a.dest))));
+    R55_ASSETS.forEach(a => out.push(processR55_(a, resolveR55Destination_(root, a.dest))));
     Logger.log(JSON.stringify({module:'A4-15', results:out}, null, 2));
   } finally { lock.releaseLock(); }
 }
@@ -41,5 +41,6 @@ function processR55_(a, dest) {
   return {asset:name,id:id,status:'MOVED_AND_VERIFIED',destination:dest.getName()};
 }
 function uniqueFolder_(name){const it=DriveApp.getFoldersByName(name),a=[];while(it.hasNext())a.push(it.next());if(a.length!==1)throw new Error(a.length?'AMBIGUOUS FOLDER: '+name:'MISSING FOLDER: '+name);return a[0];}
-function uniqueChild_(p,name){const it=p.getFoldersByName(name),a=[];while(it.hasNext())a.push(it.next());if(a.length!==1)throw new Error(a.length?'AMBIGUOUS DESTINATION: MASTER COMPANY/'+name:'MISSING DESTINATION: MASTER COMPANY/'+name);return a[0];}
+function resolveR55Destination_(root,dest){const parts=dest.split('/');let cur=root;for(let i=0;i<parts.length;i++)cur=uniqueChild_(cur,parts[i]);return cur;}
+function uniqueChild_(p,name){const it=p.getFoldersByName(name),a=[];while(it.hasNext())a.push(it.next());if(a.length!==1)throw new Error(a.length?'AMBIGUOUS DESTINATION: '+name:'MISSING DESTINATION: '+name);return a[0];}
 function esc_(s){return s.replace(/\\/g,'\\\\').replace(/"/g,'\\\"');}
