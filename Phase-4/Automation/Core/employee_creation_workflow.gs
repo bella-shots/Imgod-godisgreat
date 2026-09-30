@@ -40,6 +40,18 @@ function getEmployeeCreationConfig() {
  * Install the single authorized edit trigger for the existing Employees sheet.
  * Safe to rerun: duplicate employee-control triggers are removed first.
  */
+function setupEmployeeDirectSheetWorkflow() {
+  const trigger = installEmployeeSheetControlTrigger();
+  const prerequisites = verifyEmployeeCreationPrerequisites();
+  const result = {
+    status: trigger.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    trigger: trigger,
+    prerequisites: prerequisites
+  };
+  Logger.log(JSON.stringify(result, null, 2));
+  return result;
+}
+
 function installEmployeeSheetControlTrigger() {
   const sheet = getEmployeeSheet_();
   const ss = sheet.getParent();
@@ -144,7 +156,7 @@ function generateEmployeeIdForRow_(sheet, rowNumber) {
     PropertiesService.getScriptProperties()
       .setProperty('EMPLOYEE_PENDING_' + employeeId, JSON.stringify(pending));
 
-    SpreadsheetApp.getActive().toast(
+    sheet.getParent().toast(
       'Employee ID generated: ' + employeeId +
       '. Review the row, then type SAVE EMPLOYEE in Created_At.',
       'Employee Creation',
