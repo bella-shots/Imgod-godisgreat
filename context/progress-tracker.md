@@ -510,3 +510,10 @@ The remaining Finance authoritative tabs — Employee_Spending, OOP_Claims, Sala
 - Project_MOM_Index
 
 The Operations workbook verification is complete. This is a partial Phase 3 completion milestone only; the overall Phase 3 status remains IN PROGRESS / HUMAN ACTION REQUIRED until the remaining workbook/Form and acceptance gates are completed.
+
+
+### R49 — Universal stable ID generation frozen
+- Phase 3 ID formats are now `PREFIX-000001` with six-digit zero-padded sequences.
+- System generation, independent per-prefix counters, immutability, no reuse, gap tolerance, and Employee_ID canonical-reference rules are frozen.
+- Phase 4 must implement PropertiesService counters, LockService concurrency protection, existing-ID reconciliation, format validation and idempotency.
+- No Phase 3 workbook/form/business-calculation changes were introduced by R49.
