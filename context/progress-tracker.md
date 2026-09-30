@@ -129,17 +129,24 @@ All R55 placement and response-destination acceptance checks are now verified un
 - **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
-- **Employee Creation Workflow (Phase 3 R48): IMPLEMENTED in GitHub; live verification pending.**
-  - Dedicated sidebar workflow: validate employee details → Generate EMP ID through A4-00 → Save Employee → lock Employee_ID.
+- **Employee Creation Workflow (Phase 3 R48): DIRECT SHEET IMPLEMENTATION IN GITHUB; live verification pending.**
+  - Uses the existing `Employees` tab directly; no sidebar, custom menu, employee-creation Form, or extra schema column.
+  - The `Employees` schema remains exactly 15 columns in the frozen order.
+  - Explicit control 1: type `GENERATE EMPLOYEE ID` in `Employee_ID` on the pending employee row.
+  - Explicit control 2: after review, type `SAVE EMPLOYEE` in `Created_At`; the script replaces it with the system timestamp and commits the row.
+  - Employee_ID is generated only through A4-00, then protected/read-only; pending generated state is tracked so manually invented IDs cannot be saved.
   - Uses the frozen Employment_Status values: Probation, Full-Time, Notice Period, Relieved.
-  - No employee-creation Form and no generic onEdit/autosave ID generation.
+  - The old sidebar implementation has been removed.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger now ignores non-`Projects_Responses` sheets instead of throwing `A4_01_WRONG_SHEET`.
 
 ## Phase 4 immediate focus
-1. Live-verify A4-00 after the NOT-prefix correction.
-2. Live-verify A4-01/A4-02 prerequisites.
-3. Run controlled FRM-01 end-to-end test.
+1. Deploy the updated direct Employees-sheet workflow through the existing GitHub Actions Apps Script deployment.
+2. Run `installEmployeeSheetControlTrigger()` in the existing MASTER COMPANY Apps Script project.
+3. Run `verifyEmployeeCreationPrerequisites()` and then perform the controlled employee Generate-ID → Save test.
+4. Live-verify A4-00 after the NOT-prefix correction.
+5. Live-verify A4-01/A4-02 prerequisites.
+6. Run controlled FRM-01 end-to-end test.
 4. Continue A4-03 Expense Processing and R54 attachment routing.
 5. Business rules, reporting, authorization, error handling, idempotency and acceptance tests.
 
