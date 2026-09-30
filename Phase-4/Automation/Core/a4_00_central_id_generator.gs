@@ -40,13 +40,15 @@ function generateA4Id(prefix, existingIds) {
 
     // Reconcile against authoritative existing IDs before issuing anything.
     const highestExisting = getHighestA4IdNumber_(prefix, existingIds || []);
-    let next = Math.max(stored, highestExisting) + 1;
+    const next = Math.max(stored, highestExisting) + 1;
 
     const candidate = formatA4Id_(prefix, next);
     if (containsA4Id_(existingIds || [], candidate)) {
       throw new Error('A4_ID_COLLISION: ' + candidate);
     }
 
+    // Issuing an ID advances the counter permanently. If the caller later
+    // fails to commit the business record, the ID is intentionally not reused.
     props.setProperty(propertyKey, String(next));
     return candidate;
   } finally {
@@ -59,32 +61,52 @@ function reconcileA4IdCounter(prefix, existingIds) {
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
+    const props = PropertiesService.getScriptProperties();
+    const propertyKey = A4_ID_PROPERTY_PREFIX + prefix;
+    const stored = parseA4Sequence_(props.getProperty(propertyKey));
     const highest = getHighestA4IdNumber_(prefix, existingIds || []);
-    PropertiesService.getScriptProperties()
-      .setProperty(A4_ID_PROPERTY_PREFIX + prefix, String(highest));
+
+    // Never move the counter backward. This preserves issued IDs even when
+    // an old business row was deleted and is no longer present in the sheet.
+    const reconciled = Math.max(stored, highest);
+    props.setProperty(propertyKey, String(reconciled));
+
     return {
       prefix: prefix,
       highestExisting: highest,
-      storedCounter: highest,
-      nextId: formatA4Id_(prefix, highest + 1)
+      storedCounterBefore: stored,
+      storedCounter: reconciled,
+      nextId: formatA4Id_(prefix, reconciled + 1)
     };
   } finally {
     lock.releaseLock();
   }
 }
 
-/** Test harness only. Does not write a business record. */
-function testA4IdGenerator() {
+/** Non-destructive preview helper for verification and UI validation.
+ * Does not write Script Properties and does not issue/consume an ID.
+ */
+function previewA4Id(prefix, existingIds) {
+  prefix = normalizeA4Prefix_(prefix);
+  const stored = parseA4Sequence_(
+    PropertiesService.getScriptProperties().getProperty(A4_ID_PROPERTY_PREFIX + prefix)
+  );
+  const highestExisting = getHighestA4IdNumber_(prefix, existingIds || []);
+  return formatA4Id_(prefix, Math.max(stored, highestExisting) + 1);
+}
+
+/** Non-destructive test harness. Does not advance production counters. */
+function testA4IdGeneratorNonDestructive() {
   const samples = {
     PRJ: ['PRJ-000001','PRJ-000004'],
     EMP: ['EMP-000010'],
     BDG: ['BDG-000099']
   };
   const out = Object.keys(samples).map(function(prefix) {
-    const id = generateA4Id(prefix, samples[prefix]);
-    return {prefix:prefix, generated:id};
+    return {prefix:prefix, preview:previewA4Id(prefix, samples[prefix])};
   });
   Logger.log(JSON.stringify(out, null, 2));
+  return out;
 }
 
 /** Reconciles all frozen 13 prefixes using supplied existing-ID arrays.
