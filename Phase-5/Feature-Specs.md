@@ -31,3 +31,7 @@
 | Drive is the file store. |  |  |  |  |  |  |
 | Apps Script is the automation layer. |  |  |  |  |  |  |
 | The original full visual-builder specification is no longer a mandatory acceptance criterion under the revised objective. |  |  |  |  |  |  |
+
+### R50 — Employee Record Self-Service
+
+Add the employee-facing **My Records** capability as an architectural requirement. After a Form submission is processed into an authoritative business record, the employee must be able to retrieve the authorized record through the company website and see its generated business ID. The website must resolve the current employee to canonical Employee_ID and enforce record-level authorization. This is not direct access to restricted Sheets and does not require a new Phase 3 schema or Form field.
