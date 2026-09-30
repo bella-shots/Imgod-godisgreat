@@ -12,3 +12,5 @@
 | P5-10 | Handover is PASS. | Ownership, documentation, maintenance and recovery information are complete. | NOT STARTED |
 | P5-11 | Defect closure gate. | No unresolved critical/security/business-blocking defect remains. | NOT STARTED |
 | P5-12 | FINAL PROJECT CLOSURE. | PHASE_5_COMPLETE is true and the Master Website is ready for internal operational use. | NOT STARTED |
+| P5-13 | Employee My Records retrieval | After an applicable Form submission is processed and receives an authoritative business ID, the submitting/authorized employee can open My Records and see that record and its generated ID. | NOT STARTED |
+| P5-14 | My Records authorization isolation | Employee A cannot retrieve Employee B's restricted record by changing record ID, Employee_ID, email, URL/query parameters, or other request inputs. | NOT STARTED |
