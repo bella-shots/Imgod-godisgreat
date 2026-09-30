@@ -8,7 +8,7 @@ const A4_FOUNDATION = {
   costBoundary: 'Google Apps Script + approved Google services only',
   privilegedRuntime: 'authorized owner/admin account',
   idWidth: 6,
-  supportedIdPrefixes: ['PRJ','EMP','MBR','PNT','BDG','SPN','CLM','SAL','MOM','INV','HRR','RPT','SUB']
+  supportedIdPrefixes: ['PRJ','EMP','MBR','NOT','BDG','SPN','CLM','SAL','MOM','INV','HRR','RPT','SUB']
 };
 
 function verifyA4Foundation() {
