@@ -367,3 +367,14 @@ The Role/Designation distinction is resolved as follows: `Role` = functional res
 
 ## R47 — Budget_Given return model resolved
 Resolved the Budget_Given spending/return-state ambiguity. The authoritative model is: Amount Given INR; Used Amount INR; calculated To Be Returned INR = MAX(0, Given - Used); Returned Amount INR; calculated Pending Return Amount INR = MAX(0, To Be Returned - Returned); and derived Status = Pending Return when any positive amount remains, Fully Returned when the amount to be returned is fully returned, and No Return Required when nothing remains to be returned. A pending amount of ₹1 or any positive amount remains Pending Return. The old Reconciled terminology is removed from Budget_Given. Recipient Email / Name accepts a name or email. No Form change is required.
+
+
+## R48 resolution — Employee ID generation and employee reference key
+
+**Resolved:** Employee creation remains in the Employees sheet. HR/Admin enters the employee details there, then must use **GENERATE EMPLOYEE ID** before **SAVE EMPLOYEE**. Saving without a generated Employee_ID is prohibited.
+
+**Resolved:** Employee_ID is system-generated in EMP-XXX format, is not derived from the employee name, is not manually assigned/overwritten, and is never reused.
+
+**Resolved:** Authoritative employee-linked references use Employee_ID. Names remain display attributes and are not canonical employee keys.
+
+**Implementation owner:** Phase 4 Apps Script. Phase 3 freezes the behavior and acceptance criteria.
