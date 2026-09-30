@@ -40,3 +40,7 @@ Add the employee-facing **My Records** capability as an architectural requiremen
 ### R51 — Universal Generated-ID Visibility
 
 All 13 authoritative record types must expose their generated canonical ID in the corresponding authorized website/module view: Projects, Employees, Project Members, Project Notes, MOM/MOM Index, Budget Given, Employee Spending, OOP Claims, Salary/Payroll, Investments, HR Requests, Reports, and Submission/Processing History. This is not a new data schema and does not alter permissions.
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- R52 — For Sheet-originated records, the website/module may display the generated business ID only after it has been persisted by the controlled Generate-ID workflow. Project Member, Project Note, Budget and Salary records require explicit Generate-ID actions before commit; IDs must not be inferred from row position or generated from autosave/edit events.
