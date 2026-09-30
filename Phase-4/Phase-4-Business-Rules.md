@@ -28,17 +28,15 @@
 - Routing must be idempotent; retries must not create duplicate business copies.
 
 
-## R55 — Control-asset Drive placement rules
-
-- The canonical Drive location for MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN, MASTER_COMPANY_ADMIN, FRM-01 through FRM-07, and the Master Google Site is the existing root MASTER COMPANY folder.
-- Phase 4 must locate/verify the existing authoritative asset rather than creating a new asset.
-- If technically supported, an existing misplaced asset may be moved to MASTER COMPANY while preserving its identity, content, permissions and links.
-- No duplicate workbook, Form, or Site may be created to satisfy placement.
-- Resource-specific access controls remain authoritative; moving an asset must not broaden access.
-- Failed placement normalization must remain visible and must not be reported as successfully completed.
-
-
 ## R55 — Master Drive asset placement business rules
+- The Google Site file, four master workbooks and seven Forms have frozen authoritative Drive destinations defined by R55.
+- Phase 4 must verify the current Drive parent for every asset and relocate an existing misplaced asset when authorized and technically possible.
+- Do not create a replacement workbook, Form or Site when the existing asset can be located and moved.
+- Do not silently choose an alternate folder or create a new folder outside the frozen Phase 1 hierarchy.
+- Placement is idempotent and must not duplicate assets on retries.
+- Existing workbook contents, Form questions/response destinations, and Site content must be preserved during placement.
+- If an asset is missing, ambiguous, inaccessible, or cannot be moved without human action, preserve the current source state and surface HUMAN ACTION REQUIRED; do not mark placement PASS.
+
 - The Google Site file, four master workbooks and seven Forms have frozen authoritative Drive destinations defined by R55.
 - Phase 4 must verify the current Drive parent for every asset and relocate an existing misplaced asset when authorized and technically possible.
 - Do not create a replacement workbook, Form or Site when the existing asset can be located and moved.
