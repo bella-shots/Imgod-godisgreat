@@ -534,3 +534,7 @@ The Operations workbook verification is complete. This is a partial Phase 3 comp
 - All 13 generated IDs must be displayed in their corresponding authorized website/module views.
 - This includes PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT and SUB.
 - This does not change Phase 3 schemas/forms, ID generation rules, or permissions.
+
+
+### R52 — Explicit Generate-ID controls for Sheet-originated records
+- R52 — Explicit Generate-ID controls for Sheet-originated records. Status: ARCHITECTURE FROZEN / IMPLEMENTATION PENDING. Project Member (MBR), Project Note (NOT), Budget (BDG) and Salary (SAL) IDs are not generated merely because a row is edited or autosaved. Each requires an explicit controlled Generate-ID action; the generated ID is written to the authoritative row, locked/read-only, and the record cannot be committed without it. Salary supports controlled bulk generation for validated payroll imports/entries. Employee_ID remains unchanged under its existing Generate Employee ID → lock → Save workflow. Submission_ID remains system/index-generated and is not a manual Generate-ID workflow. Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 and Phase 5 implementation remain blocked pending the existing Phase 3 gate.
