@@ -378,3 +378,10 @@ Resolved the Budget_Given spending/return-state ambiguity. The authoritative mod
 **Resolved:** Authoritative employee-linked references use Employee_ID. Names remain display attributes and are not canonical employee keys.
 
 **Implementation owner:** Phase 4 Apps Script. Phase 3 freezes the behavior and acceptance criteria.
+
+
+## R48 clarification — Global employee reference resolution
+
+**Resolved:** Employee_ID is the canonical employee key wherever a business record identifies or references an employee. This includes Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and future employee-related tables.
+
+**Not a blanket Name replacement:** Employees.Name remains a display attribute; Recipient_Vendor remains a vendor/entity name; Investments.Source_Person remains a person/entity field because investment capital may come from a non-employee. Reports can display Name while internally using Employee_ID.
