@@ -1,6 +1,6 @@
 /** Phase 4 A4-15 — R55 Master Asset Placement / Verification */
 const R55_ASSETS = [
-  {label:'Google Site', match:'imgod_godisgreat', exact:true, dest:'MASTER COMPANY/MASTER COMPANY'},
+  {label:'Google Site', match:'imgod_godisgreat', exact:true, dest:'MASTER COMPANY'},
   {label:'MASTER_COMPANY_OPERATIONS', match:'MASTER_COMPANY_OPERATIONS', exact:true, dest:'Projects'},
   {label:'MASTER_COMPANY_FINANCE', match:'MASTER_COMPANY_FINANCE', exact:true, dest:'Finance'},
   {label:'MASTER_COMPANY_HR_ADMIN', match:'MASTER_COMPANY_HR_ADMIN', exact:true, dest:'HR'},
@@ -19,7 +19,7 @@ function placeR55MasterAssets() {
   const out = [];
   try {
     const root = uniqueFolder_('MASTER COMPANY');
-    R55_ASSETS.forEach(a => out.push(processR55_(a, resolveR55Destination_(root, a.dest))));
+    R55_ASSETS.forEach(a => out.push(processR55_(a, a.dest === 'MASTER COMPANY' ? root : resolveR55Destination_(root, a.dest))));
     Logger.log(JSON.stringify({module:'A4-15', results:out}, null, 2));
   } finally { lock.releaseLock(); }
 }
