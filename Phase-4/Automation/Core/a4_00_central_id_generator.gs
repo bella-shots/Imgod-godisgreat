@@ -13,8 +13,8 @@
 const A4_ID_CONFIG = {
   PRJ: {label:'Project_ID'},
   EMP: {label:'Employee_ID'},
-  MBR: {label:'Project_Member_ID'},
-  PNT: {label:'Project_Note_ID'},
+  MBR: {label:'Member_Record_ID'},
+  NOT: {label:'Note_ID'},
   BDG: {label:'Budget_ID'},
   SPN: {label:'Spending_ID'},
   CLM: {label:'Claim_ID'},
@@ -37,18 +37,16 @@ function generateA4Id(prefix, existingIds) {
     const props = PropertiesService.getScriptProperties();
     const propertyKey = A4_ID_PROPERTY_PREFIX + prefix;
     const stored = parseA4Sequence_(props.getProperty(propertyKey));
-
-    // Reconcile against authoritative existing IDs before issuing anything.
     const highestExisting = getHighestA4IdNumber_(prefix, existingIds || []);
     const next = Math.max(stored, highestExisting) + 1;
-
     const candidate = formatA4Id_(prefix, next);
+
     if (containsA4Id_(existingIds || [], candidate)) {
       throw new Error('A4_ID_COLLISION: ' + candidate);
     }
 
-    // Issuing an ID advances the counter permanently. If the caller later
-    // fails to commit the business record, the ID is intentionally not reused.
+    // Issued IDs are consumed permanently, even if the caller later fails
+    // to commit the business record. This preserves the no-reuse invariant.
     props.setProperty(propertyKey, String(next));
     return candidate;
   } finally {
@@ -65,10 +63,9 @@ function reconcileA4IdCounter(prefix, existingIds) {
     const propertyKey = A4_ID_PROPERTY_PREFIX + prefix;
     const stored = parseA4Sequence_(props.getProperty(propertyKey));
     const highest = getHighestA4IdNumber_(prefix, existingIds || []);
-
-    // Never move the counter backward. This preserves issued IDs even when
-    // an old business row was deleted and is no longer present in the sheet.
     const reconciled = Math.max(stored, highest);
+
+    // Never move a counter backward; issued IDs must never be reused.
     props.setProperty(propertyKey, String(reconciled));
 
     return {
@@ -83,9 +80,7 @@ function reconcileA4IdCounter(prefix, existingIds) {
   }
 }
 
-/** Non-destructive preview helper for verification and UI validation.
- * Does not write Script Properties and does not issue/consume an ID.
- */
+/** Non-destructive preview helper. Does not consume or issue an ID. */
 function previewA4Id(prefix, existingIds) {
   prefix = normalizeA4Prefix_(prefix);
   const stored = parseA4Sequence_(
@@ -100,7 +95,8 @@ function testA4IdGeneratorNonDestructive() {
   const samples = {
     PRJ: ['PRJ-000001','PRJ-000004'],
     EMP: ['EMP-000010'],
-    BDG: ['BDG-000099']
+    BDG: ['BDG-000099'],
+    NOT: ['NOT-000002']
   };
   const out = Object.keys(samples).map(function(prefix) {
     return {prefix:prefix, preview:previewA4Id(prefix, samples[prefix])};
@@ -109,10 +105,6 @@ function testA4IdGeneratorNonDestructive() {
   return out;
 }
 
-/** Reconciles all frozen 13 prefixes using supplied existing-ID arrays.
- * This function is intentionally empty by default: callers/modules must supply
- * authoritative IDs rather than allowing this core module to guess sheet columns.
- */
 function listA4SupportedPrefixes() {
   Logger.log(JSON.stringify(Object.keys(A4_ID_CONFIG), null, 2));
   return Object.keys(A4_ID_CONFIG);
