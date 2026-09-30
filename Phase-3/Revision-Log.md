@@ -452,3 +452,13 @@ Expanded the compensation architecture to support recurring monthly compensation
 
 ## R47 — Budget_Given spending and return tracking
 Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`) with a simple calculated money-flow model. `Amount Given INR` and `Used Amount INR` determine calculated `To Be Returned INR`; `Returned Amount INR` determines calculated `Pending Return Amount INR`; Status is automatically derived as `Pending Return`, `Fully Returned`, or `No Return Required`. Any positive pending amount, including ₹1, remains `Pending Return`. Used Amount cannot exceed Amount Given and Returned Amount cannot exceed To Be Returned. `Recipient Email / Name` is name-or-email, not email-only. No Form, workbook-boundary, Lists_Config, cross-workbook validation, or Phase 4 architecture change.
+
+
+### R48 — Employee_ID generation gate + canonical employee reference rule
+- Employees remains the direct HR/Admin employee-entry surface.
+- Added mandatory **GENERATE EMPLOYEE ID** control before **SAVE EMPLOYEE**.
+- Saving a new employee without a generated Employee_ID is prohibited.
+- Employee_ID is system-generated, stable, never name-derived, never manually overwritten, and never reused.
+- Canonical employee references in authoritative business records use Employee_ID; employee names remain display attributes.
+- Budget_Given employee recipient field is Recipient Employee_ID instead of Recipient Email / Name.
+- Phase 4 Apps Script owns enforcement; Phase 3 freezes the requirement.
