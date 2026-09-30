@@ -2,7 +2,7 @@
 |---|---|---|---|
 | B4-01 | Stable record identity | Use Project_ID, Employee_ID, Claim_ID, Spending_ID, MOM_ID, Salary_Record_ID and Investment_ID as applicable. | Never identify records only by row position. |
 | B4-02 | Expense validation | Reject/flag missing employee, date, amount, project or required proof according to the Phase 3 field definition. | Do not silently alter submitted values. |
-| B4-03 | OOP claim validation | Validate month/date/amount/project/proof and employee eligibility before approval processing. | Do not auto-approve unless explicitly authorized. |
+| B4-03 | OOP claim validation | Validate claim date/amount/project/proof and employee eligibility before approval processing. Derive reporting month from the claim date when required; do not require or store a separate OOP month field. | Do not auto-approve unless explicitly authorized. |
 | B4-04 | ₹5,000 rule | Implement only the exact interpretation approved for the project. | Do not invent allowance treatment, extra ₹5,000 line, approval behavior or salary treatment. |
 | B4-05 | Salary carry-forward | Calculate pending amount using approved salary fields and preserve monthly history. | Do not overwrite prior month records. |
 | B4-06 | MOM recipients | Use registered participant/recipient email IDs from the approved MOM workflow. | Do not email arbitrary contacts unless the workflow authorizes them. |
