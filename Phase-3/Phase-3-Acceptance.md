@@ -526,3 +526,21 @@ Verify the live `MASTER_COMPANY_FINANCE → Budget_Given` sheet implements the R
 - No old Budget_Given status values remain: `Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`.
 
 **Status:** SPEC READY / HUMAN ACTION REQUIRED until the live workbook is updated and the above tests pass.
+
+
+## P3-25 — Employee creation: Generate Employee ID before Save
+
+**Status:** SPEC READY / HUMAN ACTION REQUIRED for Phase 3; Apps Script implementation is Phase 4.
+
+Acceptance requirements:
+- Employees is the direct HR/Admin employee-entry surface.
+- HR/Admin can enter all required employee details without manually entering Employee_ID.
+- A **GENERATE EMPLOYEE ID** control is defined for the employee-entry workflow.
+- Generating an ID validates required fields and duplicate-identity constraints first.
+- A valid unique EMP-XXX ID is generated only after validation succeeds.
+- The generated Employee_ID is locked/read-only after generation.
+- **SAVE EMPLOYEE** is unavailable until a valid Employee_ID has been generated.
+- A new employee record cannot be committed by bypassing the Generate-ID step.
+- Employee_ID is never generated from Name, never manually overwritten, and never reused after separation.
+- Employee-linked authoritative references use Employee_ID rather than employee name.
+- The actual button/trigger enforcement is implemented in Phase 4 Apps Script, not by manual Phase 3 acceptance activity.
