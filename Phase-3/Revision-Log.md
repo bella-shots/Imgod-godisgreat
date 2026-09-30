@@ -511,4 +511,31 @@ This is a schema revision only; it does not change the OOP ₹5,000 threshold ru
 Frozen the missing Drive-routing behavior for Form-uploaded files using only the existing Phase 1 folder manifest. FRM-02 Employee Spending and FRM-03 OOP Claims proofs/receipts route to the exact project `03_Expenses` folder. FRM-04 HR supporting documents route to `MASTER COMPANY/HR`. FRM-05 has no file-upload field; MOM artifacts are stored in the project's `04_MOM` folder and indexed through `Project_MOM_Index.Drive_URL`. FRM-01, FRM-06 and FRM-07 have no attachment-routing workflow because their current Forms contain no file-upload field. Routing is Phase 4 Apps Script behavior; destination permissions remain authoritative; retries are idempotent; failures preserve the source reference and do not silently choose alternate folders.
 
 
-| R55 | Frozen canonical Drive placement for the Phase 3 control assets: MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN, MASTER_COMPANY_ADMIN, FRM-01 through FRM-07, and the Master Google Site are stored in the existing root MASTER COMPANY Drive location. No new folder or duplicate asset is authorized. Phase 4 must verify/normalize placement. |
+
+
+### R55 — Master Drive asset locations frozen
+**Date:** 2026-09-30
+
+A repository-wide inspection found no prior authoritative contract defining the Drive location of the master Google Site, the four Phase 3 master workbooks, or the seven Phase 3 Forms. R55 freezes their locations without changing the already-verified Phase 1 top-level Drive structure.
+
+**Authoritative master asset locations:**
+- Google Site file: `MASTER COMPANY/MASTER COMPANY`
+- `MASTER_COMPANY_OPERATIONS`: `MASTER COMPANY/Projects/MASTER_COMPANY_OPERATIONS`
+- `MASTER_COMPANY_FINANCE`: `MASTER COMPANY/Finance/MASTER_COMPANY_FINANCE`
+- `MASTER_COMPANY_HR_ADMIN`: `MASTER COMPANY/HR/MASTER_COMPANY_HR_ADMIN`
+- `MASTER_COMPANY_ADMIN`: `MASTER COMPANY/MASTER_COMPANY_ADMIN`
+
+**Authoritative Form locations:**
+- FRM-01 Projects: `MASTER COMPANY/Projects/FRM-01 Projects`
+- FRM-02 Employee Spending: `MASTER COMPANY/Finance/FRM-02 Employee Spending`
+- FRM-03 OOP Claims: `MASTER COMPANY/Finance/FRM-03 OOP Claims`
+- FRM-04 HR Request: `MASTER COMPANY/HR/FRM-04 HR Request`
+- FRM-05 MOM Input: `MASTER COMPANY/MOM/FRM-05 MOM Input`
+- FRM-06 Report Request: `MASTER COMPANY/Reports/FRM-06 Report Request`
+- FRM-07 Investment Input: `MASTER COMPANY/Finance/FRM-07 Investment Input`
+
+No new top-level Drive folder is introduced. Phase 4 must locate/verify these assets and move misplaced existing assets to the authoritative destination when authorized and technically possible. It must not create duplicate business assets. If an asset is missing, ambiguous, inaccessible, or cannot be moved without a human-only action, Phase 4 must preserve the current source state and surface HUMAN ACTION REQUIRED rather than silently creating a replacement.
+
+The Form response tabs remain in their authoritative workbooks. This revision concerns the Form files themselves and does not change Phase 3 workbook boundaries. Form file-upload destinations remain governed by R54.
+
+R55 is frozen. Any change to these locations requires a new approved revision.
