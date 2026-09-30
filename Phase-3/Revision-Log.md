@@ -509,3 +509,6 @@ This is a schema revision only; it does not change the OOP ₹5,000 threshold ru
 **Date:** 2026-09-30
 
 Frozen the missing Drive-routing behavior for Form-uploaded files using only the existing Phase 1 folder manifest. FRM-02 Employee Spending and FRM-03 OOP Claims proofs/receipts route to the exact project `03_Expenses` folder. FRM-04 HR supporting documents route to `MASTER COMPANY/HR`. FRM-05 has no file-upload field; MOM artifacts are stored in the project's `04_MOM` folder and indexed through `Project_MOM_Index.Drive_URL`. FRM-01, FRM-06 and FRM-07 have no attachment-routing workflow because their current Forms contain no file-upload field. Routing is Phase 4 Apps Script behavior; destination permissions remain authoritative; retries are idempotent; failures preserve the source reference and do not silently choose alternate folders.
+
+
+| R55 | Frozen canonical Drive placement for the Phase 3 control assets: MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN, MASTER_COMPANY_ADMIN, FRM-01 through FRM-07, and the Master Google Site are stored in the existing root MASTER COMPANY Drive location. No new folder or duplicate asset is authorized. Phase 4 must verify/normalize placement. |
