@@ -81,3 +81,11 @@ The generator must never move a counter backwards.
 Phase 3 freezes the ID formats and invariants.
 Phase 4 implements the Apps Script generator, locking, counters, reconciliation, validation and idempotency.
 No manual ID-generation process is required for normal operations.
+
+## 10. Downstream employee self-service visibility — R50
+
+For employee-linked authoritative records, generation of the business ID is not the end of the workflow. After the authoritative record is created/updated, the record must be retrievable through the authorized employee-facing self-service layer defined in `Phase-5/Employee-Record-Self-Service-Architecture.md`.
+
+The generated business ID remains the canonical displayed record identifier. Phase 4 must preserve the linkage between the Form submission, Submission_Index.Record_ID, and the authoritative business record so Phase 5 can retrieve the record without exposing restricted source workbooks.
+
+This does not change the ID-generation algorithm or Phase 3 schema.
