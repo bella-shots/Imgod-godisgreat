@@ -538,3 +538,16 @@ The Operations workbook verification is complete. This is a partial Phase 3 comp
 
 ### R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 — Explicit Generate-ID controls for Sheet-originated records. Status: ARCHITECTURE FROZEN / IMPLEMENTATION PENDING. Project Member (MBR), Project Note (NOT), Budget (BDG) and Salary (SAL) IDs are not generated merely because a row is edited or autosaved. Each requires an explicit controlled Generate-ID action; the generated ID is written to the authoritative row, locked/read-only, and the record cannot be committed without it. Salary supports controlled bulk generation for validated payroll imports/entries. Employee_ID remains unchanged under its existing Generate Employee ID → lock → Save workflow. Submission_ID remains system/index-generated and is not a manual Generate-ID workflow. Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 and Phase 5 implementation remain blocked pending the existing Phase 3 gate.
+ 
+
+## R54 session note — Form attachment Drive routing frozen
+- Frozen the missing Phase 4 Drive-routing contract using the existing Phase 1 folder manifest only.
+- FRM-02 Employee Spending receipt/proof → `MASTER COMPANY/Projects/PROJECT_<ProjectName>/03_Expenses`.
+- FRM-03 OOP Claim proof → `MASTER COMPANY/Projects/PROJECT_<ProjectName>/03_Expenses`.
+- FRM-04 HR supporting document → `MASTER COMPANY/HR`.
+- FRM-05 has no file-upload field; MOM artifacts → project `04_MOM`, with `Project_MOM_Index.Drive_URL` recorded.
+- FRM-01, FRM-06 and FRM-07 have no attachment-routing workflow under their current schemas.
+- Routing is Phase 4 Apps Script behavior; no Phase 3 Form/schema change is required.
+- Destination permissions remain authoritative; no public sharing or permission expansion is permitted.
+- Duplicate routing must be idempotent; unresolved destination/move failure must preserve the source reference and surface a safe failure/pending state.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked until the Phase 3 gate is formally closed.
