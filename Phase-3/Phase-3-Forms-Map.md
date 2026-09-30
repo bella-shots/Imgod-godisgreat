@@ -483,3 +483,12 @@ Both are authoritative employee-profile attributes and may be displayed in HR Re
 
 ## R47 — Budget_Given return-tracking revision
 The `Budget_Given` authoritative Finance table is revised to use Amount Given INR, Used Amount INR, automatically calculated To Be Returned INR, Returned Amount INR, automatically calculated Pending Return Amount INR, and automatically derived Status (`Pending Return`, `Fully Returned`, `No Return Required`). This revision does not add or change any respondent-facing Form fields or native response destinations. FRM-02/FRM-03/FRM-07 mappings remain unchanged. The Finance workbook remains restricted and local validation remains native to the authoritative tab.
+
+
+## R48 — Employee creation is a Sheet workflow, not a new Form
+
+Employee creation is intentionally handled directly in the authoritative Employees sheet. Do not create an additional employee-creation Google Form solely to generate Employee_ID.
+
+The employee-entry sheet must expose a mandatory **GENERATE EMPLOYEE ID** control followed by **SAVE EMPLOYEE**. The record cannot be committed until a valid system-generated EMP-XXX exists. The control logic is a Phase 4 Apps Script implementation requirement.
+
+This does not alter the existing respondent-facing Forms. Their currently frozen human-facing identity fields remain as specified; Phase 4 resolves employee identity to canonical Employee_ID before writing authoritative employee-linked records.
