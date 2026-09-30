@@ -34,13 +34,7 @@
 - **Idempotency:** retries must detect an already-routed file/record and must not create duplicate destination copies.
 - **Failure:** if the destination project/folder cannot be resolved or the file cannot be moved, preserve the source submission, mark processing as failed/pending, retain the original uploaded-file reference for controlled retry, and do not mark the authoritative business record as successfully processed.
 
-
 ## R55 — A4-15 Master Asset Placement / Verification
-- **A4-15 — Master Asset Placement / Verification:** Phase 4 startup/admin action that locates the frozen Google Site, four master workbooks and seven Forms; verifies each asset's Drive parent; moves a misplaced existing asset to its authoritative destination when authorized; and reports missing, ambiguous, inaccessible or non-movable assets as HUMAN ACTION REQUIRED.
-- Frozen destinations are exactly those defined in R55 of the Phase 3 Revision Log and Phase 4 Build specification.
-- A4-15 must never create duplicate master assets merely because an existing asset is misplaced. It is idempotent and preserves existing content/data/form structure.
-- A4-15 does not alter Phase 3 schemas or Form questions. R54 remains authoritative for Form-uploaded file routing.
-
 - **A4-15 — Master Asset Placement / Verification:** Phase 4 startup/admin action that locates the frozen Google Site, four master workbooks and seven Forms; verifies each asset's Drive parent; moves a misplaced existing asset to its authoritative destination when authorized; and reports missing, ambiguous, inaccessible or non-movable assets as HUMAN ACTION REQUIRED.
 - Frozen destinations are exactly those defined in R55 of the Phase 3 Revision Log and Phase 4 Build specification.
 - A4-15 must never create duplicate master assets merely because an existing asset is misplaced. It is idempotent and preserves existing content/data/form structure.
