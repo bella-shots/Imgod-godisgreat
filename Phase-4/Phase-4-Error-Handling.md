@@ -11,3 +11,7 @@
 | ID counter conflict / rollback | Reconcile the stored prefix counter against the highest valid existing ID and advance before issuing a new ID. | Do not issue an ID below an existing ID or silently overwrite an existing record. |
 | ID generation collision | Reject the collision, log the failure, and retry only within the controlled ID-generation transaction. | Do not reuse an already-issued ID. |
 | Concurrent ID requests | Serialize generation with Apps Script LockService. | Do not read/increment/write a shared counter without a lock. |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- R52 error-handling requirements: reject Generate-ID when required fields are incomplete/invalid; never issue an ID from generic onEdit/autosave; LockService serializes concurrent Generate-ID actions; if generation succeeds but commit/save fails, the issued ID is not reused; repeated Generate-ID on an already-ID'd/locked record must not allocate another sequence value.
