@@ -25,7 +25,7 @@ function placeR55MasterAssets() {
 }
 function processR55_(a, dest) {
   const files = DriveApp.searchFiles((a.exact ? 'title = "' : 'title contains "') + esc_(a.match) + '" and trashed = false');
-  const matches=[]; while(files.hasNext()) matches.push(files.next());
+  const matches=[]; while(files.hasNext()){const f=files.next(); if(a.label==='Google Site' && f.getMimeType()!=='application/vnd.google-apps.site') continue; matches.push(f);}
   if (!matches.length) return {asset:a.label,status:'HUMAN_ACTION_REQUIRED',reason:'MISSING_OR_INACCESSIBLE'};
   if (matches.length>1) return {asset:a.label,status:'HUMAN_ACTION_REQUIRED',reason:'AMBIGUOUS',candidates:matches.map(f=>({name:f.getName(),id:f.getId()}))};
   const file=matches[0], name=file.getName(), id=file.getId();
