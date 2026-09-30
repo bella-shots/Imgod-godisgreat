@@ -29,9 +29,9 @@ Feature 03: Sheets + Forms (Create 4 Google Sheets workbooks and 8 Google Forms 
 - 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
 
 ## Current Phase 3 Prompt
-- Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-005.md`
+- Authoritative implementation prompt: `Phase-3/ChatGPT Prompt/Prompt-006.md`
 - Prompt-001, Prompt-002 and Prompt-003 remain historical and are not overwritten.
-- Prompt-005 records running changes R20 through R23. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary; R22 makes FRM-05 Project Name a free Short answer; R23 removes the recurring salary Form and makes `Salary_Admin` the payroll ledger. R19 and R18 remain in force. The authoritative/support count is 13 and the applicable/native response count is 7, for 20 physical tabs after all applicable Forms are linked.
+- Prompt-005 records historical running changes R20 through R23. Prompt-006 freezes the R49 universal stable ID generation revision. R20 moves cross-domain `Report_Index` and `Submission_Index` into the restricted `MASTER_COMPANY_ADMIN` workbook; R21 corrects the human-facing Form identity boundary; R22 makes FRM-05 Project Name a free Short answer; R23 removes the recurring salary Form and makes `Salary_Admin` the payroll ledger. R19 and R18 remain in force. The authoritative/support count is 13 and the applicable/native response count is 7, for 20 physical tabs after all applicable Forms are linked.
 
 ## Open decisions
 - Any remaining implementation ambiguity must be resolved in the relevant feature specification before dependent behavior is built.
