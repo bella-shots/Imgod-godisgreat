@@ -9,7 +9,7 @@ Repository is under the playbook-controlled five-phase architecture.
 The user has confirmed that all required Phase 3 workbooks and Forms have been live-verified. Phase 4 implementation and verification are in progress.
 
 ## Feature status
-- 01 Google Drive structure: COMPLETE & VERIFIED
+- 01 Google Drive structure: COMPLETE & VERIFIED (revised 30-Sep-2026: Admin and Site containers added)
 - 02 Master Google Site: COMPLETE & VERIFIED
 - 03 Sheets + Forms: COMPLETE & VERIFIED
 - 04 Apps Script automation: IN PROGRESS
@@ -39,7 +39,7 @@ The user has confirmed that all required Phase 3 workbooks and Forms have been l
 - Universal stable IDs use independent PREFIX-000001 sequences.
 - Phase 4 implements the explicit Generate-ID workflows frozen in R52.
 - Form attachment routing follows R54.
-- Master Google Site, workbook, and Form Drive locations follow R55.
+- Master Google Site, workbook, and Form Drive locations follow the revised R55 hierarchy.
 - No new folders, tabs, Forms, fields, or alternate schemas may be invented without an approved revision.
 
 ## Phase 4 entry condition
@@ -53,34 +53,44 @@ Implementation source of truth:
 5. Phase-4/Phase-4-Acceptance.md
 6. Frozen Phase 3 schemas, Forms map, revision log, and Drive contracts
 
+## Current authoritative Drive hierarchy
+
+```text
+MASTER COMPANY
+├── Projects
+│   └── MASTER_COMPANY_OPERATIONS + FRM-01
+├── Finance
+│   ├── MASTER_COMPANY_FINANCE
+│   ├── FRM-02
+│   ├── FRM-03
+│   └── FRM-07
+├── HR
+│   ├── MASTER_COMPANY_HR_ADMIN
+│   └── FRM-04
+├── Admin
+│   └── MASTER_COMPANY_ADMIN
+├── MOM
+│   └── FRM-05
+├── Reports
+│   └── FRM-06
+└── Site
+    ├── imgod_godisgreat
+    └── Templates
+```
+
 ## Phase 4 R55 master asset placement status
 
-### Verified
-- **P4-33 — Google Site placement: VERIFIED**
-  - `imgod_godisgreat` is `ALREADY_CORRECT` at the Phase 1 root `MASTER COMPANY`.
-  - The verified Site asset ID is `1sx5s9r1CNjz86ljbQgmbv_Dvu6vHj5oO`.
-- **P4-34 — Four master workbooks: VERIFIED**
-  - MASTER_COMPANY_OPERATIONS → `MASTER COMPANY/Projects`
-  - MASTER_COMPANY_FINANCE → `MASTER COMPANY/Finance`
-  - MASTER_COMPANY_HR_ADMIN → `MASTER COMPANY/HR`
-  - MASTER_COMPANY_ADMIN → `MASTER COMPANY`
-- **P4-35 — Seven Forms: VERIFIED**
-  - FRM-01 → Projects
-  - FRM-02 → Finance
-  - FRM-03 → Finance
-  - FRM-04 → HR
-  - FRM-05 → MOM
-  - FRM-06 → Reports
-  - FRM-07 → Finance
-- **P4-36 — Relocate misplaced asset: VERIFIED/DEMONSTRATED**
-- **P4-37 — Retry/idempotency: VERIFIED/DEMONSTRATED**
-- **P4-38 — Missing/ambiguous/inaccessible handling: VERIFIED/DEMONSTRATED**
-  - Missing/inaccessible handling was observed during earlier execution.
-  - Ambiguous Google Site matching was observed and then resolved by filtering to the native Google Site MIME type.
-- **P4-39 — Response-destination integrity: PENDING**
+### Previous R55 evidence
+The previous execution verified assets under the superseded root-level Site/ADMIN placement. Those results are now superseded by the revised 30-Sep-2026 hierarchy.
+
+### Revised targets requiring live verification
+- Google Site → `MASTER COMPANY/Site`
+- MASTER_COMPANY_ADMIN → `MASTER COMPANY/Admin/MASTER_COMPANY_ADMIN`
+- Other master workbooks and Forms retain their existing destinations.
+- P4-39 response-destination integrity remains pending.
 
 ### R55 overall status
-**OPEN — P4-39 remains pending.**
+**OPEN — revised placement targets and P4-39 require live verification.**
 
 The R55 asset-placement work must not be marked fully complete until response-destination integrity is verified.
 
