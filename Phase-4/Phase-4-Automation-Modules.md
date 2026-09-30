@@ -12,3 +12,6 @@
 | A4-10 | Audit Logger | Important automation actions | Action type; record ID; actor; timestamp; result | Write audit/submission status to approved audit structure | Traceable automation history |
 | A4-11 | Error Handler | Any module exception | Error context | Catch/log error; preserve source record; mark processing failure; notify admin where required | Error log + safe failure state |
 | A4-00 | Central ID Generator | Any authorized record-creation workflow | Record type/prefix + existing authoritative records + stored counter | Acquire ScriptLock; reconcile stored counter with highest valid existing ID; increment the independent prefix counter in PropertiesService; generate and validate the next ID; release lock; return the ID for the record-creation transaction | Unique stable ID such as `BDG-000001`; safe under concurrent submissions |
+
+
+| A4-12 | Employee Record Self-Service Linkage | Successful authoritative record creation/update | Submission_ID + generated Record_ID + canonical Employee_ID + authorization scope | Preserve the submission-to-record linkage and expose the record only through the authorized Phase 5 self-service retrieval contract; do not broaden source-workbook permissions | Employee can retrieve authorized record and generated business ID through My Records |
