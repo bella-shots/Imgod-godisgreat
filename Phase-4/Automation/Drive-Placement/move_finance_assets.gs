@@ -4,7 +4,7 @@
  * Finance assets:
  *   MASTER_COMPANY_FINANCE
  *   FRM-02 — Employee Spending / Expense
- *   FRM-03 OOP Claims
+ *   FRM-03 — OOP Claim
  *   FRM-07 Investment Input
  *
  * Moves existing assets into:
@@ -26,7 +26,10 @@ const FINANCE_ASSETS = [
     id: '1OSVrNelP4bJeP6SUGcjtZDxufO1UHaoQ3_eII4YDc_k'
   },
   {
-    expectedNames: ['FRM-03 OOP Claims'],
+    expectedNames: [
+      'FRM-03 — OOP Claim',
+      'FRM-03 OOP Claims'
+    ],
     id: '1nbd0vlQ3GymGvHs-lab6-A9rxZsY2qMHWZ7QW9aouuk'
   },
   {
@@ -67,20 +70,19 @@ function placeAsset_(asset, destinationFolder) {
     throw new Error(
       'ID/name mismatch for ' + asset.id +
       ': expected one of [' + asset.expectedNames.join(', ') +
-      '] but found "' + actualName + '".'
+      '] but found \"' + actualName + '\".'
     );
   }
 
-  const sameNameInDestination =
-    destinationFolder.getFilesByName(actualName);
+  const sameNameInDestination = destinationFolder.getFilesByName(actualName);
 
   while (sameNameInDestination.hasNext()) {
     const existing = sameNameInDestination.next();
 
     if (existing.getId() !== asset.id) {
       throw new Error(
-        'DUPLICATE DETECTED: "' + actualName +
-        '" already exists in MASTER COMPANY/Finance with a different ID: ' +
+        'DUPLICATE DETECTED: \"' + actualName +
+        '\" already exists in MASTER COMPANY/Finance with a different ID: ' +
         existing.getId()
       );
     }
@@ -123,7 +125,7 @@ function placeAsset_(asset, destinationFolder) {
 
   if (!verified) {
     throw new Error(
-      'MOVE_VERIFICATION_FAILED for "' + actualName + '".'
+      'MOVE_VERIFICATION_FAILED for \"' + actualName + '\".'
     );
   }
 
@@ -145,14 +147,14 @@ function findUniqueFolderByName_(name) {
 
   if (matches.length === 0) {
     throw new Error(
-      'Required folder not found: "' + name + '".'
+      'Required folder not found: \"' + name + '\".'
     );
   }
 
   if (matches.length > 1) {
     throw new Error(
-      'AMBIGUOUS FOLDER: "' + name +
-      '" has multiple matches. Refusing to guess.'
+      'AMBIGUOUS FOLDER: \"' + name +
+      '\" has multiple matches. Refusing to guess.'
     );
   }
 
