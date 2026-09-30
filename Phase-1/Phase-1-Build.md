@@ -6,12 +6,16 @@
 | Employee identity rule | Employees may use normal Gmail/Google Accounts. They do not need paid Workspace subscriptions for the target architecture. |
 | Owner/admin rule | The owner/admin account is the authoritative owner of the MASTER COMPANY structure. Avoid making individual employees owners of core folders/files unless deliberately required. |
 | Root folder | MASTER COMPANY |
-| Required top-level folders | Projects; Finance; HR; Templates; MOM; Reports |
+| Required top-level folders | Projects; Finance; HR; Admin; MOM; Reports; Site |
 | Folder hierarchy | MASTER COMPANY / Projects / [Project Name] / ... |
+| Administrative hierarchy | MASTER COMPANY / Admin / MASTER_COMPANY_ADMIN |
+| Site/template hierarchy | MASTER COMPANY / Site / imgod_godisgreat (Google Site); MASTER COMPANY / Site / Templates |
 | Project folder purpose | Each project gets one dedicated folder containing its project-specific files, ready-made checklist Excel, expense Excel, MOM material, notes and other project documents. |
 | Finance folder purpose | Finance-controlled documents, expense source files, reports and finance-related artifacts. Sensitive source data must not be broadly shared. |
 | HR folder purpose | Employee/HR documents and controlled HR records. Sensitive employee data must remain restricted. |
-| Templates folder purpose | Reusable templates for project setup, checklists, expenses, MOMs, reports and other standard documents. |
+| Admin folder purpose | Company-level administrative workbook(s) and controlled administrative artifacts. |
+| Site folder purpose | Google Site and reusable templates associated with the Master Company Site. |
+| Templates folder purpose | Reusable templates for project setup, checklists, expenses, MOMs, reports and other standard documents. Templates are maintained under Site. |
 | MOM folder purpose | Published and/or archived MOM documents and related artifacts, organized consistently. |
 | Reports folder purpose | Generated management reports and approved report outputs. |
 | Required naming convention | Use stable, human-readable names. Recommended project folder format: PROJECT_<ProjectName>. Use consistent subfolder/file naming so Apps Script can locate assets deterministically. |
