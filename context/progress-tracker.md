@@ -527,3 +527,10 @@ The Operations workbook verification is complete. This is a partial Phase 3 comp
 - No Phase 3 Form field, workbook/tab, ID format, or business calculation changed.
 - Phase 4 owns submission-to-authoritative-record linkage and processing; Phase 5 owns My Records UI/retrieval and end-to-end verification.
 - Current live status remains unchanged: Phase 3 IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 BLOCKED; Phase 5 BLOCKED.
+
+
+### R51 — Universal generated-ID visibility
+- **Status:** ARCHITECTURE FROZEN / IMPLEMENTATION PENDING
+- All 13 generated IDs must be displayed in their corresponding authorized website/module views.
+- This includes PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT and SUB.
+- This does not change Phase 3 schemas/forms, ID generation rules, or permissions.
