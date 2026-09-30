@@ -477,3 +477,11 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 
 
 | R51 | Architecture change — expanded generated-ID visibility to all 13 authoritative record types. Every generated ID (PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT, SUB) must be viewable in the corresponding authorized website/module record view. This is a visibility/reference requirement, not a permission expansion or Apps Script implementation. |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+**Date:** 2026-09-30
+
+Corrected the universal ID architecture for records created directly in authoritative Google Sheets. Project Member, Project Note, Budget and Salary IDs are no longer described as being generated merely because a row becomes valid or autosaves. They require explicit controlled Generate-ID actions, followed by ID lock/read-only enforcement and commit/save. Salary supports controlled bulk ID generation for validated payroll imports/entries. Employee_ID retains its existing frozen Generate-ID → lock → Save workflow. Submission_ID remains a system/index-generated identifier and is not a manual employee/admin Generate-ID action.
+
+R52 does not change ID formats, counters, no-reuse rules, Form-originated record processing, or the Phase 4/5 ownership boundaries.
