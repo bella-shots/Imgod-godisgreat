@@ -544,3 +544,10 @@ Acceptance requirements:
 - Employee_ID is never generated from Name, never manually overwritten, and never reused after separation.
 - Employee-linked authoritative references use Employee_ID rather than employee name.
 - The actual button/trigger enforcement is implemented in Phase 4 Apps Script, not by manual Phase 3 acceptance activity.
+
+
+## R48 clarification — Global employee reference acceptance
+
+Acceptance requires canonical Employee_ID references for all employee-linked authoritative records and internal lookups, including Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups, and future employee-related tables. Names may be displayed but must not be used as employee keys.
+
+Explicit exceptions: Employees.Name remains a display field; Recipient_Vendor remains a vendor/entity name; Investments.Source_Person is not converted unless the business rule establishes that the source is always an employee.
