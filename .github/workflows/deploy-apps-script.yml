@@ -26,13 +26,12 @@ jobs:
 
       - name: Configure clasp credentials
         env:
-          CLASP_CREDENTIALS: ${{ secrets.CLASP_CREDENTIALS }}
+          CLASPRC: ${{ secrets.CLASP_CREDENTIALS }}
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
-          test -n "$CLASP_CREDENTIALS" || { echo "Missing CLASP_CREDENTIALS secret"; exit 1; }
-          test -n "$APPS_SCRIPT_ID" || { echo "Missing APPS_SCRIPT_ID secret"; exit 1; }
-          mkdir -p "$HOME"
-          printf '%s' "$CLASP_CREDENTIALS" > "$HOME/.clasprc.json"
+          test -n "$CLASPRC" || { echo "Missing CLASPRC"; exit 1; }
+          test -n "$APPS_SCRIPT_ID" || { echo "Missing APPS_SCRIPT_ID"; exit 1; }
+          printf '%s' "$CLASPRC" > "$HOME/.clasprc.json"
           printf '%s\n' '{"scriptId":"'"$APPS_SCRIPT_ID"'","rootDir":"Phase-4/Automation"}' > .clasp.json
 
       - name: Push GitHub source to existing Apps Script project
@@ -46,11 +45,14 @@ jobs:
           cp "$HOME/.clasprc.json" /tmp/live-apps-script/.clasprc.json
           cd /tmp/live-apps-script
           clasp pull --force
+          echo "Retrieved files:"
+          find . -type f -maxdepth 5 -print
 
       - name: Verify direct employee workflow is actually deployed
         run: |
-          FILE="/tmp/live-apps-script/employee_creation_workflow.gs"
-          test -f "$FILE" || { echo "FAIL: live employee_creation_workflow.gs was not retrieved"; exit 1; }
+          FILE="$(find /tmp/live-apps-script -type f -name 'employee_creation_workflow.gs' -print -quit)"
+          test -n "$FILE" || { echo "FAIL: live employee_creation_workflow.gs was not retrieved anywhere under pulled Apps Script source"; exit 1; }
+          echo "Checking live file: $FILE"
           grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow is NOT in the live Apps Script source"; exit 1; }
           grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl is NOT in the live Apps Script source"; exit 1; }
           if grep -q "function onOpen" "$FILE"; then echo "FAIL: obsolete onOpen remains in live Apps Script source"; exit 1; fi
