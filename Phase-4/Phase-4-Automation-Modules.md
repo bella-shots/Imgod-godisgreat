@@ -18,3 +18,7 @@
 
 
 | A4-13 | Generated-ID Persistence and Visibility Linkage | Successful authoritative record creation/update | Record type + generated Record_ID + Submission_ID where applicable | Persist the canonical generated ID with the authoritative record and preserve linkage required for the corresponding authorized website/module view | Generated ID available in the correct module; no permission expansion |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- A4-14 — Explicit Generate-ID controls for Sheet-originated records: implement controlled Generate-ID actions for Project Member, Project Note, Budget and Salary records. The action validates the pending record, invokes A4-00, writes the generated ID, locks the ID field, and enables/permits commit only after successful generation. Salary must support controlled bulk generation for validated payroll imports/entries. Do not use generic row-edit/autosave triggers to generate these IDs. Employee_ID remains on its dedicated Generate Employee ID workflow. Submission_ID remains system/index-generated.
