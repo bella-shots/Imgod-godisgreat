@@ -112,10 +112,13 @@ R55 placement execution on 30-Sep-2026 completed successfully with all 12 assets
 
 All R55 placement and response-destination acceptance checks are now verified under the revised Drive hierarchy.
 
+## Phase 4 implementation status
+- **Apps Script foundation/configuration: IMPLEMENTED in GitHub; live verification pending.**
+- **A4-00 Central ID Generator: IMPLEMENTED in GitHub; live verification pending.**
+
 ## Phase 4 immediate focus
 1. Apps Script foundation and configuration.
 2. Stable-ID generation and reconciliation.
-4. Stable-ID generation and reconciliation.
 5. Form submission processing and authoritative-record creation.
 6. Drive attachment routing under R54.
 7. Business rules and validation.
