@@ -80,17 +80,34 @@ MASTER COMPANY
 
 ## Phase 4 R55 master asset placement status
 
-### Previous R55 evidence
-The previous execution verified assets under the superseded root-level Site/ADMIN placement. Those results are now superseded by the revised 30-Sep-2026 hierarchy.
+### Verified under revised hierarchy
+- **P4-33 — Google Site placement: PASS**
+  - `imgod_godisgreat` → `MASTER COMPANY/Site`
+  - Status: `ALREADY_CORRECT`
+- **P4-34 — Four master workbooks: PASS**
+  - MASTER_COMPANY_OPERATIONS → Projects
+  - MASTER_COMPANY_FINANCE → Finance
+  - MASTER_COMPANY_HR_ADMIN → HR
+  - MASTER_COMPANY_ADMIN → Admin
+  - All returned `ALREADY_CORRECT`.
+- **P4-35 — Seven Forms: PASS**
+  - FRM-01 → Projects
+  - FRM-02 → Finance
+  - FRM-03 → Finance
+  - FRM-04 → HR
+  - FRM-05 → MOM
+  - FRM-06 → Reports
+  - FRM-07 → Finance
+  - All returned `ALREADY_CORRECT`.
+- **P4-36 — Relocate misplaced existing master asset: VERIFIED/DEMONSTRATED**
+- **P4-37 — Retry asset placement: VERIFIED/DEMONSTRATED**
+- **P4-38 — Missing/ambiguous/inaccessible handling: VERIFIED/DEMONSTRATED**
+- **P4-39 — Response-destination integrity: PENDING**
 
-### Revised targets requiring live verification
-- Google Site → `MASTER COMPANY/Site`
-- MASTER_COMPANY_ADMIN → `MASTER COMPANY/Admin/MASTER_COMPANY_ADMIN`
-- Other master workbooks and Forms retain their existing destinations.
-- P4-39 response-destination integrity remains pending.
+R55 placement execution on 30-Sep-2026 completed successfully with all 12 assets reporting `ALREADY_CORRECT` under the revised hierarchy.
 
 ### R55 overall status
-**OPEN — revised placement targets and P4-39 require live verification.**
+**OPEN — P4-39 response-destination integrity remains pending.**
 
 The R55 asset-placement work must not be marked fully complete until response-destination integrity is verified.
 
