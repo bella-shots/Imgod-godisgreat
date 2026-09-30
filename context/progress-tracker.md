@@ -475,3 +475,9 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 - **Save gate:** no employee record may be committed without a valid generated Employee_ID.
 - **Canonical reference:** employee-linked authoritative records use Employee_ID; names are display-only for employee identity.
 - **Phase 4 dependency:** Apps Script must implement and enforce the Generate-ID and Save controls.
+
+
+### Phase 3 R48 clarification — Global employee reference rule
+- Employee_ID is the canonical key for every employee-linked authoritative record and internal lookup.
+- Covered domains: Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and future employee-related tables.
+- Names remain display attributes; vendor and non-employee investment-source fields are not converted.
