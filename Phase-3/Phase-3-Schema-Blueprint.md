@@ -1101,3 +1101,16 @@ For records that are created directly in authoritative Google Sheets rather than
 The generated ID is written to the authoritative row, becomes locked/read-only, and the record cannot be committed without a valid generated ID. Google Sheets autosave is not itself an ID-generation trigger. Concurrent users are protected by the Phase 4 central generator and LockService. Employee_ID retains the already-frozen **GENERATE EMPLOYEE ID → lock → SAVE EMPLOYEE** workflow and is not changed by R52.
 
 Submission_ID remains system/index generated for Submission_Index and is not converted into a user-facing manual Generate-ID workflow.
+
+
+## R55 — Canonical workbook and Form Drive placement
+
+The four authoritative Phase 3 Google Sheets workbooks are stored in the existing root MASTER COMPANY Drive folder:
+- MASTER_COMPANY_OPERATIONS
+- MASTER_COMPANY_FINANCE
+- MASTER_COMPANY_HR_ADMIN
+- MASTER_COMPANY_ADMIN
+
+FRM-01 through FRM-07 are also stored as authoritative Google Form assets in the root MASTER COMPANY Drive folder. This is a storage/location rule only; it does not change respondent access or workbook permission boundaries.
+
+No duplicate workbook or Form may be created merely to satisfy placement. Phase 4 must locate/verify these assets by authoritative resource identity and normalize them to the canonical root when technically supported.
