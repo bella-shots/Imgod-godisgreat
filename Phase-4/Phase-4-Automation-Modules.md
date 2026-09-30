@@ -44,3 +44,10 @@
 - Do not alter Phase 3 workbook permission boundaries or Phase 2 Site access merely to achieve placement.
 - If an asset cannot be located, moved, or safely normalized, preserve the existing asset and record a visible placement failure/manual-review state.
 - This module verifies/normalizes placement only; it does not create new workbooks, Forms, or a second Site.
+
+
+## R55 — A4-15 Master Asset Placement / Verification
+- **A4-15 — Master Asset Placement / Verification:** Phase 4 startup/admin action that locates the frozen Google Site, four master workbooks and seven Forms; verifies each asset's Drive parent; moves a misplaced existing asset to its authoritative destination when authorized; and reports missing, ambiguous, inaccessible or non-movable assets as HUMAN ACTION REQUIRED.
+- Frozen destinations are exactly those defined in R55 of the Phase 3 Revision Log and Phase 4 Build specification.
+- A4-15 must never create duplicate master assets merely because an existing asset is misplaced. It is idempotent and preserves existing content/data/form structure.
+- A4-15 does not alter Phase 3 schemas or Form questions. R54 remains authoritative for Form-uploaded file routing.
