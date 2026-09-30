@@ -1089,3 +1089,16 @@ Whenever a field identifies or references an employee as a business record, the 
 This applies to `Employee_Spending.Employee_ID`, `OOP_Claims.Employee_ID`, `Salary_Admin.Employee_ID`, `HR_Admin.Employee_ID`, `Project_Members.Employee_ID`, employee identity in Reports/internal lookups, `Budget_Given.Recipient Employee_ID`, and any future employee-related authoritative table.
 
 Do not blindly replace every occurrence of `Name`. `Employees.Name` remains the employee display name. `Recipient_Vendor` remains a vendor/entity name. `Investments.Source_Person` remains a person/entity field because the source of investment capital is not necessarily an employee. Reports may display employee `Name`, but internal joins, lookups, authorization and record references must resolve/use `Employee_ID`.
+
+
+### R52 — Explicit Generate-ID workflow for Sheet-originated records
+For records that are created directly in authoritative Google Sheets rather than through a Google Form, business-ID generation must NOT be triggered merely by row editing/autosave. The following records use an explicit controlled Generate-ID action before the record is committed:
+
+- Project Member → **GENERATE PROJECT MEMBER ID** → `MBR-000001`
+- Project Note → **GENERATE PROJECT NOTE ID** → `NOT-000001`
+- Budget → **GENERATE BUDGET ID** → `BDG-000001`
+- Salary → **GENERATE SALARY ID(S)** → `SAL-000001` etc.; bulk generation is supported for validated payroll imports/entries.
+
+The generated ID is written to the authoritative row, becomes locked/read-only, and the record cannot be committed without a valid generated ID. Google Sheets autosave is not itself an ID-generation trigger. Concurrent users are protected by the Phase 4 central generator and LockService. Employee_ID retains the already-frozen **GENERATE EMPLOYEE ID → lock → SAVE EMPLOYEE** workflow and is not changed by R52.
+
+Submission_ID remains system/index generated for Submission_Index and is not converted into a user-facing manual Generate-ID workflow.
