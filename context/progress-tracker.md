@@ -553,17 +553,14 @@ The Operations workbook verification is complete. This is a partial Phase 3 comp
 - Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains blocked until the Phase 3 gate is formally closed.
 
 
-## R55 session note
-- Repository-wide inspection found no prior authoritative contract specifying the Drive storage location of the four master workbooks, FRM-01 through FRM-07, or the Master Google Site.
-- Frozen canonical placement: all four master workbooks, all seven Forms, and the Master Google Site belong in the existing root MASTER COMPANY Drive folder.
-- No new Drive folder was introduced and no existing Phase 1 folder was renamed or repurposed.
-- Phase 4 now includes A4-15 control-asset placement verification/normalization and acceptance tests P4-33 through P4-38.
-- Phase 4 must preserve existing resource identity, content and permissions, must not create duplicates, and must surface failures for human resolution.
-- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains BLOCKED until Phase 3 is verified.
-
-
-
 ## R55 session note — Master Drive asset locations frozen
+- Repository-wide inspection found no earlier authoritative location contract for the master Google Site, four master workbooks, or seven Forms.
+- Frozen destinations are defined by Phase 3 R55 and implemented as a Phase 4 placement/verification requirement.
+- Phase 4 A4-15 must locate/verify and, where authorized, move existing assets to their exact destinations without creating duplicates.
+- Phase 4 acceptance P4-33 through P4-39 covers live verification, relocation, idempotency, failure handling and response-destination integrity.
+- No new top-level Drive folder is introduced and the verified Phase 1 folder hierarchy remains unchanged.
+- Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 remains BLOCKED pending the existing Phase 3 gate.
+
 - Repository-wide inspection found no earlier authoritative location contract for the master Google Site, four master workbooks, or seven Forms.
 - Frozen destinations are defined in Phase 3 R55 and implemented as a Phase 4 placement/verification requirement.
 - Phase 4 A4-15 must locate/verify and, where authorized, move existing assets to their exact destinations without creating duplicates.
