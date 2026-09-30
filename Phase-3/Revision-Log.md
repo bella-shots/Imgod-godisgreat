@@ -485,3 +485,21 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 Corrected the universal ID architecture for records created directly in authoritative Google Sheets. Project Member, Project Note, Budget and Salary IDs are no longer described as being generated merely because a row becomes valid or autosaves. They require explicit controlled Generate-ID actions, followed by ID lock/read-only enforcement and commit/save. Salary supports controlled bulk ID generation for validated payroll imports/entries. Employee_ID retains its existing frozen Generate-ID → lock → Save workflow. Submission_ID remains a system/index-generated identifier and is not a manual employee/admin Generate-ID action.
 
 R52 does not change ID formats, counters, no-reuse rules, Form-originated record processing, or the Phase 4/5 ownership boundaries.
+
+
+## R53 — OOP Claims month field removed
+
+**Date:** 2026-09-30
+
+The OOP_Claims schema has been simplified so that `Date` is the single authoritative claim date. The separate `Month` field is removed because the reporting month can be deterministically derived from `Date`.
+
+Changes:
+- Removed `OOP_Claims.Month` from the authoritative Phase 3 schema.
+- OOP_Claims now has 11 columns, with `Date` as the third column.
+- Period filtering uses `OOP_Claims.Date`.
+- Any monthly grouping/reporting derives `YYYY-MM` from `Date`.
+- Phase 4 validation no longer requires a separate OOP month field.
+- Existing Finance Report presentation already uses Claim Date; this revision aligns the underlying schema with that presentation.
+- No new Form field is added.
+
+This is a schema revision only; it does not change the OOP ₹5,000 threshold rule, approval workflow, status values, stable Claim_ID format, or permissions.
