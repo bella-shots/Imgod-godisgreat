@@ -517,3 +517,13 @@ The Operations workbook verification is complete. This is a partial Phase 3 comp
 - System generation, independent per-prefix counters, immutability, no reuse, gap tolerance, and Employee_ID canonical-reference rules are frozen.
 - Phase 4 must implement PropertiesService counters, LockService concurrency protection, existing-ID reconciliation, format validation and idempotency.
 - No Phase 3 workbook/form/business-calculation changes were introduced by R49.
+
+
+### R50 — Employee self-service record retrieval architecture
+- **Status:** ARCHITECTURE FROZEN / IMPLEMENTATION PENDING
+- After applicable Form submission processing, the generated authoritative business ID must be retrievable by the authorized employee through the company website's **My Records** area.
+- The employee-facing layer must resolve the current employee to canonical Employee_ID and enforce record-level authorization.
+- Restricted source workbooks remain restricted; My Records is not direct Sheet access.
+- No Phase 3 Form field, workbook/tab, ID format, or business calculation changed.
+- Phase 4 owns submission-to-authoritative-record linkage and processing; Phase 5 owns My Records UI/retrieval and end-to-end verification.
+- Current live status remains unchanged: Phase 3 IN PROGRESS / HUMAN ACTION REQUIRED; Phase 4 BLOCKED; Phase 5 BLOCKED.
