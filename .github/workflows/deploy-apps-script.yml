@@ -44,8 +44,8 @@ jobs:
           test -f .clasp.json || { echo "FAIL: Phase-4/Automation/.clasp.json missing"; exit 1; }
           grep -q '"scriptId": "1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W"' .clasp.json || { echo "FAIL: wrong scriptId in .clasp.json"; exit 1; }
           grep -q '"rootDir": "."' .clasp.json || { echo "FAIL: rootDir must be ."; exit 1; }
-          test -f employee_creation_workflow.gs || { echo "FAIL: direct employee workflow is not at Apps Script project root"; exit 1; }
-          grep -q "function setupEmployeeDirectSheetWorkflow" employee_creation_workflow.gs || { echo "FAIL: local direct setup function missing"; exit 1; }
+          test -f Core/employee_creation_workflow.gs || { echo "FAIL: direct employee workflow missing from Core"; exit 1; }
+          grep -q "function setupEmployeeDirectSheetWorkflow" Core/employee_creation_workflow.gs || { echo "FAIL: local direct setup function missing"; exit 1; }
 
       - name: Push GitHub source to existing Apps Script project
         working-directory: Phase-4/Automation
@@ -63,21 +63,22 @@ jobs:
           cd /tmp/live-apps-script
           clasp pull --force
           echo "=== LIVE FILES RETURNED BY GOOGLE ==="
-          find . -maxdepth 2 -type f -print | sort
+          find . -type f -print | sort
 
       - name: Verify actual live source
         run: |
-          FILE="/tmp/live-apps-script/employee_creation_workflow.gs"
-          test -f "$FILE" || {
+          FILE="$(find /tmp/live-apps-script -type f -name 'employee_creation_workflow.gs' -print -quit)"
+          test -n "$FILE" || {
             echo "FAIL: Google Apps Script API did not return employee_creation_workflow.gs from the target project."
             echo "=== LIVE DIRECTORY ==="
-            find /tmp/live-apps-script -maxdepth 3 -type f -print | sort
+            find /tmp/live-apps-script -type f -print | sort
             exit 1
           }
+          echo "LIVE EMPLOYEE WORKFLOW: $FILE"
           grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow missing from live source"; exit 1; }
           grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl missing from live source"; exit 1; }
           if grep -q "function onOpen" "$FILE"; then echo "FAIL: obsolete onOpen remains in live source"; exit 1; fi
-          if grep -q "function showEmployeeCreationSidebar" "$FILE"; then echo "FAIL: obsolete sidebar function remains in live source"; exit 1; fi
+          if grep -q "function showEmployeeCreationSidebar" "$FILE"; then echo "FAIL: obsolete sidebar remains in live source"; exit 1; fi
           if grep -q "function generatePendingEmployeeId" "$FILE"; then echo "FAIL: obsolete generatePendingEmployeeId remains in live source"; exit 1; fi
           if grep -q "function saveEmployee(" "$FILE"; then echo "FAIL: obsolete saveEmployee remains in live source"; exit 1; fi
-          echo "PASS: live MASTER COMPANY Apps Script contains the direct Employees-sheet workflow and no obsolete employee-sidebar workflow.";
+          echo "PASS: live MASTER COMPANY Apps Script contains the direct Employees-sheet workflow and no obsolete employee-sidebar workflow."
