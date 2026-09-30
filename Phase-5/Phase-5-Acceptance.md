@@ -16,3 +16,7 @@
 | P5-14 | My Records authorization isolation | Employee A cannot retrieve Employee B's restricted record by changing record ID, Employee_ID, email, URL/query parameters, or other request inputs. | NOT STARTED |
 
 | P5-15 | Universal generated-ID visibility | Every authoritative record type displays its generated canonical ID in the corresponding authorized website/module view, subject to existing permissions. | NOT STARTED |
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- P5-16 — Verify Project Member, Project Note, Budget and Salary records receive IDs only through explicit Generate-ID actions, persist those IDs, and display them in the corresponding authorized website/module view. Verify ordinary Sheet edits/autosave do not generate IDs and unauthorized users cannot invoke creation or view restricted records.
