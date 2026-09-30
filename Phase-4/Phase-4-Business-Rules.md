@@ -26,3 +26,13 @@
 - Routing uses the exact human-facing Project Name to resolve the canonical project and its Drive folder; it must not guess a project.
 - Destination-folder permissions remain authoritative. No public sharing or permission broadening is allowed.
 - Routing must be idempotent; retries must not create duplicate business copies.
+
+
+## R55 — Control-asset Drive placement rules
+
+- The canonical Drive location for MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN, MASTER_COMPANY_ADMIN, FRM-01 through FRM-07, and the Master Google Site is the existing root MASTER COMPANY folder.
+- Phase 4 must locate/verify the existing authoritative asset rather than creating a new asset.
+- If technically supported, an existing misplaced asset may be moved to MASTER COMPANY while preserving its identity, content, permissions and links.
+- No duplicate workbook, Form, or Site may be created to satisfy placement.
+- Resource-specific access controls remain authoritative; moving an asset must not broaden access.
+- Failed placement normalization must remain visible and must not be reported as successfully completed.
