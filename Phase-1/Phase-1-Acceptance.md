@@ -1,14 +1,14 @@
 | ID | Acceptance Test | Expected Result | Status | Evidence / Notes |
 |---|---|---|---|---|
 | P1-01 | Create MASTER COMPANY root folder. | Root folder exists under the intended admin Google account. | PASS | Verified existing root folder via Apps Script execution (26-Sep-2026). |
-| P1-02 | Create six required top-level folders. | Projects, Finance, HR, Templates, MOM and Reports all exist. | PASS | Verified existing 6 folders (Projects, Finance, HR, Templates, MOM, Reports) via Apps Script execution (26-Sep-2026). |
+| P1-02 | Create required top-level folders. | Projects, Finance, HR, Admin, MOM, Reports and Site exist. | PASS | Original six-folder structure was subsequently revised on 30-Sep-2026: Admin was added for MASTER_COMPANY_ADMIN and Site was added as the designated container for the Google Site and Templates; live creation/movement was confirmed by the user. |
 | P1-03 | Create a sample project folder. | PROJECT_<ProjectName> exists under Projects. | PASS | Verified existing PROJECT_Phase1_Test folder under Projects (26-Sep-2026). |
 | P1-04 | Create recommended project subfolders. | 01_Admin through 07_Reports exist in the sample project. | PASS | Verified existing 7 subfolders (01_Admin to 07_Reports) under PROJECT_Phase1_Test (26-Sep-2026). |
 | P1-05 | Verify restricted Finance access. | Test employee account cannot access restricted Finance source material. | PASS (WITH LIMITATION) | Verified PRIVATE (Admin/owner only; 0 editors, 0 viewers). Limitation: No secondary test collaborator account was active to perform live denial login; isolation established by zero-sharing audit state. |
 | P1-06 | Verify restricted HR access. | Test employee account cannot access restricted HR source material. | PASS (WITH LIMITATION) | Verified PRIVATE (Admin/owner only; 0 editors, 0 viewers). Limitation: No secondary test collaborator account was active to perform live denial login; isolation established by zero-sharing audit state. |
 | P1-07 | Verify project access. | Authorized project user can access only the intended project material. | PASS (WITH LIMITATION) | Verified PRIVATE (Admin/owner only; 0 editors, 0 viewers). Limitation: Project folder is fully contained and unshared; per-collaborator onboarding testing deferred to active project provisioning. |
 | P1-08 | Verify no public exposure. | Confidential folders/files are not published publicly or shared by unrestricted link. | PASS | 8:40 PM Audit: MASTER COMPANY and all top folders verified PRIVATE (General Access is Restricted, zero public links). |
-| P1-09 | Verify naming convention. | Folder names match the documented naming standard. | PASS | Folder naming matches manifest: all caps root, PascalCase top folders, 01_-07_ prefixes. |
+| P1-09 | Verify naming convention. | Folder names match the revised documented standard, including Admin and Site containers. | PASS | Revised hierarchy uses the all-caps root, functional folders, Admin for administrative assets, and Site for the Google Site/Templates container. |
 | P1-10 | Verify template protection. | Master templates cannot be accidentally overwritten by ordinary users. | PASS (WITH LIMITATION) | Verified PRIVATE (Owner-only; 0 non-admin editors). Ordinary users have zero write permissions in current state. |
 | P1-11 | Verify zero additional software dependency. | No paid third-party storage/file service is required. | PASS | Standard Google Drive personal account used. ₹0 spend, zero third-party software. |
 | P1-12 | Phase 1 closure. | All P1 acceptance tests PASS and evidence is recorded. | PASS | All criteria P1-01 through P1-11 verified (structural, zero-cost, and permission audit evidence). Phase 1 officially CLOSED. |
@@ -16,3 +16,10 @@
 ## Verification Limitation & Scope Note (26-Sep-2026)
 - **Observable Evidence:** Read-only permission audit confirmed `MASTER COMPANY` and all child folders are strictly `PRIVATE` with 0 non-admin editors and 0 viewers.
 - **Documented Limitation:** No non-admin collaborator accounts were available in the environment to perform live secondary-account login denial tests for P1-05, P1-06, P1-07, and P1-10. Technical restriction is verified by the complete absence of shared users and absence of public links. Live multi-account delegation tests can be re-validated during Phase 5 UAT when real collaborator identities are onboarded.
+
+## Subsequent folder-structure revision — 30-Sep-2026
+- Added `MASTER COMPANY/Admin` as the designated location for `MASTER_COMPANY_ADMIN`.
+- Added `MASTER COMPANY/Site` as the designated location for the Google Site and `Templates`.
+- The Google Site is no longer authorized at the MASTER COMPANY root.
+- `Templates` is no longer treated as a MASTER COMPANY top-level folder; it belongs under `Site`.
+- Phase 4 R55 placement rules are updated accordingly.
