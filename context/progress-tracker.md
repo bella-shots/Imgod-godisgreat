@@ -115,17 +115,20 @@ All R55 placement and response-destination acceptance checks are now verified un
 ## Phase 4 implementation status
 - **Apps Script foundation/configuration: IMPLEMENTED and LIVE-VERIFIED.**
   - `verifyA4Foundation()` returned `PASS` on 30-Sep-2026.
-- **A4-00 Central ID Generator: IMPLEMENTED in GitHub; live verification pending.**
-  - Counter reconciliation was hardened on 30-Sep-2026 so counters never move backward.
-  - Added non-destructive preview/test helpers; production counters are not consumed by verification-only tests.
+- **A4-00 Central ID Generator: IMPLEMENTED in GitHub.**
+  - Non-destructive verification passed on 30-Sep-2026.
+  - Verified previews: PRJ → `PRJ-000005`, EMP → `EMP-000011`, BDG → `BDG-000100`.
+  - Counter reconciliation is hardened so counters never move backward.
+  - Production counters are not consumed by verification-only tests.
+  - Full A4-00 acceptance remains open until real record-creation workflows exercise the generator.
 
 ## Phase 4 immediate focus
-1. A4-00 Central ID Generator live verification.
-2. Form submission processing and authoritative-record creation.
-3. Drive attachment routing under R54.
-4. Business rules and validation.
-5. Reporting and authorization workflows.
-6. Error handling, idempotency, audit trail, and acceptance tests.
+1. Form submission processing and authoritative-record creation.
+2. Drive attachment routing under R54.
+3. Business rules and validation.
+4. Reporting and authorization workflows.
+5. Error handling, idempotency, audit trail, and acceptance tests.
+6. Full A4-00 acceptance through integrated record-creation workflows.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
