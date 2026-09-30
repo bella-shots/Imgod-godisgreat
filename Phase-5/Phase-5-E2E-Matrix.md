@@ -12,3 +12,5 @@
 | E2E-10 | Project onboarding | Admin → project workflow | Project record, Drive folder/resources and Site access/linking work as intended. | Critical | NOT STARTED |
 | E2E-11 | Mobile use | Employee mobile device → Site | Core Site navigation and permitted Forms remain usable. | High | NOT STARTED |
 | E2E-12 | Automation failure/retry | Controlled test failure | Failure is visible, source data is preserved, and retry does not duplicate side effects. | High | NOT STARTED |
+| E2E-13 | Employee retrieves generated record | Employee submits an applicable Form → processing completes → employee opens My Records | The authoritative record appears with its generated business ID and permitted details. | Critical | NOT STARTED |
+| E2E-14 | Cross-employee retrieval denial | Employee A attempts to retrieve Employee B's record by manipulating identifier/identity inputs | Access is denied and no restricted record data is disclosed. | Critical | NOT STARTED |
