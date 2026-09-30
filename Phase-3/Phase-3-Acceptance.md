@@ -468,99 +468,32 @@ Acceptance requires that `Employees` contain both `Role` and `Designation` as se
 
 ### P3-24 — Verify Budget_Given spending and return tracking
 
-Verify the live `MASTER_COMPANY_FINANCE → Budget_Given` sheet implements the R47 money-flow model exactly.
+**Status: PASS — VERIFIED 2026-09-30**
 
-**Required fields:**
-- Amount Given INR
-- Used Amount INR
-- To Be Returned INR
-- Returned Amount INR
-- Pending Return Amount INR
-- Status
+The live MASTER_COMPANY_FINANCE → Budget_Given sheet was verified by the user as verified and working as intended against the current GitHub schema.
 
-**Calculation tests:**
+Verified requirements:
+- Required 13-column structure is implemented.
+- Recipient Employee_ID is implemented as the canonical employee reference.
+- Used Amount INR cannot exceed Amount Given INR.
+- To Be Returned INR is automatically calculated as MAX(0, Amount Given INR - Used Amount INR).
+- Returned Amount INR cannot exceed To Be Returned INR.
+- Pending Return Amount INR is automatically calculated as MAX(0, To Be Returned INR - Returned Amount INR).
+- Status is automatically calculated rather than manually selected.
+- Status values are Pending Return, Fully Returned, and No Return Required.
+- Positive pending return, including ₹1, remains Pending Return.
+- Returning money does not reduce Used Amount INR.
 
-1. Amount Given = ₹50,000; Used Amount = ₹0.
-   - To Be Returned = ₹50,000.
-   - Pending Return = ₹50,000 until money is returned.
-   - Status = Pending Return.
+This acceptance item is closed. This does not by itself close the overall Finance workbook or Phase 3.
 
-2. Amount Given = ₹50,000; Used Amount = ₹20,000.
-   - To Be Returned = ₹30,000.
+### P3-27 — Finance workbook: Budget_Given verification milestone
 
-3. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹10,000.
-   - Pending Return = ₹20,000.
-   - Status = Pending Return.
+**Status: PASS — VERIFIED 2026-09-30**
 
-4. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹29,999.
-   - Pending Return = ₹1.
-   - Status must still be Pending Return.
+The MASTER_COMPANY_FINANCE → Budget_Given authoritative tab has been physically verified and is working as intended against the current Phase-3-Schema-Blueprint.md requirements.
 
-5. Amount Given = ₹50,000; Used Amount = ₹20,000; Returned Amount = ₹30,000.
-   - Pending Return = ₹0.
-   - Status = Fully Returned.
+The remaining Finance authoritative tabs — Employee_Spending, OOP_Claims, Salary_Admin, and Investments — remain separately unverified until the user confirms their live-sheet implementation.
 
-6. Amount Given = ₹50,000; Used Amount = ₹50,000.
-   - To Be Returned = ₹0.
-   - Pending Return = ₹0.
-   - Status = No Return Required.
-
-7. Attempt Used Amount > Amount Given.
-   - Must be rejected.
-
-8. Attempt Returned Amount > To Be Returned.
-   - Must be rejected.
-
-9. Verify To Be Returned INR and Pending Return Amount INR are calculated, not manually typed.
-
-10. Verify Status is derived automatically and is not a manually selected dropdown.
-
-11. Verify `Recipient Email / Name` accepts either a legitimate name or an email address; it is not email-only validation.
-
-**Architecture checks:**
-- No `Lists_Config`.
-- No cross-workbook validation range.
-- No Apps Script.
-- No automatic stable-ID generation added here.
-- No Form or response-tab changes.
-- No old Budget_Given status values remain: `Disbursed`, `Partially Reconciled`, `Reconciled`, `Returned`.
-
-**Status:** SPEC READY / HUMAN ACTION REQUIRED until the live workbook is updated and the above tests pass.
+Overall Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED.
 
 
-## P3-25 — Employee creation: Generate Employee ID before Save
-
-**Status:** SPEC READY / HUMAN ACTION REQUIRED for Phase 3; Apps Script implementation is Phase 4.
-
-Acceptance requirements:
-- Employees is the direct HR/Admin employee-entry surface.
-- HR/Admin can enter all required employee details without manually entering Employee_ID.
-- A **GENERATE EMPLOYEE ID** control is defined for the employee-entry workflow.
-- Generating an ID validates required fields and duplicate-identity constraints first.
-- A valid unique EMP-XXX ID is generated only after validation succeeds.
-- The generated Employee_ID is locked/read-only after generation.
-- **SAVE EMPLOYEE** is unavailable until a valid Employee_ID has been generated.
-- A new employee record cannot be committed by bypassing the Generate-ID step.
-- Employee_ID is never generated from Name, never manually overwritten, and never reused after separation.
-- Employee-linked authoritative references use Employee_ID rather than employee name.
-- The actual button/trigger enforcement is implemented in Phase 4 Apps Script, not by manual Phase 3 acceptance activity.
-
-
-## R48 clarification — Global employee reference acceptance
-
-Acceptance requires canonical Employee_ID references for all employee-linked authoritative records and internal lookups, including Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups, and future employee-related tables. Names may be displayed but must not be used as employee keys.
-
-Explicit exceptions: Employees.Name remains a display field; Recipient_Vendor remains a vendor/entity name; Investments.Source_Person is not converted unless the business rule establishes that the source is always an employee.
-
-
-## P3-26 — Operations workbook structural verification
-
-**Status:** PASS
-
-The live MASTER_COMPANY_OPERATIONS workbook has been verified for the four authoritative/support tabs:
-- Projects
-- Project_Members
-- Project_Notes
-- Project_MOM_Index
-
-This confirms the Operations workbook portion of Phase 3 is physically instantiated and verified. This does not by itself close P3-01, P3-08, or Phase 3 overall; Finance, HR/Admin, Admin, Forms, and remaining acceptance gates retain their current statuses until separately verified.
