@@ -129,6 +129,12 @@ All R55 placement and response-destination acceptance checks are now verified un
 - **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
+- **Employee Creation Workflow (Phase 3 R48): IMPLEMENTED in GitHub; live verification pending.**
+  - Dedicated sidebar workflow: validate employee details → Generate EMP ID through A4-00 → Save Employee → lock Employee_ID.
+  - Uses the frozen Employment_Status values: Probation, Full-Time, Notice Period, Relieved.
+  - No employee-creation Form and no generic onEdit/autosave ID generation.
+- **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
+  - Spreadsheet-level onFormSubmit trigger now ignores non-`Projects_Responses` sheets instead of throwing `A4_01_WRONG_SHEET`.
 
 ## Phase 4 immediate focus
 1. Live-verify A4-00 after the NOT-prefix correction.
