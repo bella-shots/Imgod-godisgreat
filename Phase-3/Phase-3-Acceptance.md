@@ -551,3 +551,16 @@ Acceptance requirements:
 Acceptance requires canonical Employee_ID references for all employee-linked authoritative records and internal lookups, including Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups, and future employee-related tables. Names may be displayed but must not be used as employee keys.
 
 Explicit exceptions: Employees.Name remains a display field; Recipient_Vendor remains a vendor/entity name; Investments.Source_Person is not converted unless the business rule establishes that the source is always an employee.
+
+
+## P3-26 — Operations workbook structural verification
+
+**Status:** PASS
+
+The live MASTER_COMPANY_OPERATIONS workbook has been verified for the four authoritative/support tabs:
+- Projects
+- Project_Members
+- Project_Notes
+- Project_MOM_Index
+
+This confirms the Operations workbook portion of Phase 3 is physically instantiated and verified. This does not by itself close P3-01, P3-08, or Phase 3 overall; Finance, HR/Admin, Admin, Forms, and remaining acceptance gates retain their current statuses until separately verified.
