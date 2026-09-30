@@ -58,3 +58,6 @@ Do not introduce:
 - changes to Form field definitions.
 
 Update only the relevant specifications and Phase 4 implementation contract.
+
+## R52 Implementation Clarification — Sheet-originated Generate-ID controls
+Update the Phase 4 implementation contract as follows: Project_Members, Project_Notes, Budget_Given and Salary_Admin must use explicit sheet controls to request business-ID generation. Do not generate IDs on generic row edit, on Google Sheets autosave, or merely because required cells become populated. The control validates the pending record, invokes the central ID generator under LockService, writes the generated ID, locks the ID field, and permits commit/save only after successful generation. Salary must support controlled bulk generation for validated payroll imports/entries. Employee_ID remains governed by the existing Generate Employee ID → lock → Save workflow. Submission_ID remains system/index-generated.
