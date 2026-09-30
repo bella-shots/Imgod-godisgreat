@@ -468,3 +468,6 @@ Replaced the old Budget_Given status model (`Disbursed`, `Partially Reconciled`,
 - Expanded the Employee_ID rule beyond Budget_Given.
 - Employee-linked authoritative records and internal lookups use Employee_ID, including Employee Spending, OOP Claims, Salary Admin, HR Admin, Project Members, Budget Given employee recipients, Reports/internal lookups and future employee-related tables.
 - Explicitly preserved non-employee Name fields and entity references: Employees.Name, Recipient_Vendor, and Investments.Source_Person.
+
+
+| R49 | Running Change — froze the universal stable ID generation standard. All authoritative IDs now use a type-specific prefix plus a six-digit zero-padded sequence (for example `BDG-000001`). IDs are system-generated, immutable, never reused, independent of row position/business attributes, and gaps are allowed. Phase 4 must implement independent per-prefix counters using Apps Script PropertiesService with LockService concurrency protection, startup/recovery reconciliation against existing records, format validation, and duplicate-trigger/idempotency protection. Employee_ID remains the canonical employee key for employee-linked authoritative records. This revision changes ID format/Generation policy only; it does not change workbook boundaries, Phase 3 tab structure, Forms, business calculations, or the Phase 4 boundary.
