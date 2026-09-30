@@ -1,23 +1,38 @@
 /**
  * Phase 4 — A4-15 Master Asset Placement / Verification
- * Finance subset: moves the four existing Finance assets into the frozen
- * MASTER COMPANY/Finance destination without creating copies.
  *
- * HUMAN ACTION REQUIRED: Run this once from an Apps Script project that has
- * Drive access to the same Google account that owns/controls MASTER COMPANY.
- *
- * Frozen assets:
+ * Finance assets:
  *   MASTER_COMPANY_FINANCE
- *   FRM-02 Employee Spending
+ *   FRM-02 — Employee Spending / Expense
  *   FRM-03 OOP Claims
  *   FRM-07 Investment Input
+ *
+ * Moves existing assets into:
+ *   MASTER COMPANY/Finance
+ *
+ * Never copies or creates duplicate business assets.
  */
 
 const FINANCE_ASSETS = [
-  { name: 'MASTER_COMPANY_FINANCE', id: '1fOqtag0z4FcRiC_A8Va92RC7t6bdwkUaUqKtkBgFhBo' },
-  { name: 'FRM-02 Employee Spending', id: '1OSVrNelP4bJeP6SUGcjtZDxufO1UHaoQ3_eII4YDc_k' },
-  { name: 'FRM-03 OOP Claims', id: '1nbd0vlQ3GymGvHs-lab6-A9rxZsY2qMHWZ7QW9aouuk' },
-  { name: 'FRM-07 Investment Input', id: '1ME8HSMcuZZHVdvIo-zhcWw3ex-6BnkUmGBznrJYkXXc' }
+  {
+    expectedNames: ['MASTER_COMPANY_FINANCE'],
+    id: '1fOqtag0z4FcRiC_A8Va92RC7t6bdwkUaUqKtkBgFhBo'
+  },
+  {
+    expectedNames: [
+      'FRM-02 — Employee Spending / Expense',
+      'FRM-02 Employee Spending'
+    ],
+    id: '1OSVrNelP4bJeP6SUGcjtZDxufO1UHaoQ3_eII4YDc_k'
+  },
+  {
+    expectedNames: ['FRM-03 OOP Claims'],
+    id: '1nbd0vlQ3GymGvHs-lab6-A9rxZsY2qMHWZ7QW9aouuk'
+  },
+  {
+    expectedNames: ['FRM-07 Investment Input'],
+    id: '1ME8HSMcuZZHVdvIo-zhcWw3ex-6BnkUmGBznrJYkXXc'
+  }
 ];
 
 function moveFinanceAssetsToFrozenLocation() {
@@ -30,7 +45,7 @@ function moveFinanceAssetsToFrozenLocation() {
     const masterCompany = findUniqueFolderByName_('MASTER COMPANY');
     const financeFolder = findUniqueChildFolder_(masterCompany, 'Finance');
 
-    FINANCE_ASSETS.forEach(asset => {
+    FINANCE_ASSETS.forEach(function(asset) {
       results.push(placeAsset_(asset, financeFolder));
     });
 
@@ -46,21 +61,25 @@ function moveFinanceAssetsToFrozenLocation() {
 
 function placeAsset_(asset, destinationFolder) {
   const file = DriveApp.getFileById(asset.id);
+  const actualName = file.getName();
 
-  if (file.getName() !== asset.name) {
+  if (asset.expectedNames.indexOf(actualName) === -1) {
     throw new Error(
       'ID/name mismatch for ' + asset.id +
-      ': expected "' + asset.name + '" but found "' + file.getName() + '".'
+      ': expected one of [' + asset.expectedNames.join(', ') +
+      '] but found "' + actualName + '".'
     );
   }
 
-  // Refuse to create a duplicate business asset.
-  const sameNameInDestination = destinationFolder.getFilesByName(asset.name);
-  if (sameNameInDestination.hasNext()) {
+  const sameNameInDestination =
+    destinationFolder.getFilesByName(actualName);
+
+  while (sameNameInDestination.hasNext()) {
     const existing = sameNameInDestination.next();
+
     if (existing.getId() !== asset.id) {
       throw new Error(
-        'DUPLICATE DETECTED: "' + asset.name +
+        'DUPLICATE DETECTED: "' + actualName +
         '" already exists in MASTER COMPANY/Finance with a different ID: ' +
         existing.getId()
       );
@@ -72,6 +91,7 @@ function placeAsset_(asset, destinationFolder) {
 
   while (parents.hasNext()) {
     const parent = parents.next();
+
     if (parent.getId() === destinationFolder.getId()) {
       alreadyInDestination = true;
       break;
@@ -80,32 +100,35 @@ function placeAsset_(asset, destinationFolder) {
 
   if (alreadyInDestination) {
     return {
-      asset: asset.name,
+      asset: actualName,
       id: asset.id,
       status: 'ALREADY_CORRECT',
       destination: 'MASTER COMPANY/Finance'
     };
   }
 
-  // Move the existing file; never copy it.
   file.moveTo(destinationFolder);
 
-  // Verify the move.
   const verifyParents = file.getParents();
   let verified = false;
+
   while (verifyParents.hasNext()) {
-    if (verifyParents.next().getId() === destinationFolder.getId()) {
+    const parent = verifyParents.next();
+
+    if (parent.getId() === destinationFolder.getId()) {
       verified = true;
       break;
     }
   }
 
   if (!verified) {
-    throw new Error('MOVE_VERIFICATION_FAILED for "' + asset.name + '".');
+    throw new Error(
+      'MOVE_VERIFICATION_FAILED for "' + actualName + '".'
+    );
   }
 
   return {
-    asset: asset.name,
+    asset: actualName,
     id: asset.id,
     status: 'MOVED_AND_VERIFIED',
     destination: 'MASTER COMPANY/Finance'
@@ -121,7 +144,9 @@ function findUniqueFolderByName_(name) {
   }
 
   if (matches.length === 0) {
-    throw new Error('Required folder not found: "' + name + '".');
+    throw new Error(
+      'Required folder not found: "' + name + '".'
+    );
   }
 
   if (matches.length > 1) {
@@ -144,7 +169,8 @@ function findUniqueChildFolder_(parent, childName) {
 
   if (matches.length === 0) {
     throw new Error(
-      'Required destination folder not found: MASTER COMPANY/' + childName
+      'Required destination folder not found: MASTER COMPANY/' +
+      childName
     );
   }
 
