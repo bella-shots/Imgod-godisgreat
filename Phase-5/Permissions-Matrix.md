@@ -39,3 +39,7 @@
 | Direct access to restricted source workbook | According to admin authorization | According to existing matrix | No | Yes | Yes | Direct source access test |
 
 My Records is a controlled retrieval interface. UI filtering alone is insufficient; authorization must be enforced at the retrieval boundary.
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- R52 — Generate-ID controls for Project Members, Project Notes, Budget and Salary are restricted to the roles already authorized to create/edit those authoritative records. The control does not grant additional permissions. Employee_ID generation remains restricted to HR/Admin under the existing employee workflow.
