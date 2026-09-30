@@ -44,6 +44,7 @@ jobs:
         run: |
           cd "$RUNNER_TEMP/apps-script"
           clasp push --force --non-interactive
+          echo "=== CLASP STATUS ==="
           clasp status --json
 
       - name: Pull live Apps Script source
@@ -53,16 +54,33 @@ jobs:
           cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/apps-script-live/.clasp.json"
           cd "$RUNNER_TEMP/apps-script-live"
           clasp pull --force
-          find . -maxdepth 1 -type f -print | sort
+          echo "=== LIVE FILES RETURNED BY GOOGLE ==="
+          find . -maxdepth 1 -type f -printf '%f\n' | sort
 
-      - name: Verify live direct employee workflow
+      - name: Verify live Apps Script by content, not filename
         run: |
-          FILE="$RUNNER_TEMP/apps-script-live/employee_creation_workflow.gs"
-          test -f "$FILE" || { echo "FAIL: live employee_creation_workflow.gs missing"; exit 1; }
-          grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow missing"; exit 1; }
-          grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl missing"; exit 1; }
-          ! grep -q "function onOpen" "$FILE" || { echo "FAIL: obsolete onOpen remains"; exit 1; }
-          ! grep -q "function showEmployeeCreationSidebar" "$FILE" || { echo "FAIL: obsolete sidebar remains"; exit 1; }
-          ! grep -q "function generatePendingEmployeeId" "$FILE" || { echo "FAIL: obsolete generatePendingEmployeeId remains"; exit 1; }
-          ! grep -q "function saveEmployee(" "$FILE" || { echo "FAIL: obsolete saveEmployee remains"; exit 1; }
-          echo "PASS: live MASTER COMPANY Apps Script is the direct Employees-sheet workflow."
+          LIVE="$RUNNER_TEMP/apps-script-live"
+          echo "=== SEARCHING LIVE SOURCE FOR DIRECT WORKFLOW ==="
+          NEW_MATCHES=$(grep -RIl "function setupEmployeeDirectSheetWorkflow" "$LIVE" --include='*.gs' || true)
+          echo "$NEW_MATCHES"
+          test -n "$NEW_MATCHES" || {
+            echo "FAIL: Google Apps Script live source does not contain setupEmployeeDirectSheetWorkflow."
+            echo "=== ALL LIVE SOURCE FILES ==="
+            find "$LIVE" -type f -print | sort
+            exit 1
+          }
+
+          NEW_FILE=$(printf '%s\n' "$NEW_MATCHES" | head -n 1)
+          grep -q "function processEmployeeSheetControl" "$NEW_FILE" || { echo "FAIL: processEmployeeSheetControl missing"; exit 1; }
+
+          echo "=== SEARCHING FOR OBSOLETE WORKFLOW ==="
+          OBSOLETE=$(grep -RIlE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.gs' --include='*.html' || true)
+          if [ -n "$OBSOLETE" ]; then
+            echo "FAIL: obsolete employee workflow still exists in live Apps Script:"
+            echo "$OBSOLETE"
+            echo "=== OBSOLETE MATCHES ==="
+            grep -RInE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.gs' --include='*.html' || true
+            exit 1
+          fi
+
+          echo "PASS: live MASTER COMPANY Apps Script contains the direct Employees-sheet workflow and no obsolete employee workflow."
