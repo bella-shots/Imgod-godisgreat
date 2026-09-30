@@ -217,3 +217,7 @@ It does not:
 - implement the website.
 
 Status: **ARCHITECTURE FROZEN / IMPLEMENTATION PENDING / HUMAN VERIFICATION REQUIRED**
+
+
+## R52 — Explicit Generate-ID controls for Sheet-originated records
+- R52 — Sheet-originated record creation and generated-ID visibility: Project Member, Project Note, Budget and Salary records obtain IDs through explicit controlled Generate-ID actions before commit; Sheets autosave/edit events are not ID-generation triggers. Once generated, the ID is persisted in the authoritative row and shown in the corresponding authorized website/module view. Employee_ID retains its existing dedicated workflow. Submission_ID remains system/index-generated.
