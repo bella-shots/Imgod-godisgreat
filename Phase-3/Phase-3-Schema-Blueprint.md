@@ -190,13 +190,12 @@ Before a new employee record may be saved/committed:
 
 ### Tab 8: `OOP_Claims` (Out-of-Pocket Reimbursements)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
-- **Purpose:** Monthly out-of-pocket claims submitted by employees.
+- **Purpose:** Out-of-pocket reimbursement claims submitted by employees. Claim `Date` is the single authoritative claim date; reporting month is derived from `Date` when required.
 - **Sensitivity:** High (Restricted source tab).
 - **Columns:**
   1. `Claim_ID` (Text, Format: `CLM-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
-  3. `Month` (Text, Format: `YYYY-MM`, e.g., `2026-09`, Required)
-  4. `Date` (Date, Format: `YYYY-MM-DD`, Date of claim, Required)
+  3. `Date` (Date, Format: `YYYY-MM-DD`, Date of claim, Required)
   5. `Purpose` (Text, Claim description, Required)
   6. `Amount` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
   7. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
@@ -463,7 +462,7 @@ Approved role-based scope for the Finance Report:
 The Finance Report can include these categories, filtered by authorization and period:
 - **Budget Given:** Date, Recipient, Amount, Purpose, Project, Status.
 - **Employee Spending:** Employee/recipient, Date, Amount, Vendor, Purpose, Project, Status.
-- **OOP Claims:** Employee/recipient, Month/Date, Amount, Purpose, Project, Status, Approved Amount, Paid Date.
+- **OOP Claims:** Employee/recipient, Claim Date, Amount, Purpose, Project, Status, Approved Amount, Paid Date.
 - **Salary / Payroll:** only for roles explicitly authorized to access salary/payroll data.
 - **Investments:** only for roles explicitly authorized to access investment data.
 - **Financial totals/aggregations:** calculated only from authorized records/fields.
@@ -705,7 +704,7 @@ Unauthorized sections/categories are omitted rather than shown as empty restrict
 - Project_Notes.Date = note activity.
 - Budget_Given.Date = Budget Given activity.
 - Employee_Spending.Date = Employee Spending activity.
-- OOP_Claims.Date = OOP activity; OOP_Claims.Month remains authoritative and must be consistent with the claim date.
+- OOP_Claims.Date = OOP activity and is the single authoritative claim date. Any reporting month is derived from Date.
 - Salary_Admin.Month = payroll activity.
 - Investments.Taken_Date and Actual_Return_Date = applicable investment activity.
 - HR_Admin.Submitted_At = HR-request activity; Processed_At = processing/completion activity.
@@ -815,7 +814,7 @@ This is a required **Short answer** field, not a Google Forms Date question.
 - `Project_MOM_Index.Meeting_Date` filters MOM activity.
 - `Budget_Given.Date` filters Budget Given activity.
 - `Employee_Spending.Date` filters Employee Spending activity.
-- `OOP_Claims.Date` filters OOP activity; `OOP_Claims.Month` must remain consistent with the claim date.
+- `OOP_Claims.Date` filters OOP activity. Reporting month is derived from `Date` when required.
 - `Salary_Admin.Month` is month-based. Include a salary record when its `YYYY-MM` calendar month intersects the requested date range.
 - `Investments.Taken_Date` and `Actual_Return_Date` are used for applicable investment activity.
 - `HR_Admin.Submitted_At` filters HR request submissions; `Processed_At` is used for processing/completion activity.
@@ -913,7 +912,7 @@ For the requester's authorized claims, show:
 - Status
 - Paid Date when applicable
 
-**Presentation correction (R43):** Do not display `OOP_Claims.Month` in the user-facing Finance Report. `Month` remains an authoritative source field for internal processing/reconciliation and must remain consistent with `OOP_Claims.Date`.
+**Presentation correction (R43):** Do not display `OOP_Claims.Month` in the user-facing Finance Report. The authoritative source contains only `OOP_Claims.Date`; no separate OOP month field is stored.
 
 Summary:
 - claim count
@@ -922,7 +921,7 @@ Summary:
 - total paid amount where determinable from the authoritative schema
 - count/amount by Status
 
-Use `OOP_Claims.Date` for period filtering. `OOP_Claims.Month` remains authoritative and must be consistent with the claim date.
+Use `OOP_Claims.Date` for period filtering. Any month grouping/reporting is derived from `OOP_Claims.Date`.
 
 Do not expose Proof_URL or OOP_Rule_Flag merely because Finance Report was selected.
 
