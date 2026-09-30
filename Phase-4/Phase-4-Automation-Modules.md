@@ -33,3 +33,14 @@
 - **Access boundary:** Drive permissions of the destination folder govern access. Automation must never make an attachment public or broaden access to restricted Finance/HR material.
 - **Idempotency:** retries must detect an already-routed file/record and must not create duplicate destination copies.
 - **Failure:** if the destination project/folder cannot be resolved or the file cannot be moved, preserve the source submission, mark processing as failed/pending, retain the original uploaded-file reference for controlled retry, and do not mark the authoritative business record as successfully processed.
+
+
+## R55 — Control-asset Drive placement normalization
+
+- A4-15 — Control-Asset Drive Placement Verification/Normalization: locate the authoritative Master Google Site, four master workbooks (MASTER_COMPANY_OPERATIONS, MASTER_COMPANY_FINANCE, MASTER_COMPANY_HR_ADMIN, MASTER_COMPANY_ADMIN), and FRM-01 through FRM-07 by authoritative resource identity/name.
+- Verify that each asset is located in the root MASTER COMPANY Drive folder.
+- If an asset is elsewhere and a safe move is technically supported, move the existing asset to MASTER COMPANY; do not create a replacement or duplicate.
+- Preserve existing spreadsheet/Form/Site IDs and resource identity during movement.
+- Do not alter Phase 3 workbook permission boundaries or Phase 2 Site access merely to achieve placement.
+- If an asset cannot be located, moved, or safely normalized, preserve the existing asset and record a visible placement failure/manual-review state.
+- This module verifies/normalizes placement only; it does not create new workbooks, Forms, or a second Site.
