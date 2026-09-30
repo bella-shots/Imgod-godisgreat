@@ -196,14 +196,14 @@ Before a new employee record may be saved/committed:
   1. `Claim_ID` (Text, Format: `CLM-000001` (prefix + 6-digit sequence). Stable unique ID)
   2. `Employee_ID` (Text, Foreign Key -> `Employees.Employee_ID`, Required)
   3. `Date` (Date, Format: `YYYY-MM-DD`, Date of claim, Required)
-  5. `Purpose` (Text, Claim description, Required)
-  6. `Amount` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
-  7. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
-  8. `Proof_URL` (URL to invoice proof in Google Drive)
-  9. `Status` (Dropdown: `Submitted`, `Pending Review`, `Approved`, `Rejected`, `Paid`)
-  10. `Approved_Amount` (Currency INR, Format: `₹#,##0.00`, Determined in Phase 4)
-  11. `Paid_Date` (Date, Format: `YYYY-MM-DD`)
-  12. `OOP_Rule_Flag` (Text, Reserved for Phase 4 ₹5,000 threshold evaluation)
+  4. `Purpose` (Text, Claim description, Required)
+  5. `Amount` (Currency INR, Format: `₹#,##0.00`, Number > 0, Required)
+  6. `Project_ID` (Text, Foreign Key -> `Projects.Project_ID`, Required)
+  7. `Proof_URL` (URL to invoice proof in Google Drive)
+  8. `Status` (Dropdown: `Submitted`, `Pending Review`, `Approved`, `Rejected`, `Paid`)
+  9. `Approved_Amount` (Currency INR, Format: `₹#,##0.00`, Determined in Phase 4)
+  10. `Paid_Date` (Date, Format: `YYYY-MM-DD`)
+  11. `OOP_Rule_Flag` (Text, Reserved for Phase 4 ₹5,000 threshold evaluation)
 
 ### Tab 9: `Salary_Admin` (Administrative Payroll & Compensation Ledger)
 - **Workbook:** `MASTER_COMPANY_FINANCE`
@@ -775,7 +775,7 @@ Salary/Payroll and Investments are not ordinary Project Report content. They req
 - Project_Members.Assigned_Date supports team-assignment activity.
 - Project_Notes.Date is the note activity date.
 - Project_MOM_Index.Meeting_Date is the MOM activity date.
-- Budget_Given.Date, Employee_Spending.Date and OOP_Claims.Date are project-linked finance activity dates; OOP_Claims.Month remains authoritative and must be consistent with the claim date.
+- Budget_Given.Date, Employee_Spending.Date and OOP_Claims.Date are project-linked finance activity dates; OOP_Claims.Date is the single authoritative OOP claim date.
 - Project master snapshot fields are shown as current values; no historical project-status reconstruction is permitted.
 
 #### Project Report authorization and identity
@@ -912,7 +912,7 @@ For the requester's authorized claims, show:
 - Status
 - Paid Date when applicable
 
-**Presentation correction (R43):** Do not display `OOP_Claims.Month` in the user-facing Finance Report. The authoritative source contains only `OOP_Claims.Date`; no separate OOP month field is stored.
+**Presentation correction (R43/R53):** Finance Report displays Claim Date. The authoritative source contains only `OOP_Claims.Date`; no separate OOP month field is stored.
 
 Summary:
 - claim count
