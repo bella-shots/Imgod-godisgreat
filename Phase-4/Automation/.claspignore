@@ -1,0 +1,4 @@
+.claspignore
+*.md
+*.txt
+.git/**
