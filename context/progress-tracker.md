@@ -115,20 +115,27 @@ All R55 placement and response-destination acceptance checks are now verified un
 ## Phase 4 implementation status
 - **Apps Script foundation/configuration: IMPLEMENTED and LIVE-VERIFIED.**
   - `verifyA4Foundation()` returned `PASS` on 30-Sep-2026.
-- **A4-00 Central ID Generator: IMPLEMENTED in GitHub.**
-  - Non-destructive verification passed on 30-Sep-2026.
-  - Verified previews: PRJ → `PRJ-000005`, EMP → `EMP-000011`, BDG → `BDG-000100`.
-  - Counter reconciliation is hardened so counters never move backward.
-  - Production counters are not consumed by verification-only tests.
+- **A4-00 Central ID Generator: IMPLEMENTED in GitHub; contract corrected.**
+  - Frozen prefixes now match the authoritative R49 contract: PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT, SUB.
+  - Counter reconciliation never moves counters backward.
+  - Non-destructive verification helpers are available.
   - Full A4-00 acceptance remains open until real record-creation workflows exercise the generator.
+- **A4-01 Project Processing: IMPLEMENTED in GitHub; live verification pending.**
+  - FRM-01 → Projects + Project_Members normalization.
+  - Submission_Index traceability.
+  - Human-facing member resolution to canonical Employee_ID.
+  - Concurrent idempotency reservation.
+  - PRJ/MBR generation through A4-00 only.
+- **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
+  - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
+  - Reuses existing unique folders; rejects ambiguous duplicates.
 
 ## Phase 4 immediate focus
-1. Form submission processing and authoritative-record creation.
-2. Drive attachment routing under R54.
-3. Business rules and validation.
-4. Reporting and authorization workflows.
-5. Error handling, idempotency, audit trail, and acceptance tests.
-6. Full A4-00 acceptance through integrated record-creation workflows.
+1. Live-verify A4-00 after the NOT-prefix correction.
+2. Live-verify A4-01/A4-02 prerequisites.
+3. Run controlled FRM-01 end-to-end test.
+4. Continue A4-03 Expense Processing and R54 attachment routing.
+5. Business rules, reporting, authorization, error handling, idempotency and acceptance tests.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
