@@ -15,3 +15,10 @@
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 error-handling requirements: reject Generate-ID when required fields are incomplete/invalid; never issue an ID from generic onEdit/autosave; LockService serializes concurrent Generate-ID actions; if generation succeeds but commit/save fails, the issued ID is not reused; repeated Generate-ID on an already-ID'd/locked record must not allocate another sequence value.
+
+
+## R54 — Attachment routing failures
+- If a project name cannot be resolved exactly, stop routing and mark the submission for validation failure/manual review; do not guess a folder.
+- If the required project folder or subfolder is missing, mark processing pending/error and notify the administrator; do not silently create an unapproved alternate destination.
+- If Drive move/copy permission fails, preserve the source record and original uploaded-file reference, mark processing failure/pending, and do not mark the business record fully processed.
+- If a retry encounters a file already routed to the authoritative destination, treat the routing step as already complete rather than creating another copy.
