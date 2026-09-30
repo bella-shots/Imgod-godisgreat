@@ -33,31 +33,39 @@ jobs:
           test -n "$APPS_SCRIPT_ID" || { echo "Missing APPS_SCRIPT_ID"; exit 1; }
           printf '%s' "$CLASPRC" > "$HOME/.clasprc.json"
           printf '%s\n' '{"scriptId":"'"$APPS_SCRIPT_ID"'","rootDir":"Phase-4/Automation"}' > .clasp.json
+          echo "TARGET APPS SCRIPT ID: $APPS_SCRIPT_ID"
+          cat .clasp.json
 
       - name: Push GitHub source to existing Apps Script project
-        run: clasp push --force --non-interactive
+        run: |
+          clasp push --force --non-interactive
+          echo "=== CLASP STATUS ==="
+          clasp status || true
 
-      - name: Pull live Apps Script source for verification
+      - name: Inspect live Apps Script source
         run: |
           rm -rf /tmp/live-apps-script
           mkdir -p /tmp/live-apps-script
           cp .clasp.json /tmp/live-apps-script/.clasp.json
           cp "$HOME/.clasprc.json" /tmp/live-apps-script/.clasprc.json
           cd /tmp/live-apps-script
+          echo "=== CLASP PULL ==="
           clasp pull --force
-          echo "Retrieved files:"
-          find . -type f -maxdepth 5 -print
+          echo "=== PULLED FILES ==="
+          find . -type f -print | sort
+          echo "=== EMPLOYEE WORKFLOW MATCHES ==="
+          find . -type f -print0 | xargs -0 grep -l "setupEmployeeDirectSheetWorkflow" 2>/dev/null || true
 
-      - name: Verify direct employee workflow is actually deployed
+      - name: Verify direct employee workflow
         run: |
           FILE="$(find /tmp/live-apps-script -type f -name 'employee_creation_workflow.gs' -print -quit)"
-          test -n "$FILE" || { echo "FAIL: live employee_creation_workflow.gs was not retrieved anywhere under pulled Apps Script source"; exit 1; }
-          echo "Checking live file: $FILE"
-          grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: setupEmployeeDirectSheetWorkflow is NOT in the live Apps Script source"; exit 1; }
-          grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: processEmployeeSheetControl is NOT in the live Apps Script source"; exit 1; }
-          if grep -q "function onOpen" "$FILE"; then echo "FAIL: obsolete onOpen remains in live Apps Script source"; exit 1; fi
-          if grep -q "function showEmployeeCreationSidebar" "$FILE"; then echo "FAIL: obsolete sidebar function remains in live Apps Script source"; exit 1; fi
-          echo "PASS: live Apps Script contains the direct Employees-sheet workflow and no obsolete sidebar functions."
-
-      - name: Verify deployed source
-        run: clasp status
+          if [ -z "$FILE" ]; then
+            echo "FAIL: live employee_creation_workflow.gs was not retrieved."
+            echo "The diagnostic output above identifies exactly what clasp returned."
+            exit 1
+          fi
+          grep -q "function setupEmployeeDirectSheetWorkflow" "$FILE" || { echo "FAIL: direct setup function missing from live source"; exit 1; }
+          grep -q "function processEmployeeSheetControl" "$FILE" || { echo "FAIL: direct edit-control function missing from live source"; exit 1; }
+          if grep -q "function onOpen" "$FILE"; then echo "FAIL: obsolete onOpen remains"; exit 1; fi
+          if grep -q "function showEmployeeCreationSidebar" "$FILE"; then echo "FAIL: obsolete sidebar remains"; exit 1; fi
+          echo "PASS: live Apps Script contains the direct Employees-sheet workflow."
