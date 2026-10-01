@@ -84,6 +84,7 @@ function processOopClaimRecord_(input, target) {
 
   var headers = target.getRange(1, 1, 1, target.getLastColumn()).getValues()[0];
   assertExactOopHeaders_(headers);
+  getTopManagerEmail_();
 
   var existingIds = getOopColumnValues_(target, headers, 'Claim_ID')
     .filter(function(v) { return /^CLM-[0-9]{6}$/.test(String(v).trim()); });
@@ -144,7 +145,8 @@ function verifyA404Architecture() {
     submissionPath: 'FRM-03 -> OOP_Claims_Responses -> A4-04 -> OOP_Claims',
     centralGeneratorAvailable: typeof generateA4Id === 'function',
     r58CanonicalEmployeeKey: 'Employee_ID',
-    approved5000RuleAvailable: false,
+    topManagerApprovalGateAvailable: typeof finalizeOopManagerDecision_ === 'function',
+    salaryGateAvailable: typeof isSalaryEligibleOopRuleFlag_ === 'function',
     status: (finance && response && target && employees && projects && exactHeaders && typeof generateA4Id === 'function') ? 'PASS' : 'FAIL'
   };
 }
