@@ -167,11 +167,19 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Does not add a Generate Spending ID menu, onEdit ID issuance, Save/Process UX, Form, tab, or schema column.
   - Live verification on 01-Oct-2026 returned `allPassed: true`.
   - Verified exact 10-column `Employee_Spending` schema, required workbook/sheet resolution, canonical Employee_ID and Project_ID resolution, A4-00 SPN availability, no SPN sequence consumption by the test, no onEdit ID issuance, R58 rejection of Member_Record_ID, and preservation of production data.
+- **A4-04 OOP Claims Processing: IMPLEMENTED IN GITHUB — FORM-ORIGINATED; R57 DIRECT-SHEET WORKFLOW DOES NOT APPLY — LIVE VERIFICATION PENDING.**
+  - Frozen Phase 3 architecture confirms FRM-03 OOP Claim → OOP_Claims_Responses → OOP_Claims.
+  - New `Phase-4/Automation/Core/a4_04_oop_claim_processing.gs` implements controlled FRM-03 processing and automatic CLM generation through A4-00.
+  - Resolves Employee Email ID to canonical `Employee_ID`; `Member_Record_ID` is rejected.
+  - Resolves Project Name to canonical `Project_ID` and requires proof.
+  - Creates claims in `Pending Review` and does not auto-approve.
+  - The exact approved ₹5,000 rule interpretation is not present in the frozen Phase-4 business-rule source reviewed for this implementation; therefore no allowance/excess/salary treatment was invented. `Approved_Amount` remains unset and `OOP_Rule_Flag` records pending rule evaluation until the approved interpretation is available.
+  - Non-destructive live verification helper is included and does not consume a CLM sequence.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. **OOP_Claims — next.** Confirm its authoritative creation path and implement/verify according to that path; do not incorrectly apply R57 if it remains Form-originated.
+1. **Live-verify A4-04 OOP Claims in the existing Phase 4 Apps Script project.** The authoritative path is FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims; R57 direct-Sheet UX does not apply.
 2. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
 3. Continue R54 attachment routing and remaining Phase 4 workflows.
 4. Use Budget_Given + Employee_Spending evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
