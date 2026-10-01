@@ -134,6 +134,23 @@ jobs:
           console.log('Replacing Apps Script content with files:');
           for (const f of files) console.log(' - ' + f.type + ': ' + f.name);
 
+          const manifestFile = files.find(f => f.name === 'appsscript' && f.type === 'JSON');
+          if (!manifestFile) {
+            throw new Error('Live Apps Script manifest was not included in the replacement payload.');
+          }
+
+          let manifest;
+          try {
+            manifest = JSON.parse(manifestFile.source);
+          } catch (err) {
+            throw new Error('Live Apps Script manifest is not valid JSON: ' + err.message);
+          }
+
+          // Expose this same project as an Apps Script Execution API deployment so
+          // GitHub Actions can run the one-time trigger installer after each source replacement.
+          manifest.executionApi = Object.assign({}, manifest.executionApi || {}, {access: 'MYSELF'});
+          manifestFile.source = JSON.stringify(manifest, null, 2);
+
           const response = await script.projects.updateContent({
             scriptId,
             requestBody: {files}
@@ -145,22 +162,47 @@ jobs:
 
           console.log('PASS: Google Apps Script projects.updateContent completed for the approved MASTER COMPANY project.');
 
-          try {
-            console.log('Attempting automated execution of setupEmployeeDirectSheetWorkflow via Apps Script API...');
-            const runResponse = await script.scripts.run({
-              scriptId,
-              requestBody: {
-                function: 'setupEmployeeDirectSheetWorkflow'
-              }
-            });
-            if (runResponse.data && runResponse.data.response && runResponse.data.response.result) {
-              console.log('AUTOMATED TRIGGER SETUP RESULT:', JSON.stringify(runResponse.data.response.result));
-            } else if (runResponse.data && runResponse.data.error) {
-              console.log('Trigger setup note (API execution response):', JSON.stringify(runResponse.data.error));
-            }
-          } catch (runErr) {
-            console.log('Trigger setup note: scripts.run requires API executable deployment or manual trigger setup in script editor. Message:', runErr.message);
+          // Create a fresh immutable version from the just-written source.
+          const versionResponse = await script.projects.versions.create({
+            scriptId,
+            requestBody: {description: 'GitHub Actions deployment for trigger installation'}
+          });
+
+          const versionNumber = versionResponse.data && versionResponse.data.versionNumber;
+          if (!versionNumber) {
+            throw new Error('Apps Script version creation did not return a version number.');
           }
+
+          // Create an Execution API deployment for that version.
+          const deploymentResponse = await script.projects.deployments.create({
+            scriptId,
+            requestBody: {
+              versionNumber: versionNumber,
+              description: 'MASTER COMPANY automation execution deployment'
+            }
+          });
+
+          const deploymentId = deploymentResponse.data && deploymentResponse.data.deploymentId;
+          if (!deploymentId) {
+            throw new Error('Apps Script deployment creation did not return a deployment ID.');
+          }
+
+          console.log('PASS: Apps Script Execution API deployment created: ' + deploymentId);
+
+          const runResponse = await script.scripts.run({
+            scriptId,
+            requestBody: {
+              function: 'setupEmployeeDirectSheetWorkflow',
+              devMode: false
+            }
+          });
+
+          if (runResponse.data && runResponse.data.error) {
+            throw new Error('Automated trigger setup failed: ' + JSON.stringify(runResponse.data.error));
+          }
+
+          const result = runResponse.data && runResponse.data.response && runResponse.data.response.result;
+          console.log('AUTOMATED TRIGGER SETUP RESULT:', JSON.stringify(result || {}));
           })().catch(err => { console.error(err); process.exit(1); });
           NODE
 
