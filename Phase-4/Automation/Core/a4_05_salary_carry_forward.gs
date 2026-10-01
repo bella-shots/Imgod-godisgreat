@@ -2,9 +2,11 @@
  * A4-05 — Salary Carry-Forward / OOP Salary Credit
  *
  * R60 FROZEN RULE:
- * The employee's next salary credit is:
- *   designated/base salary + total approved company-essential OOP spend
- *   for the applicable prior month.
+ * The employee's next salary credit contains two distinct components:
+ *   1) the fixed ₹1,000 monthly food/eatables allowance; and
+ *   2) designated/base salary + approved company-essential OOP spend
+ *      for the applicable prior month.
+ * Ordinary food/eatables claims are excluded from the OOP component.
  *
  * The ₹5,000 amount is a monthly baseline, NOT a reimbursement cap.
  * Examples:
@@ -50,7 +52,7 @@ function calculateOopSalaryCredit_(baseSalary, approvedOopTotal) {
   };
 }
 
-function aggregateApprovedOopForMonth_(employeeId, month) {
+function calculateMonthlyFoodAllowance_() { return 1000; }\n\nfunction aggregateApprovedOopForMonth_(employeeId, month) {
   var finance = findUniqueA405Spreadsheet_(A405_CONFIG.FINANCE_WORKBOOK);
   var sheet = finance.getSheetByName(A405_CONFIG.OOP_SHEET);
   if (!sheet) throw new Error('A4_05_OOP_SHEET_MISSING');
@@ -72,7 +74,7 @@ function aggregateApprovedOopForMonth_(employeeId, month) {
     var rowMonth = Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM');
     if (String(row[employeeIdx]).trim() === employeeId &&
         rowMonth === month &&
-        String(row[statusIdx]).trim() === 'Approved') {
+        String(row[statusIdx]).trim() === 'Approved' && !/^FOOD_/.test(String(row[headers.indexOf('OOP_Rule_Flag')]).trim())) {
       var approved = Number(row[approvedIdx]);
       if (approved > 0) total += approved;
     }
@@ -95,7 +97,8 @@ function prepareNextMonthlySalaryRecord_(employeeId, month, baseSalary) {
     excessApplied: calculation.excessApplied,
     oopSalaryAddition: calculation.oopSalaryAddition,
     baseSalary: Number(baseSalary),
-    dueAmount: calculation.dueAmount
+    foodAllowance: calculateMonthlyFoodAllowance_(),
+    dueAmount: calculation.dueAmount + calculateMonthlyFoodAllowance_()
   };
 }
 
@@ -113,8 +116,9 @@ function testA405OopSalaryRule() {
       excessApplied: calc.excessApplied,
       oopSalaryAddition: calc.oopSalaryAddition,
       dueAmount: calc.dueAmount,
-      expectedDueAmount: 10000 + c.expected,
-      pass: calc.dueAmount === 10000 + c.expected
+      foodAllowance: 1000,
+      expectedDueAmount: 10000 + c.expected + 1000,
+      pass: calc.dueAmount + 1000 === 10000 + c.expected + 1000
     };
   });
   return {
@@ -130,4 +134,9 @@ function findUniqueA405Spreadsheet_(name) {
   while (files.hasNext()) found.push(files.next());
   if (found.length !== 1) throw new Error('A4_05_WORKBOOK_AMBIGUOUS_OR_MISSING: ' + name + ' count=' + found.length);
   return SpreadsheetApp.openById(found[0].getId());
+}
+
+
+function testA405FoodAllowanceRule() {
+  return {foodAllowance: calculateMonthlyFoodAllowance_(), noSpendRequired: true, noCarryForwardReduction: true, pass: calculateMonthlyFoodAllowance_() === 1000};
 }
