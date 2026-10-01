@@ -39,3 +39,8 @@
 - No implementation may introduce a second Save/Process step solely to complete the Generate-ID workflow unless a future approved rule explicitly requires one.
 - A4-14 must be treated as the implementation module for this universal pattern, while the individual processing modules remain responsible for their own record-specific validation and business rules.
 - A4-00 remains the sole authoritative ID generator; R49/R52/R56 invariants continue to apply.
+
+
+## Financial employee-linkage invariant
+
+All employee-related financial workflows must resolve the employee through the canonical `Employee_ID`. `Member_Record_ID` is only a project-membership identifier and must not be substituted for `Employee_ID` in `Budget_Given`, `Employee_Spending`, `OOP_Claims` or `Salary_Admin`. `Investments` is the explicit exception under the frozen Phase 3 schema because it uses `Source_Person` rather than `Employee_ID`.
