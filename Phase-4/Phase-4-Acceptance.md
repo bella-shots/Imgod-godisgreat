@@ -124,3 +124,22 @@
 - A4-04 flags food-related claims for review instead of automatically treating them as company-essential OOP.
 - A4-05 includes only approved company-essential OOP in the OOP salary addition and adds the fixed ₹1,000 monthly food allowance separately.
 - The ₹1,000 food allowance and approved company-essential OOP amount must never be merged or double-counted.
+
+## R62 — OOP Top Manager approval acceptance tests
+| ID | Acceptance test | Expected result | Status |
+|---|---|---|---|
+| P4-51 | Test employee OOP submission routing | Valid FRM-03 submission creates a CLM record with `Pending Review` and notifies the configured Top Manager. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-52 | Test non-manager approval rejection | An account other than the configured Top Manager cannot approve/reject a claim. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-53 | Test normal company-essential approval | Top Manager approval changes `Pending Review` → `Approved`, writes positive `Approved_Amount`, sets `APPROVED_COMPANY_ESSENTIAL`, and makes the claim salary-eligible. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-54 | Test ordinary food claim | Food-related claim remains excluded from salary unless explicitly approved as a genuine business exception. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-55 | Test food business exception approval | Top Manager uses `Approve Food Business Exception`; claim becomes `Approved`, receives positive `Approved_Amount` and `APPROVED_FOOD_BUSINESS_EXCEPTION`, and is eligible for salary. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-56 | Test rejection gate | Rejected claim contributes ₹0 to next-month OOP salary credit. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-57 | Test salary gate | A4-05 includes only `Approved` claims with `APPROVED_COMPANY_ESSENTIAL` or `APPROVED_FOOD_BUSINESS_EXCEPTION`; pending/unapproved/ordinary-food claims contribute ₹0. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-58 | Test no schema expansion | OOP_Claims remains the frozen 11-column schema; approval workflow uses existing fields and Apps Script controls. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+
+### R62 workflow decision — 01-Oct-2026
+- Employee submits FRM-03.
+- A4-04 routes the claim to the configured Top Manager and leaves it `Pending Review`.
+- Only explicit Top Manager approval makes the claim eligible for the next salary calculation.
+- Ordinary food claims are not eligible; genuine client/business/hosted-guest exceptions require the dedicated food-business-exception approval action.
+- A4-05 excludes all unapproved and non-salary-eligible claims.
