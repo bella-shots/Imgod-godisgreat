@@ -74,7 +74,7 @@ function calculateMonthlyFoodAllowance_() { return 1000; }\n\nfunction aggregate
     var rowMonth = Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM');
     if (String(row[employeeIdx]).trim() === employeeId &&
         rowMonth === month &&
-        String(row[statusIdx]).trim() === 'Approved' && !/^FOOD_/.test(String(row[headers.indexOf('OOP_Rule_Flag')]).trim())) {
+        String(row[statusIdx]).trim() === 'Approved' && isSalaryEligibleOopRuleFlag_(String(row[headers.indexOf('OOP_Rule_Flag')]).trim())) {
       var approved = Number(row[approvedIdx]);
       if (approved > 0) total += approved;
     }
@@ -139,4 +139,33 @@ function findUniqueA405Spreadsheet_(name) {
 
 function testA405FoodAllowanceRule() {
   return {foodAllowance: calculateMonthlyFoodAllowance_(), noSpendRequired: true, noCarryForwardReduction: true, pass: calculateMonthlyFoodAllowance_() === 1000};
+}
+
+
+function isSalaryEligibleOopRuleFlag_(flag) {
+  return flag === 'APPROVED_COMPANY_ESSENTIAL' ||
+         flag === 'APPROVED_FOOD_BUSINESS_EXCEPTION';
+}
+
+/**
+ * R62 gate check: only explicitly approved claims may contribute to salary.
+ */
+function testA405ApprovalGateRule() {
+  var cases = [
+    {status:'Pending Review', flag:'UNDER_5000_ADD_ACTUAL_SPEND', approved:1000, eligible:false},
+    {status:'Rejected', flag:'REJECTED_BY_TOP_MANAGER', approved:0, eligible:false},
+    {status:'Approved', flag:'UNDER_5000_ADD_ACTUAL_SPEND', approved:1000, eligible:false},
+    {status:'Approved', flag:'APPROVED_COMPANY_ESSENTIAL', approved:1000, eligible:true},
+    {status:'Approved', flag:'FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY', approved:1000, eligible:false},
+    {status:'Approved', flag:'APPROVED_FOOD_BUSINESS_EXCEPTION', approved:1000, eligible:true}
+  ];
+  return {
+    cases: cases.map(function(c) {
+      return {input:c, result:c.status === 'Approved' && c.approved > 0 && isSalaryEligibleOopRuleFlag_(c.flag), pass:(c.status === 'Approved' && c.approved > 0 && isSalaryEligibleOopRuleFlag_(c.flag)) === c.eligible};
+    }),
+    rule:'Only Top-Manager-approved company-essential claims, including explicitly approved food-business exceptions, enter next-month salary.',
+    allPassed: cases.every(function(c) {
+      return ((c.status === 'Approved' && c.approved > 0 && isSalaryEligibleOopRuleFlag_(c.flag)) === c.eligible);
+    })
+  };
 }
