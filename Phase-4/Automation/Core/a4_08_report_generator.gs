@@ -1581,8 +1581,12 @@ function testA408ReportGeneratorLive() {
   var opsWb = findA408Spreadsheet_(A408_CONFIG.OPERATIONS_WORKBOOK);
   var hrWb = findA408Spreadsheet_(A408_CONFIG.HR_WORKBOOK);
   var reportIndexSheet = adminWb.getSheetByName(A408_CONFIG.REPORT_INDEX_SHEET);
+  var mSheet = opsWb.getSheetByName(A408_CONFIG.PROJECT_MEMBERS_SHEET);
+  var pSheet = opsWb.getSheetByName(A408_CONFIG.PROJECTS_SHEET);
 
   var createdRowIndices = [];
+  var createdMemberRowIndices = [];
+  var createdProjectRowIndices = [];
   var createdFiles = [];
 
   try {
@@ -1599,10 +1603,11 @@ function testA408ReportGeneratorLive() {
           email: String(empRows[i][empHeaders.indexOf('Email')] || '').trim(),
           empId: String(empRows[i][empHeaders.indexOf('Employee_ID')] || '').trim(),
           role: rVal,
-          designation: dVal
+          designation: dVal,
+          isAdmin: /^(Administrator|Site Admin)$/i.test(rVal) || /^(Administrator|Site Admin)$/i.test(dVal)
         };
         if (!activeEmp) activeEmp = candidate;
-        if (/^(Administrator|Site Admin)$/i.test(rVal) || /^(Administrator|Site Admin)$/i.test(dVal)) {
+        if (candidate.isAdmin) {
           activeEmp = candidate;
           break;
         }
@@ -1611,9 +1616,8 @@ function testA408ReportGeneratorLive() {
     if (!activeEmp) throw new Error('A4_08_TEST_NO_ACTIVE_EMPLOYEE');
 
     // Locate a project
-    var pSheet = opsWb.getSheetByName(A408_CONFIG.PROJECTS_SHEET);
-    var pHeaders = pSheet.getRange(1, 1, 1, pSheet.getLastColumn()).getValues()[0];
-    var pRows = pSheet.getRange(2, 1, pSheet.getLastRow() - 1, pHeaders.length).getValues();
+    var pHeaders = pSheet ? pSheet.getRange(1, 1, 1, pSheet.getLastColumn()).getValues()[0] : [];
+    var pRows = (pSheet && pSheet.getLastRow() >= 2) ? pSheet.getRange(2, 1, pSheet.getLastRow() - 1, pHeaders.length).getValues() : [];
     var testProject = null;
     if (pRows.length > 0) {
       testProject = {
@@ -1645,6 +1649,47 @@ function testA408ReportGeneratorLive() {
       reportId: companyRes.reportId,
       driveUrl: companyRes.driveUrl
     };
+
+    // Ensure legitimate project membership exists for activeEmp on testProject
+    var mHeaders = mSheet ? mSheet.getRange(1, 1, 1, mSheet.getLastColumn()).getValues()[0] : [];
+    var mRows = (mSheet && mSheet.getLastRow() >= 2) ? mSheet.getRange(2, 1, mSheet.getLastRow() - 1, mHeaders.length).getValues() : [];
+    var pIdCol = mHeaders.indexOf('Project_ID');
+    var empIdCol = mHeaders.indexOf('Employee_ID');
+    var actCol = mHeaders.indexOf('Active');
+
+    var alreadyMember = false;
+    for (var m = 0; m < mRows.length; m++) {
+      if (String(mRows[m][pIdCol] || '').trim() === testProject.id &&
+          String(mRows[m][empIdCol] || '').trim() === activeEmp.empId &&
+          isA408BooleanTrue_(mRows[m][actCol])) {
+        alreadyMember = true;
+        break;
+      }
+    }
+
+    if (!alreadyMember && mSheet) {
+      var existingMbrIds = [];
+      var mbrIdIdx = mHeaders.indexOf('Member_Record_ID');
+      mRows.forEach(function(r) {
+        var mid = String(r[mbrIdIdx] || '').trim();
+        if (mid) existingMbrIds.push(mid);
+      });
+      var newMbrId = generateA4Id('MBR', existingMbrIds);
+      var newMemberRow = new Array(mHeaders.length).fill('');
+      setA408RowVal_(newMemberRow, mHeaders, 'Member_Record_ID', newMbrId);
+      setA408RowVal_(newMemberRow, mHeaders, 'Project_ID', testProject.id);
+      setA408RowVal_(newMemberRow, mHeaders, 'Employee_ID', activeEmp.empId);
+      setA408RowVal_(newMemberRow, mHeaders, 'Project_Role', 'Core Contributor');
+      if (mHeaders.indexOf('Access_Level') >= 0) {
+        setA408RowVal_(newMemberRow, mHeaders, 'Access_Level', 'Editor');
+      }
+      setA408RowVal_(newMemberRow, mHeaders, 'Active', true); // Boolean TRUE per Phase 3 schema
+      setA408RowVal_(newMemberRow, mHeaders, 'Assigned_Date', '2026-07-01');
+
+      mSheet.appendRow(newMemberRow);
+      SpreadsheetApp.flush();
+      createdMemberRowIndices.push(mSheet.getLastRow());
+    }
 
     // 3. Test B: Project Report (R39)
     var projRes = generateA408Report({
@@ -1720,11 +1765,60 @@ function testA408ReportGeneratorLive() {
       generateA408Report({ email: activeEmp.email, reportType: 'Project Report', projectName: 'NON_EXISTENT_PROJECT_9999', period: testPeriod });
     } catch (e3) { caughtInvalidProjectName = true; }
 
+    // Negative Test: Unauthorized employee requesting a project they are not a member of
+    var caughtUnauthorizedProject = false;
+    var unauthorizedPname = 'UNAUTH_TEST_PROJECT_' + Date.now();
+    if (pSheet) {
+      var unauthProjectRow = new Array(pHeaders.length).fill('');
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Project_ID', 'PRJ-UNAUTH99');
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Project_Name', unauthorizedPname);
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Description', 'Negative Auth Test Project');
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Owner', 'different.unauth.owner@example.com');
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Status', 'Active');
+      setA408RowVal_(unauthProjectRow, pHeaders, 'Created_At', '2026-07-01');
+
+      pSheet.appendRow(unauthProjectRow);
+      SpreadsheetApp.flush();
+      createdProjectRowIndices.push(pSheet.getLastRow());
+
+      // Find a non-admin employee to test unauthorized rejection
+      var nonAdminEmp = (!activeEmp.isAdmin) ? activeEmp : null;
+      if (!nonAdminEmp) {
+        for (var na = 0; na < empRows.length; na++) {
+          var naRole = String(empRows[na][empHeaders.indexOf('Role')] || '').trim();
+          var naDesig = String(empRows[na][empHeaders.indexOf('Designation')] || '').trim();
+          if (!/^(Administrator|Site Admin)$/i.test(naRole) && !/^(Administrator|Site Admin)$/i.test(naDesig) && isA408BooleanTrue_(empRows[na][empHeaders.indexOf('Active')])) {
+            nonAdminEmp = {
+              email: String(empRows[na][empHeaders.indexOf('Email')] || '').trim(),
+              empId: String(empRows[na][empHeaders.indexOf('Employee_ID')] || '').trim()
+            };
+            break;
+          }
+        }
+      }
+
+      if (nonAdminEmp) {
+        try {
+          generateA408Report({
+            email: nonAdminEmp.email,
+            reportType: 'Project Report',
+            projectName: unauthorizedPname,
+            period: testPeriod
+          });
+        } catch (e4) {
+          if (e4.message && e4.message.indexOf('A4_08_UNAUTHORIZED_PROJECT_ACCESS') >= 0) {
+            caughtUnauthorizedProject = true;
+          }
+        }
+      }
+    }
+
     report.test6AuthorizationNegativeTests = {
-      status: (caughtInvalidEmail && caughtInvalidPeriod && caughtInvalidProjectName) ? 'PASS' : 'FAIL',
+      status: (caughtInvalidEmail && caughtInvalidPeriod && caughtInvalidProjectName && caughtUnauthorizedProject) ? 'PASS' : 'FAIL',
       rejectedInvalidEmail: caughtInvalidEmail,
       rejectedInvalidPeriod: caughtInvalidPeriod,
-      rejectedInvalidProject: caughtInvalidProjectName
+      rejectedInvalidProject: caughtInvalidProjectName,
+      rejectedUnauthorizedProject: caughtUnauthorizedProject
     };
 
     // 7. Test G: View = Download Equivalence
@@ -1748,7 +1842,6 @@ function testA408ReportGeneratorLive() {
 
     // 9. Test I: Drive Artifact
     var reportsFolder = resolveA408ReportsFolder_();
-    var pdfFiles = reportsFolder.getFilesByName(createdFiles[0] ? createdFiles[0].split('/').pop() : 'dummy');
     report.test9DriveArtifact = {
       status: !!companyRes.driveUrl && companyRes.driveUrl.indexOf('drive.google.com') >= 0 ? 'PASS' : 'FAIL',
       driveUrl: companyRes.driveUrl
@@ -1757,17 +1850,37 @@ function testA408ReportGeneratorLive() {
     // 10. Test J: Concurrency / Idempotency & Cleanup
     report.test10IdempotencyAndCleanup = {
       status: 'PASS',
-      cleanedUpRows: createdRowIndices.length
+      cleanedUpIndexRows: createdRowIndices.length,
+      cleanedUpMemberRows: createdMemberRowIndices.length,
+      cleanedUpProjectRows: createdProjectRowIndices.length
     };
 
   } finally {
-    // Non-destructive cleanup: Delete only the rows created during this test
+    // Non-destructive cleanup: Delete all temporary rows created during this test
+    // 1. Report_Index rows
     for (var r = createdRowIndices.length - 1; r >= 0; r--) {
       try {
         reportIndexSheet.deleteRow(createdRowIndices[r]);
       } catch (delErr) {}
     }
+    // 2. Project_Members rows
+    if (mSheet && createdMemberRowIndices.length > 0) {
+      for (var mr = createdMemberRowIndices.length - 1; mr >= 0; mr--) {
+        try {
+          mSheet.deleteRow(createdMemberRowIndices[mr]);
+        } catch (mDelErr) {}
+      }
+    }
+    // 3. Projects rows
+    if (pSheet && createdProjectRowIndices.length > 0) {
+      for (var pr = createdProjectRowIndices.length - 1; pr >= 0; pr--) {
+        try {
+          pSheet.deleteRow(createdProjectRowIndices[pr]);
+        } catch (pDelErr) {}
+      }
+    }
   }
+
 
   report.allPassed = (
     report.test1Prerequisites.status === 'PASS' &&
