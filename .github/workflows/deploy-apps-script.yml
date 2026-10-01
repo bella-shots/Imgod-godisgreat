@@ -260,6 +260,25 @@ jobs:
             exit 1
           }
 
+          PM_MATCHES=$(grep -RIl "function setupProjectMemberSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$PM_MATCHES" || {
+            echo "FAIL: setupProjectMemberSheetWorkflow is missing from live Apps Script."
+            exit 1
+          }
+          PM_FILE=$(printf '%s\n' "$PM_MATCHES" | head -n 1)
+          grep -q "function onOpenProjectMemberSheetMenu" "$PM_FILE" || {
+            echo "FAIL: onOpenProjectMemberSheetMenu missing from live workflow."
+            exit 1
+          }
+          grep -q "function generateSelectedProjectMemberId" "$PM_FILE" || {
+            echo "FAIL: generateSelectedProjectMemberId missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA414ProjectMemberWorkflowLive" "$PM_FILE" || {
+            echo "FAIL: testA414ProjectMemberWorkflowLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
