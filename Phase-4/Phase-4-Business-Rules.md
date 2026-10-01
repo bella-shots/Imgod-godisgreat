@@ -3,7 +3,7 @@
 | B4-01 | Stable record identity | Use Project_ID, Employee_ID, Claim_ID, Spending_ID, MOM_ID, Salary_Record_ID and Investment_ID as applicable. | Never identify records only by row position. |
 | B4-02 | Expense validation | Reject/flag missing employee, date, amount, project or required proof according to the Phase 3 field definition. | Do not silently alter submitted values. |
 | B4-03 | OOP claim validation | Validate claim date/amount/project/proof and employee eligibility before approval processing. Derive reporting month from the claim date when required; do not require or store a separate OOP month field. | Do not auto-approve unless explicitly authorized. |
-| B4-04 | ₹5,000 rule | Implement only the exact interpretation approved for the project. | Do not invent allowance treatment, extra ₹5,000 line, approval behavior or salary treatment. |
+| B4-04 | ₹5,000 OOP monthly rule | Each employee has a ₹5,000 monthly company-essential spending amount. The next salary credit includes the employee's actual approved company-essential spend: below ₹5,000, add only the amount actually spent; exactly ₹5,000, add ₹5,000; above ₹5,000, add ₹5,000 plus the excess, which equals the full approved spend. | ₹5,000 is not a reimbursement cap. Do not add a separate ₹5,000 line on top of actual spend, and do not reduce an approved claim merely because it exceeds ₹5,000. Salary history must be preserved. |
 | B4-05 | Salary carry-forward | Calculate pending amount using approved salary fields and preserve monthly history. | Do not overwrite prior month records. |
 | B4-06 | MOM recipients | Use registered participant/recipient email IDs from the approved MOM workflow. | Do not email arbitrary contacts unless the workflow authorizes them. |
 | B4-07 | MOM versioning | Every published/update event must retain version/status metadata. | Do not destroy the prior version history. |
@@ -42,3 +42,19 @@
 ## Financial employee-linkage invariant
 
 For employee-related money records, `Employee_ID` is the canonical employee identity reference. `Member_Record_ID` / `MBR-XXXXXX` is a project-membership record ID and must never be used as the employee identity or as the employee linkage for financial records. This applies to `Budget_Given` (`Recipient Employee_ID`), `Employee_Spending` (`Employee_ID`), `OOP_Claims` (`Employee_ID`) and `Salary_Admin` (`Employee_ID`). `Investments` remains the explicit exception because its frozen schema uses `Source_Person` and does not define an `Employee_ID` field.
+
+
+## R60 — OOP ₹5,000 monthly company-essential spending rule (frozen)
+
+**Date:** 2026-10-01
+
+Each employee has a **₹5,000 monthly company-essential spending amount** associated with OOP/company-essential expenses.
+
+For the next salary credit, the employee receives the designated salary **plus the actual approved company-essential spend for the applicable month**.
+
+Examples:
+- ₹1,000 approved spend → Salary + ₹1,000.
+- ₹5,000 approved spend → Salary + ₹5,000.
+- ₹7,000 approved spend → Salary + ₹5,000 + ₹2,000 excess = Salary + ₹7,000.
+
+Therefore ₹5,000 is **not a reimbursement cap**. Do not create a separate additional ₹5,000 reimbursement line, and do not reduce an otherwise approved claim merely because it exceeds ₹5,000. Multiple approved OOP claims in the same month contribute to the applicable monthly approved-spend total. Salary history must be preserved. This rule does not itself authorize automatic claim approval.
