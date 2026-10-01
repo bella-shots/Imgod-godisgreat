@@ -183,24 +183,32 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Preserves salary history and does not add a duplicate ₹5,000 line.
   - Non-destructive `testA405OopSalaryRule()` covers ₹1,000, ₹5,000 and ₹7,000 cases.
   - Live verification passed the ₹1,000, ₹5,000, ₹7,000, pending, rejected, ordinary-food, food-business-exception and separate ₹1,000 allowance cases.
+
+- **Salary_Admin R57 workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED PASS (01-Oct-2026).**
+  - `Phase-4/Automation/Core/a4_14_salary_sheet_workflow.gs` implements the frozen direct-Sheet workflow.
+  - Salary_Admin remains exactly 11 columns with no Salary Form/native response tab.
+  - `Salary Actions → Generate Salary ID(s)` supports single-row and controlled bulk generation.
+  - Validation occurs before SAL allocation; canonical Employee_ID is enforced and Member_Record_ID is rejected.
+  - A4-00 prefix `SAL`, LockService, ID protection, duplicate protection and no generic onEdit/autosave issuance all passed live verification.
+  - Salary history and production data were preserved; temporary test records were removed.
+
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
-3. **Next: Salary/Admin Generate-ID workflow, including controlled Salary bulk generation (P4-48).**
-4. Continue Investment exception, MOM, reporting, notification, audit/error handling, and remaining Phase 4 workflows.
+3. **Salary/Admin Generate-ID workflow is COMPLETE/PASS — P4-48 and the applicable R57 direct-Sheet acceptance gates are now verified.**
+4. **Next: Investment exception workflow, then remaining MOM/reporting/notification/audit/error-handling workflows.**
 5. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
-6. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
+6. R58 financial employee-identity acceptance is now PASS for all applicable money workflows; Investments remains the explicit frozen Source_Person exception.
 
 
-## Next live-verification target — Salary/Admin Generate-ID
-- **Target:** controlled Salary_Admin Generate Salary ID(s) workflow in the existing Phase 4 Apps Script project.
-- Verify the frozen Salary_Admin schema and the explicit Generate Salary ID(s) action.
-- Verify validation-before-ID issuance, canonical A4-00 `SAL-XXXXXX` generation, locking/immutability, controlled bulk generation, duplicate/already-ID'd protection, and no generic onEdit/autosave issuance.
-- Preserve salary history and do not introduce a Salary Form/native response tab.
-- Do not mark P4-48 PASS until live evidence is returned.
+## Next live-verification target — Investment exception workflow
+- **Target:** verify the frozen Investments workflow and its explicit R58 `Source_Person` exception in the existing Phase 4 Apps Script project.
+- Preserve the authoritative Phase 3 Investments schema and the frozen distinction that Investments uses `Source_Person`, not Employee_ID, as its explicit exception.
+- Verify the controlled workflow, A4-00 `INV` generation where applicable, validation, duplicate/idempotency safety, access controls, and production-data preservation.
+- Do not mark the Investment workflow PASS until live evidence is returned.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
