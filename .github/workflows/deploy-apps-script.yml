@@ -286,11 +286,19 @@ jobs:
           LIVE="$RUNNER_TEMP/apps-script-live"
 
           check_fn() {
-            local file="$1"
+            local stem="$1"
             local fn="$2"
-            test -f "$LIVE/$file" || { echo "FAIL: live file missing: $file"; exit 1; }
-            grep -qF "function $fn" "$LIVE/$file" || { echo "FAIL: $fn missing from $file"; exit 1; }
-            echo "PASS: $file :: $fn"
+            local file=""
+            if [ -f "$LIVE/$stem.gs" ]; then
+              file="$LIVE/$stem.gs"
+            elif [ -f "$LIVE/$stem.js" ]; then
+              file="$LIVE/$stem.js"
+            else
+              echo "FAIL: live source file missing for $stem (.gs/.js)"
+              exit 1
+            fi
+            grep -qF "function $fn" "$file" || { echo "FAIL: $fn missing from $stem"; exit 1; }
+            echo "PASS: $stem :: $fn"
           }
 
           check_fn "employee_creation_workflow.gs" "setupEmployeeDirectSheetWorkflow"
@@ -351,7 +359,14 @@ jobs:
           check_fn "a4_14_budget_given_sheet_workflow.gs" "generateSelectedBudgetId"
           check_fn "a4_14_budget_given_sheet_workflow.gs" "testA414BudgetGivenWorkflowLive"
 
-          EMPLOYEE_FILE="$LIVE/employee_creation_workflow.gs"
+          if [ -f "$LIVE/employee_creation_workflow.gs" ]; then
+            EMPLOYEE_FILE="$LIVE/employee_creation_workflow.gs"
+          elif [ -f "$LIVE/employee_creation_workflow.js" ]; then
+            EMPLOYEE_FILE="$LIVE/employee_creation_workflow.js"
+          else
+            echo "FAIL: employee_creation_workflow live source file missing."
+            exit 1
+          fi
           if grep -qF "function saveSelectedEmployee" "$EMPLOYEE_FILE" ||
              grep -qF "function processSelectedEmployee" "$EMPLOYEE_FILE" ||
              grep -qF "function showEmployeeActionsFloatingPanel" "$EMPLOYEE_FILE" ||
