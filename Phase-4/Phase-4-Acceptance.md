@@ -9,7 +9,7 @@
 | P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | PASS — live-verified 01-Oct-2026; approved/pending/rejected/food cases and separate ₹1,000 allowance passed. |
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | PASS — live-verified 01-Oct-2026; FRM-05 → MOM_Responses → A4-06 → Project_MOM_Index + 04_MOM Doc artifact creation, versioning (v1.0 → v1.1), update/publish, and canonical Project_ID resolution all passed. |
 | P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | PASS — live-verified 01-Oct-2026; A4-07 parsed/deduplicated attendee emails, generated correct MOM subject/body/link, prevented duplicate email dispatch via ScriptProperties, and logged send results. |
-| P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | NOT STARTED |
+| P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | PASS — live-verified 01-Oct-2026; all 10 A4-08 P4-10 live sub-tests passed. |
 | P4-11 | Test duplicate trigger protection. | Retrying the same event does not create duplicate folders, records or emails. | NOT STARTED |
 | P4-12 | Test failure handling. | Forced error creates a visible failure state and appropriate admin notification/log entry. | NOT STARTED |
 | P4-13 | Test sensitive access. | Automation does not broaden employee access to restricted Finance, Salary, Investment or HR source data. | NOT STARTED |
@@ -35,6 +35,24 @@
 - Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
 - Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
 
+
+### A4-08 / P4-10 live verification evidence — 01-Oct-2026
+- Implementation: `Phase-4/Automation/Core/a4_08_report_generator.gs`.
+- Locked specification: `Phase-4/A4-08-Report-Generator-Build-Spec.md`.
+- Live execution: `testA408ReportGeneratorLive()` completed successfully in the approved MASTER COMPANY Phase 4 Automation Apps Script project.
+- Company Summary: PASS — R38 6-section model generated with Executive Snapshot.
+- Project Report: PASS — canonical Employees → Project_Members authorization chain verified.
+- Finance Report: PASS — R41 structure, self-only salary and Investment exclusion verified.
+- HR Report: PASS — R44 structure, requester-scoped profile and confidential-field protection verified.
+- Authorization: PASS — invalid email, inverted period and non-existent project rejected before query.
+- Negative Project Access: PASS — unauthorized non-member blocked with `A4_08_UNAUTHORIZED_PROJECT_ACCESS`.
+- View = Download: PASS — same reportModel used for HTML View and PDF download with data parity.
+- Report_Index: PASS — exact 7-column contract, `RPT-######`, Published status and YYYY-MM-DD Generated_Date verified.
+- Drive artifact: PASS — PDF generated under `MASTER COMPANY/Reports`.
+- A4-00 Report_ID: PASS — central `generateA4Id('RPT', ...)` with LockService verified.
+- Overall: `A4_08_P4_10_LIVE_VERIFICATION = PASS`.
+- Test cleanup completed through the existing non-destructive `finally` cleanup path; temporary test records/artifacts were removed and pre-existing production data preserved.
+
 ## Phase 4 deployment/verification stabilization checkpoint — CLOSED (01-Oct-2026)
 - GitHub Actions runs #49–#64 were historically failing; the final blocker identified in #64 was the Apps Script 20-versioned-deployment limit.
 - Deployment workflow now creates a new immutable code version but reuses/updates an existing Apps Script Execution API deployment instead of creating a new deployment on every CI run. Google documents deployment update as the supported way to move an existing deployment to a new version. [Google Apps Script deployment management documentation]
@@ -48,7 +66,7 @@
 - A4-07 MOM Email Sender live test suite executed: `testA407MomEmailSenderLive()` returned 9/9 checks PASS, cleanup PASS.
 - P4-08 (MOM Processing) = PASS; P4-09 (MOM Email Sender) = PASS; P4-49 (Form/System ID Architecture) = PASS.
 - **STABILIZATION CHECKPOINT = CLOSED.**
-- **A4-08 Report Generator = NOT STARTED / NEXT PHASE.**
+- **A4-08 Report Generator = IMPLEMENTED — P4-10 LIVE-VERIFIED PASS (01-Oct-2026).**
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 acceptance tests: P4-21 Project_Members requires explicit Generate Project Member ID; P4-22 Project_Notes requires explicit Generate Project Note ID; P4-23 Budget_Given requires explicit Generate Budget ID; P4-24 Salary_Admin supports explicit Generate Salary ID(s), including controlled bulk generation; P4-25 concurrent Generate-ID actions produce unique IDs under LockService; P4-26 generated IDs become read-only/locked and cannot be manually overwritten.
