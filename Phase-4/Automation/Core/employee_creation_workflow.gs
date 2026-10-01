@@ -1,22 +1,26 @@
 /** Employee Creation Workflow — Phase 4
- * Floating Employee Actions Panel (Primary UI) & Native Menu (Secondary UI).
- *
- * 1. Floating Modeless Panel:
- *    • Floats above the spreadsheet grid.
- *    • Remains active while HR/Admin selects employee rows and works on the sheet.
- *    • Two large, dedicated action buttons:
- *      - [ Generate Employee ID ] (Blue)
- *      - [ Save Employee ] (Green)
- *    • Real-time status/feedback area.
- *    • Draggable to bottom-left corner of the Google Sheets viewport.
- * 2. Native "Employee Actions" Menu:
- *    • Open Floating Panel
+ * Direct Employees-sheet UI controls:
+ * 1. Column A (Employee_ID): Visual ID-generation control header (Dark Blue).
+ * 2. Column P (Process): Visual Process/Commit control header (Green) placed
+ *    immediately beside the 15-column table without contaminating the database schema.
+ * 3. Native "Employee Actions" custom menu:
  *    • Generate Employee ID
+ *    • Process Employee
  *    • Save Employee
  *
- * Schema Safety:
- * The authoritative Employees tab remains strictly 15 columns (Columns A:O).
- * No cells, merged cells, drawing buttons, or extra schema columns are used.
+ * Workflow:
+ * 1. HR/Admin enters employee details directly in the Employees sheet.
+ * 2. User selects the Employee_ID cell (or row) and clicks Employee Actions → Generate Employee ID.
+ * 3. Script validates row, generates EMP-XXXXXX via central A4-00 generator,
+ *    locks Employee_ID, marks Process column as "▶ Ready to Process".
+ * 4. User reviews employee information.
+ * 5. User selects Process cell (or row) and clicks Employee Actions → Process Employee.
+ * 6. Script validates entire record, populates Created_At, locks record, marks "✔ Processed".
+ *
+ * Safety & Invariants:
+ * • Authoritative database schema remains strictly 15 columns (Columns A:O).
+ * • No automatic onEdit ID generation or autosave.
+ * • No floating panels, sidebars, or external forms.
  */
 
 const EMPLOYEE_CREATION_CONFIG = {
@@ -40,123 +44,85 @@ function onOpenEmployeeSheetMenu(e) {
   try {
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Employee Actions')
-      .addItem('Open Floating Panel', 'showEmployeeActionsFloatingPanel')
-      .addSeparator()
       .addItem('Generate Employee ID', 'generateSelectedEmployeeId')
+      .addItem('Process Employee', 'processSelectedEmployee')
       .addItem('Save Employee', 'saveSelectedEmployee')
       .addToUi();
-
-    // Attempt to automatically display the floating panel on open
-    showEmployeeActionsFloatingPanel();
   } catch (err) {
     Logger.log('onOpenEmployeeSheetMenu note (expected in headless context): ' + err.message);
   }
 }
 
-/** Opens the floating modeless dialog for Employee Actions */
-function showEmployeeActionsFloatingPanel() {
-  try {
-    const ui = SpreadsheetApp.getUi();
-    const htmlOutput = HtmlService.createHtmlOutput(getFloatingPanelHtml_())
-      .setWidth(290)
-      .setHeight(230)
-      .setTitle(' ');
-    ui.showModelessDialog(htmlOutput, 'Employee Actions');
-    return { status: 'PASS', panel: 'FLOATING_MODELESS_DIALOG' };
-  } catch (err) {
-    Logger.log('showEmployeeActionsFloatingPanel note: ' + err.message);
-    return { status: 'NOTE', message: err.message };
+/** Formats the in-sheet Employee_ID and Process controls */
+function installEmployeeSheetControls() {
+  const sheet = getEmployeeSheet_();
+
+  // 1. Column A (Employee_ID) Control Header Styling
+  const idHeader = sheet.getRange(1, 1);
+  idHeader.setValue('Employee_ID'); // Authoritative schema header preserved
+  idHeader.setBackground('#1e3a8a'); // Dark blue
+  idHeader.setFontColor('#ffffff'); // White bold
+  idHeader.setFontWeight('bold');
+  idHeader.setHorizontalAlignment('center');
+  idHeader.setVerticalAlignment('middle');
+  idHeader.setNote(
+    'EMPLOYEE ID GENERATION\n\n' +
+    '1. Fill in employee details.\n' +
+    '2. Select this Employee_ID cell for the row.\n' +
+    '3. Click Employee Actions → Generate Employee ID.'
+  );
+
+  // 2. Column P (Process) UI Control Column (Outside 15-column schema A:O)
+  sheet.setColumnWidth(16, 120);
+  const processHeader = sheet.getRange(1, 16);
+  processHeader.setValue('Process');
+  processHeader.setBackground('#15803d'); // Green
+  processHeader.setFontColor('#ffffff'); // White bold
+  processHeader.setFontWeight('bold');
+  processHeader.setHorizontalAlignment('center');
+  processHeader.setVerticalAlignment('middle');
+  processHeader.setNote(
+    'PROCESS / COMMIT CONTROL\n\n' +
+    '1. Ensure Employee_ID is generated and all fields are complete.\n' +
+    '2. Select this Process cell or employee row.\n' +
+    '3. Click Employee Actions → Process Employee to validate and finalize.'
+  );
+
+  // Separate UI control column visually from data columns
+  processHeader.setBorder(true, true, true, true, null, null, '#0f172a', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+
+  // Update existing data rows status in Column P
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    const createdAts = sheet.getRange(2, 15, lastRow - 1, 1).getValues();
+    const ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (let i = 0; i < ids.length; i++) {
+      const rowNum = i + 2;
+      const cell = sheet.getRange(rowNum, 16);
+      cell.setHorizontalAlignment('center');
+      cell.setVerticalAlignment('middle');
+      cell.setFontSize(10);
+      if (createdAts[i][0]) {
+        cell.setValue('✔ Processed');
+        cell.setBackground('#dcfce7');
+        cell.setFontColor('#166534');
+        cell.setFontWeight('bold');
+      } else if (ids[i][0] && /^EMP-[0-9]{6}$/.test(String(ids[i][0]).trim())) {
+        cell.setValue('▶ Ready to Process');
+        cell.setBackground('#fef9c3');
+        cell.setFontColor('#854d0e');
+        cell.setFontWeight('bold');
+      } else {
+        cell.setValue('—');
+        cell.setBackground('#ffffff');
+        cell.setFontColor('#94a3b8');
+        cell.setFontWeight('normal');
+      }
+    }
   }
-}
 
-/** HTML template for the floating Employee Actions panel */
-function getFloatingPanelHtml_() {
-  return '<!DOCTYPE html>' +
-    '<html><head><base target="_top"><style>' +
-    '* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }' +
-    'body { background: #ffffff; color: #0f172a; padding: 8px; user-select: none; }' +
-    '.panel { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); overflow: hidden; }' +
-    '.header { background: #0f172a; color: #ffffff; padding: 10px 12px; text-align: center; font-size: 13px; font-weight: 700; letter-spacing: 0.5px; }' +
-    '.body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }' +
-    '.btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 10px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid transparent; cursor: pointer; transition: background 0.15s ease, box-shadow 0.15s ease; }' +
-    '.btn-primary { background: #2563eb; color: #ffffff; border-color: #1d4ed8; }' +
-    '.btn-primary:hover { background: #1d4ed8; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }' +
-    '.btn-success { background: #16a34a; color: #ffffff; border-color: #15803d; }' +
-    '.btn-success:hover { background: #15803d; box-shadow: 0 2px 6px rgba(22,163,74,0.3); }' +
-    '.btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }' +
-    '.status { font-size: 11px; line-height: 1.35; padding: 6px 8px; border-radius: 4px; background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; min-height: 36px; word-break: break-word; }' +
-    '.status.error { background: #fef2f2; border-color: #fecaca; color: #dc2626; font-weight: 500; }' +
-    '.status.success { background: #f0fdf4; border-color: #bbf7d0; color: #16a34a; font-weight: 600; }' +
-    '</style></head><body>' +
-    '<div class="panel">' +
-    '  <div class="header">EMPLOYEE ACTIONS</div>' +
-    '  <div class="body">' +
-    '    <button id="btnGenerate" class="btn btn-primary" onclick="handleGenerate()">▶ Generate Employee ID</button>' +
-    '    <button id="btnSave" class="btn btn-success" onclick="handleSave()">✔ Save Employee</button>' +
-    '    <div id="status" class="status">Select an employee row in Employees sheet, then click an action.</div>' +
-    '  </div>' +
-    '</div>' +
-    '<script>' +
-    'function setStatus(text, type) {' +
-    '  var s = document.getElementById("status");' +
-    '  s.textContent = text;' +
-    '  s.className = "status" + (type ? " " + type : "");' +
-    '}' +
-    'function setBusy(busy) {' +
-    '  document.getElementById("btnGenerate").disabled = busy;' +
-    '  document.getElementById("btnSave").disabled = busy;' +
-    '}' +
-    'function handleGenerate() {' +
-    '  setBusy(true);' +
-    '  setStatus("Validating row and generating Employee ID...", "");' +
-    '  google.script.run' +
-    '    .withSuccessHandler(function(res) {' +
-    '      setBusy(false);' +
-    '      if (res && res.success) {' +
-    '        setStatus(res.message, "success");' +
-    '      } else {' +
-    '        setStatus(res && res.message ? res.message : "Error generating ID.", "error");' +
-    '      }' +
-    '    })' +
-    '    .withFailureHandler(function(err) {' +
-    '      setBusy(false);' +
-    '      setStatus(err.message || "Operation failed.", "error");' +
-    '    })' +
-    '    .generateSelectedEmployeeId();' +
-    '}' +
-    'function handleSave() {' +
-    '  setBusy(true);' +
-    '  setStatus("Validating and saving employee record...", "");' +
-    '  google.script.run' +
-    '    .withSuccessHandler(function(res) {' +
-    '      setBusy(false);' +
-    '      if (res && res.success) {' +
-    '        setStatus(res.message, "success");' +
-    '      } else {' +
-    '        setStatus(res && res.message ? res.message : "Error saving employee.", "error");' +
-    '      }' +
-    '    })' +
-    '    .withFailureHandler(function(err) {' +
-    '      setBusy(false);' +
-    '      setStatus(err.message || "Operation failed.", "error");' +
-    '    })' +
-    '    .saveSelectedEmployee();' +
-    '}' +
-    '</script></body></html>';
-}
-
-/** Cleans up any leftover experimental cell formatting or drawings in columns outside schema */
-function cleanEmployeeSheetExtraUi_() {
+  // Remove any obsolete images outside column 15
   try {
-    const sheet = getEmployeeSheet_();
-    // Clean columns 16 to 20 (P to T)
-    const extraRange = sheet.getRange(1, 16, 10, 5);
-    extraRange.breakApart();
-    extraRange.clear();
-    extraRange.clearNote();
-    extraRange.setBorder(false, false, false, false, false, false);
-
-    // Remove any floating images anchored in columns >= 16
     const images = sheet.getImages();
     images.forEach(function(img) {
       const anchor = img.getAnchorCell();
@@ -164,10 +130,17 @@ function cleanEmployeeSheetExtraUi_() {
         try { img.remove(); } catch (e) {}
       }
     });
-    SpreadsheetApp.flush();
-  } catch (err) {
-    Logger.log('cleanEmployeeSheetExtraUi_ note: ' + err.message);
+  } catch (imgErr) {
+    Logger.log('Image cleanup note: ' + imgErr.message);
   }
+
+  SpreadsheetApp.flush();
+  return {
+    status: 'PASS',
+    employeeIdControl: 'INSTALLED (Column A)',
+    processControl: 'INSTALLED (Column P)',
+    authoritativeSchema: 'PRESERVED (Columns A:O, 15 columns)'
+  };
 }
 
 /** Installs the installable ON_OPEN trigger for onOpenEmployeeSheetMenu */
@@ -175,7 +148,6 @@ function installEmployeeSheetMenuTrigger() {
   const sheet = getEmployeeSheet_();
   const ss = sheet.getParent();
 
-  // Remove duplicate or obsolete triggers for this menu/control
   ScriptApp.getProjectTriggers().forEach(function(trigger) {
     const handler = trigger.getHandlerFunction();
     if (handler === 'onOpenEmployeeSheetMenu' || handler === 'processEmployeeSheetControl') {
@@ -183,7 +155,6 @@ function installEmployeeSheetMenuTrigger() {
     }
   });
 
-  // Create exactly one spreadsheet ON_OPEN trigger for onOpenEmployeeSheetMenu
   ScriptApp.newTrigger('onOpenEmployeeSheetMenu')
     .forSpreadsheet(ss)
     .onOpen()
@@ -210,28 +181,17 @@ function verifyEmployeeSheetMenuTrigger() {
 
 /** Setup and prerequisite verification entry point */
 function setupEmployeeDirectSheetWorkflow() {
-  cleanEmployeeSheetExtraUi_();
+  const controls = installEmployeeSheetControls();
   const trigger = installEmployeeSheetMenuTrigger();
   const prerequisites = verifyEmployeeCreationPrerequisites();
   const result = {
-    status: trigger.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    status: trigger.status === 'PASS' && controls.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    controls: controls,
     trigger: trigger,
     prerequisites: prerequisites
   };
   Logger.log(JSON.stringify(result, null, 2));
   return result;
-}
-
-/** Backward compatibility aliases */
-function installEmployeeActionsPanel() {
-  cleanEmployeeSheetExtraUi_();
-  return { status: 'PASS', mode: 'FLOATING_PANEL' };
-}
-function installEmployeeActionsButton() {
-  return installEmployeeActionsPanel();
-}
-function processEmployeeSheetControl(e) {
-  return;
 }
 
 /** Action 1: Generate Employee ID for the selected row */
@@ -261,11 +221,19 @@ function generateSelectedEmployeeId() {
 
   try {
     const employeeId = generateEmployeeIdForRow_(sheet, rowNumber);
+
+    // Update Process column on that row to ready
+    const processCell = sheet.getRange(rowNumber, 16);
+    processCell.setValue('▶ Ready to Process');
+    processCell.setBackground('#fef9c3');
+    processCell.setFontColor('#854d0e');
+    processCell.setFontWeight('bold');
+
     return {
       success: true,
       employeeId: employeeId,
       rowNumber: rowNumber,
-      message: 'Employee ID generated: ' + employeeId + '. Review the row, then click Save Employee.'
+      message: 'Employee ID generated: ' + employeeId + '. Review the row, then click Process Employee.'
     };
   } catch (err) {
     return {
@@ -275,7 +243,12 @@ function generateSelectedEmployeeId() {
   }
 }
 
-/** Action 2: Save Employee for the selected row */
+/** Action 2: Process Employee (wrapper invoking saveSelectedEmployee) */
+function processSelectedEmployee() {
+  return saveSelectedEmployee();
+}
+
+/** Action 3: Save Employee for the selected row */
 function saveSelectedEmployee() {
   const ss = SpreadsheetApp.getActiveSpreadsheet() || getEmployeeSheet_().getParent();
   const sheet = ss.getActiveSheet();
@@ -288,7 +261,7 @@ function saveSelectedEmployee() {
 
   const activeRange = sheet.getActiveRange();
   if (!activeRange) {
-    const msg = 'No row selected. Please select an employee row to save.';
+    const msg = 'No row selected. Please select an employee row to process.';
     ss.toast(msg, 'Employee Actions', 6);
     return { success: false, message: msg };
   }
@@ -302,6 +275,14 @@ function saveSelectedEmployee() {
 
   try {
     const employeeId = saveEmployeeRow_(sheet, rowNumber);
+
+    // Update Process column on that row to completed
+    const processCell = sheet.getRange(rowNumber, 16);
+    processCell.setValue('✔ Processed');
+    processCell.setBackground('#dcfce7');
+    processCell.setFontColor('#166534');
+    processCell.setFontWeight('bold');
+
     return {
       success: true,
       employeeId: employeeId,
@@ -346,7 +327,7 @@ function generateEmployeeIdForRow_(sheet, rowNumber) {
       email: String(row.Email).trim().toLowerCase(),
       generatedAt: new Date().toISOString()
     }));
-    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then click Save Employee.', 'Employee Actions', 8);
+    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then click Process Employee.', 'Employee Actions', 8);
     return employeeId;
   } catch (error) {
     sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
@@ -364,7 +345,7 @@ function saveEmployeeRow_(sheet, rowNumber) {
     validateEmployeeRow_(row);
     const employeeId = String(row.Employee_ID || '').trim().toUpperCase();
     if (!/^EMP-[0-9]{6}$/.test(employeeId)) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions.');
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions → Generate Employee ID.');
     }
     const pendingKey = 'EMPLOYEE_PENDING_' + employeeId;
     const pendingRaw = PropertiesService.getScriptProperties().getProperty(pendingKey);
@@ -404,10 +385,12 @@ function verifyEmployeeCreationPrerequisites() {
     workbook: sheet.getParent().getName().trim().toUpperCase() === EMPLOYEE_CREATION_CONFIG.workbookName.toUpperCase(),
     sheet: sheet.getName().trim() === EMPLOYEE_CREATION_CONFIG.sheetName,
     exact15ColumnSchema: headers.length === 15 && EMPLOYEE_CREATION_CONFIG.requiredHeaders.every(function(h, i) { return headers[i] === h; }),
+    employeeIdControlConfigured: sheet.getRange(1, 1).getValue() === 'Employee_ID',
+    processControlConfigured: sheet.getRange(1, 16).getValue() === 'Process',
     noEmployeeFormRequired: true,
     noSidebarRequired: true,
+    noFloatingPanelRequired: true,
     employeeActionsMenuConfigured: true,
-    floatingPanelConfigured: true,
     centralGeneratorAvailable: typeof generateA4Id === 'function',
     employeeSheetMenuTrigger: trigger.status === 'PASS'
   };
@@ -504,6 +487,20 @@ function validateEmployeeRow_(row) {
   if (row.Reimbursement_Eligible !== true && row.Reimbursement_Eligible !== false && reimbStr !== 'TRUE' && reimbStr !== 'FALSE') {
     throw new Error('Reimbursement_Eligible must be TRUE or FALSE.');
   }
+}
+
+/** Backward compatibility aliases */
+function installEmployeeActionsPanel() {
+  return installEmployeeSheetControls();
+}
+function installEmployeeActionsButton() {
+  return installEmployeeSheetControls();
+}
+function showEmployeeActionsFloatingPanel() {
+  return { status: 'PASS', mode: 'DIRECT_SHEET_CONTROLS' };
+}
+function processEmployeeSheetControl(e) {
+  return;
 }
 
 /** Non-destructive verification test for the direct Employees-sheet workflow. */

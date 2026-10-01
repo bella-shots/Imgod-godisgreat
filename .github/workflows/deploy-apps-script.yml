@@ -247,8 +247,12 @@ jobs:
             echo "FAIL: saveSelectedEmployee missing from live workflow."
             exit 1
           }
-          grep -q "function installEmployeeActionsPanel" "$NEW_FILE" || {
-            echo "FAIL: installEmployeeActionsPanel missing from live workflow."
+          grep -q "function installEmployeeSheetControls" "$NEW_FILE" || {
+            echo "FAIL: installEmployeeSheetControls missing from live workflow."
+            exit 1
+          }
+          grep -q "function processSelectedEmployee" "$NEW_FILE" || {
+            echo "FAIL: processSelectedEmployee missing from live workflow."
             exit 1
           }
           grep -q "function showEmployeeActionsFloatingPanel" "$NEW_FILE" || {
