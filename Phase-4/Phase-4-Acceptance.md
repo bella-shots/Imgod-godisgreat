@@ -9,7 +9,7 @@
 | P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | PASS — live-verified 01-Oct-2026; approved/pending/rejected/food cases and separate ₹1,000 allowance passed. |
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | PASS — live-verified 01-Oct-2026; FRM-05 → MOM_Responses → A4-06 → Project_MOM_Index + 04_MOM Doc artifact creation, versioning (v1.0 → v1.1), update/publish, and canonical Project_ID resolution all passed. |
 | P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | PASS — live-verified 01-Oct-2026; A4-07 parsed/deduplicated attendee emails, generated correct MOM subject/body/link, prevented duplicate email dispatch via ScriptProperties, and logged send results. |
-| P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | IMPLEMENTED — LIVE VERIFICATION REQUIRED |
+| P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | NOT STARTED |
 | P4-11 | Test duplicate trigger protection. | Retrying the same event does not create duplicate folders, records or emails. | NOT STARTED |
 | P4-12 | Test failure handling. | Forced error creates a visible failure state and appropriate admin notification/log entry. | NOT STARTED |
 | P4-13 | Test sensitive access. | Automation does not broaden employee access to restricted Finance, Salary, Investment or HR source data. | NOT STARTED |
@@ -34,21 +34,6 @@
 - Raw response preservation: PASS; the native `Projects_Responses` intake row remains intact.
 - Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
 - Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
-
-## A4-08 Report Generator implementation checkpoint — 01-Oct-2026
-
-- Implementation added: `Phase-4/Automation/Core/a4_08_report_generator.gs`.
-- Entry point: `processA408ReportFormSubmit(e)` for `Report_Requests_Responses`.
-- Frozen report types implemented: Company Summary, Project Report, Finance Report, HR Report.
-- Frozen FRM-06 period contract enforced: inclusive `YYYY-MM-DD to YYYY-MM-DD`.
-- Requester identity resolves through authoritative `Employees.Email` to canonical `Employee_ID`.
-- Authorization is not inferred from `Employees.Role` or `Designation`; self-scope is preserved and broader Finance/HR scope requires explicit access to the corresponding restricted workbook.
-- Project Report requires exact case-sensitive Project Name resolution and authorized project scope.
-- Report IDs use A4-00 `RPT-XXXXXX` generation.
-- Report_Index frozen 7-column schema is asserted before write.
-- Report artifacts are created under the existing `MASTER COMPANY/Reports` folder as a human-readable Google Doc plus PDF.
-- A non-destructive prerequisite/period/authorization verification helper is included.
-- **Acceptance remains open:** P4-10 is not marked PASS until the actual FRM-06 submission path creates a real report, writes the Report_Index record, and the resulting artifact/data scope are live-verified.
 
 ## Phase 4 deployment/verification stabilization checkpoint — CLOSED (01-Oct-2026)
 - GitHub Actions runs #49–#64 were historically failing; the final blocker identified in #64 was the Apps Script 20-versioned-deployment limit.
