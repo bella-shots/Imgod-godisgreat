@@ -207,7 +207,7 @@ All R55 placement and response-destination acceptance checks are now verified un
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
 3. **Salary/Admin Generate-ID workflow is COMPLETE/PASS — P4-48 verified live.**
 4. **Investments R58 Source_Person exception workflow is COMPLETE/PASS under dedicated module A4-15; the frozen A4-07 MOM Email Sender slot remains unchanged.**
-5. **Next: MOM processing (A4-06/A4-07) and Report generation (A4-10).**
+5. **Next: MOM processing (A4-06/A4-07) and Report generation (A4-08).**
 6. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
 7. R58 financial employee-identity acceptance is PASS across all financial workflows (`Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, and the explicit `Investments` `Source_Person` exception).
 
@@ -237,7 +237,6 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - The frozen 11-column `OOP_Claims` schema is unchanged.
 - Top Manager is resolved dynamically as the single active `Director` in `MASTER_COMPANY_HR_ADMIN → Employees`; no manager email Script Property is used.
 - Live verification of the complete employee → manager → approval → salary chain = PASS on 01-Oct-2026.
-
 
 ### R62 authority correction — 2026-10-01
 - Corrected A4-04 Top Manager resolution: the approval authority is not a manually configured email or Script Property.
