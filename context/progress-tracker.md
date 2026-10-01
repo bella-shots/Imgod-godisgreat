@@ -129,11 +129,12 @@ All R55 placement and response-destination acceptance checks are now verified un
 - **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
-- **Employee Creation Workflow (Phase 3 R48): DIRECT SHEET IMPLEMENTATION IN GITHUB; live verification pending.**
-  - Uses the existing `Employees` tab directly; no sidebar, custom menu, employee-creation Form, or extra schema column.
+- **Employee Creation Workflow (Phase 3 R48): DIRECT SHEET IMPLEMENTATION WITH EMPLOYEE ACTIONS MENU — IMPLEMENTED IN GITHUB; deployment pending.**
+  - Uses the existing `Employees` tab directly; no employee-creation Form, sidebar, or extra schema column.
   - The `Employees` schema remains exactly 15 columns in the frozen order.
-  - Explicit control 1: type `GENERATE EMPLOYEE ID` in `Employee_ID` on the pending employee row.
-  - Explicit control 2: after review, type `SAVE EMPLOYEE` in `Created_At`; the script replaces it with the system timestamp and commits the row.
+  - User selects the pending employee row and uses `Employee Actions → Generate Employee ID`.
+  - After review, user uses `Employee Actions → Save Employee`.
+  - No magic text/command is typed into data cells.
   - Employee_ID is generated only through A4-00, then protected/read-only; pending generated state is tracked so manually invented IDs cannot be saved.
   - Uses the frozen Employment_Status values: Probation, Full-Time, Notice Period, Relieved.
   - The old sidebar implementation has been removed.
@@ -141,9 +142,9 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Spreadsheet-level onFormSubmit trigger now ignores non-`Projects_Responses` sheets instead of throwing `A4_01_WRONG_SHEET`.
 
 ## Phase 4 immediate focus
-1. Deploy the updated direct Employees-sheet workflow through the existing GitHub Actions Apps Script deployment.
-2. Run `installEmployeeSheetControlTrigger()` in the existing MASTER COMPANY Apps Script project.
-3. Run `verifyEmployeeCreationPrerequisites()` and then perform the controlled employee Generate-ID → Save test.
+1. Deploy the updated Employees-sheet workflow with the native Employee Actions menu through the existing GitHub Actions Apps Script deployment.
+2. Run `setupEmployeeDirectSheetWorkflow()` in the existing MASTER COMPANY Apps Script project to install/verify the Employee Actions on-open trigger.
+3. Reopen MASTER_COMPANY_HR_ADMIN → Employees, select a pending employee row, and perform Generate Employee ID → Save Employee.
 4. Live-verify A4-00 after the NOT-prefix correction.
 5. Live-verify A4-01/A4-02 prerequisites.
 6. Run controlled FRM-01 end-to-end test.
