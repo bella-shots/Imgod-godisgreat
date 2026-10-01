@@ -195,3 +195,12 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 
 ### R58 — Financial employee identity invariant
 **FROZEN IN GITHUB.** Employee-related money records use the canonical `Employee_ID` as the employee identity reference: Budget_Given (`Recipient Employee_ID`), Employee_Spending (`Employee_ID`), OOP_Claims (`Employee_ID`) and Salary_Admin (`Employee_ID`). `Member_Record_ID` is strictly a project-membership identifier and must not be substituted for Employee_ID. Investments remains the explicit exception under the frozen Phase 3 schema (`Source_Person`).
+
+
+### R61 — Food allowance / essential OOP separation
+- **FROZEN IN GITHUB — implementation updated, live verification pending.**
+- Fixed ₹1,000 monthly food/eatables allowance is separate from company-essential OOP.
+- Ordinary food/eatables are excluded from the ₹5,000 company-essential OOP rule.
+- A4-04 flags food-related claims for review; documented company-essential exceptions require authorized classification/approval.
+- A4-05 adds the fixed ₹1,000 allowance separately and excludes unclassified FOOD_ claims from the OOP salary component.
+- R60 remains applicable to approved company-essential OOP only.
