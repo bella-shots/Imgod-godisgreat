@@ -242,26 +242,6 @@ function generateSelectedEmployeeId() {
   }
 }
 
-/** Backward compatibility wrappers */
-function saveSelectedEmployee() {
-  return generateSelectedEmployeeId();
-}
-function processSelectedEmployee() {
-  return generateSelectedEmployeeId();
-}
-function installEmployeeActionsPanel() {
-  return installEmployeeSheetControls();
-}
-function installEmployeeActionsButton() {
-  return installEmployeeSheetControls();
-}
-function showEmployeeActionsFloatingPanel() {
-  return { status: 'PASS', mode: 'SINGLE_ACTION_DIRECT_SHEET' };
-}
-function processEmployeeSheetControl(e) {
-  return;
-}
-
 function verifyEmployeeCreationPrerequisites() {
   const sheet = getEmployeeSheet_();
   const headers = getEmployeeHeaders_(sheet);
