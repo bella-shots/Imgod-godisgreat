@@ -99,7 +99,7 @@ function processOopClaimRecord_(input, target) {
   setOopByHeader_(row, headers, 'Status', A404_CONFIG.STATUS);
   setOopByHeader_(row, headers, 'Approved_Amount', '');
   setOopByHeader_(row, headers, 'Paid_Date', '');
-  setOopByHeader_(row, headers, 'OOP_Rule_Flag', classifyOop5000Rule_(amount));
+  setOopByHeader_(row, headers, 'OOP_Rule_Flag', classifyOopEligibility_(purpose, amount));
 
   target.appendRow(row);
   SpreadsheetApp.flush();
@@ -111,7 +111,7 @@ function processOopClaimRecord_(input, target) {
     projectId: project.projectId,
     source: 'FRM-03',
     processingStatus: A404_CONFIG.STATUS,
-    ruleEvaluation: classifyOop5000Rule_(amount),
+    ruleEvaluation: classifyOopEligibility_(purpose, amount),
     r57DirectSheetWorkflow: false,
     r58EmployeeIdentity: 'Employee_ID'
   };
@@ -324,4 +324,14 @@ function classifyOop5000Rule_(amount) {
   if (amount < 5000) return 'UNDER_5000_ADD_ACTUAL_SPEND';
   if (amount === 5000) return 'AT_5000_ADD_5000';
   return 'OVER_5000_ADD_5000_PLUS_EXCESS_EQUALS_FULL_SPEND';
+}
+
+
+function classifyOopEligibility_(purpose, amount) {
+  var text = String(purpose || '').toLowerCase().trim();
+  if (!(amount > 0)) throw new Error('A4_04_AMOUNT_INVALID');
+  var foodTerms = ['food','meal','meals','eatables','eating','snack','snacks','beverage','beverages','lunch','dinner','breakfast','coffee','tea'];
+  var looksFood = foodTerms.some(function(term) { return text.indexOf(term) !== -1; });
+  if (looksFood) return 'FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY';
+  return classifyOop5000Rule_(amount);
 }
