@@ -139,33 +139,38 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Employee_ID is generated only through A4-00; generic onEdit/autosave events never generate an ID.
   - User live-verified the one-click workflow on 01-Oct-2026; workflow is now frozen as the authoritative implementation baseline.
 - **Project_Members R57 workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED.**
-  - New `Phase-4/Automation/Core/a4_14_project_member_sheet_workflow.gs`.
   - Existing 7-column `Project_Members` schema is enforced.
-  - User selects the pending row and uses `Project Member Actions → Generate Project Member ID`.
-  - The single action validates required Project_ID/Employee_ID/Active values, validates approved Project_Role/Access_Level values when populated, verifies the referenced Project and Employee exist, rejects duplicate Project_ID + Employee_ID mappings, invokes A4-00, writes and locks `MBR-000001`-style ID, and finalizes the row.
+  - User uses `Project Member Actions → Generate Project Member ID`.
+  - The action validates required Project_ID/Employee_ID/Active values, approved Project_Role/Access_Level values, referenced Project and Employee, duplicate Project_ID + Employee_ID mappings, invokes A4-00, writes/locks MBR ID, and finalizes.
   - No generic onEdit/autosave ID generation.
   - A4-01 Form processing remains automatic and separate; R57 does not alter FRM-01 behavior.
 - **Project_Notes R57 workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED.**
-  - New `Phase-4/Automation/Core/a4_14_project_note_sheet_workflow.gs`.
   - Existing 7-column `Project_Notes` schema is enforced.
-  - User selects the pending row and uses `Project Note Actions → Generate Project Note ID`.
-  - The action validates Project_ID, Date, Note, Status and Author_Email, verifies the referenced Project exists, invokes A4-00 with `NOT`, writes and locks the Note_ID, stamps Created_At, and finalizes the row.
-  - Live verification on 01-Oct-2026 returned `allPassed: true`; generated test ID `NOT-000001`; invalid project and missing note were rejected; already-ID'd regeneration was rejected; ID persistence/locking passed; no onEdit trigger issued IDs; temporary test data was fully removed.
+  - User uses `Project Note Actions → Generate Project Note ID`.
+  - Live verification on 01-Oct-2026 returned `allPassed: true`; generated `NOT-000001`; invalid project and missing note were rejected; already-ID'd regeneration was rejected; ID persistence/locking passed; no onEdit trigger issued IDs; temporary test data was fully removed.
+- **Budget_Given R57/R58 workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED.**
+  - New `Phase-4/Automation/Core/a4_14_budget_given_sheet_workflow.gs`.
+  - Frozen 13-column `Budget_Given` schema remains exactly preserved; no extra columns were added.
+  - User uses `Budget Actions → Generate Budget ID`.
+  - Validates canonical `Recipient Employee_ID` against `MASTER_COMPANY_HR_ADMIN → Employees`; explicitly rejects `Member_Record_ID`, name and email substitution.
+  - Validates referenced `Project_ID` against `MASTER_COMPANY_OPERATIONS → Projects`.
+  - Uses A4-00 prefix `BDG`, LockService, ID protection, and controlled finalization.
+  - Frozen financial calculations/status were verified: To Be Returned, Pending Return, Pending Return / Fully Returned / No Return Required branches.
+  - Live verification on 01-Oct-2026 returned `allPassed: true`; generated `BDG-000001`; invalid Employee_ID, invalid Project_ID, invalid Amount, Used > Given, Returned > To Be Returned, missing Purpose, and already-ID'd rows were rejected; persistence/locking and no generic edit issuance passed.
+  - R58 evidence: `EMP-000001` accepted; `MBR-000001` explicitly rejected before ID generation.
+  - Cleanup passed: final last row returned to header-only and pre-existing records were preserved.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
-  - Spreadsheet-level onFormSubmit trigger now ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
+  - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. Live-verify the R57 Project_Notes workflow in the existing Phase 4 Apps Script project.
-2. Confirm A4-00 NOT generation, ID locking, validation rejection and already-ID protection.
-3. Do not mark the Project_Notes R57 acceptance gate PASS until live evidence exists.
-4. After Project_Notes passes, implement R57 for Budget_Given, then Employee_Spending, OOP_Claims, Salary_Admin and Investments one workflow at a time.
-5. Live-verify A4-00 after the NOT-prefix correction using the controlled Project_Notes test evidence.
-6. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
-7. Continue R54 attachment routing and remaining Phase 4 workflows.
+1. Implement and live-verify the next R57 Sheet-originated workflow: Employee_Spending only if its authoritative creation path is confirmed as direct-Sheet; otherwise preserve its Form/system-generated ID path under R57 exception rules.
+2. Continue the frozen R57 sequence for OOP_Claims, Salary_Admin and Investments according to their authoritative creation paths; do not convert Form/system-generated workflows into manual Generate-ID workflows without an approved revision.
+3. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
+4. Continue R54 attachment routing and remaining Phase 4 workflows.
+5. Use Budget_Given live evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
-
 
 ### R58 — Financial employee identity invariant
 **FROZEN IN GITHUB.** Employee-related money records use the canonical `Employee_ID` as the employee identity reference: Budget_Given (`Recipient Employee_ID`), Employee_Spending (`Employee_ID`), OOP_Claims (`Employee_ID`) and Salary_Admin (`Employee_ID`). `Member_Record_ID` is strictly a project-membership identifier and must not be substituted for Employee_ID. Investments remains the explicit exception under the frozen Phase 3 schema (`Source_Person`).
