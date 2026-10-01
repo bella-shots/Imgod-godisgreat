@@ -83,18 +83,32 @@
 ## R57 — Universal explicit Generate-ID acceptance tests for user-created Sheet records
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-43 | Verify common Generate-ID UX for Sheet-originated business records. | Each applicable direct-Sheet workflow exposes one record-specific Generate-ID action; no separate Save/Process action is required solely to complete ID generation. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
+| P4-43 | Verify common Generate-ID UX for Sheet-originated business records. | Each applicable direct-Sheet workflow exposes one record-specific Generate-ID action; no separate Save/Process action is required solely to complete ID generation. | PASS — live-verified 01-Oct-2026 across Employee, Project_Members, Project_Notes, Budget_Given and Salary_Admin. |
 | P4-44 | Test validation-before-ID issuance across applicable Sheet workflows. | Incomplete/invalid pending records are rejected before A4-00 issuance; no business ID is created and no authoritative finalization occurs. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-45 | Test ID generation + locking + finalization. | A valid pending Sheet record receives the correct canonical ID through A4-00, the ID is persisted and locked, and the appropriate authoritative commit/finalization completes in the same controlled action. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-46 | Test duplicate/already-ID'd protection. | Duplicate/identity violations or an already-generated ID prevent another sequence allocation; issued IDs are never reused. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-47 | Test no generic ID issuance. | onEdit/autosave/passive edit/spreadsheet-open events never issue business IDs for direct Sheet-originated records. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
-| P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | NOT STARTED |
+| P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | PASS — live-verified 01-Oct-2026; single-row and 3-row bulk generation, validation-before-ID issuance, duplicate protection, locking, concurrency and no generic ID issuance all passed. |
 | P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PARTIAL — Employee_Spending is now live-verified Form-originated with automatic SPN generation through controlled FRM-02 processing; broader system/form verification remains pending. |
 
 ## R58 — Financial employee identity invariant
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-50 | Verify employee linkage for money-related records. | `Budget_Given` uses `Recipient Employee_ID`; `Employee_Spending`, `OOP_Claims`, and `Salary_Admin` use `Employee_ID`; no financial workflow uses `Member_Record_ID` as the employee reference. `Investments` remains the explicit exception because its frozen schema uses `Source_Person`. | PARTIAL — Budget_Given and Employee_Spending are now live-verified; remaining applicable money workflows pending. |
+| P4-50 | Verify employee linkage for money-related records. | `Budget_Given` uses `Recipient Employee_ID`; `Employee_Spending`, `OOP_Claims`, and `Salary_Admin` use `Employee_ID`; no financial workflow uses `Member_Record_ID` as the employee reference. `Investments` remains the explicit exception because its frozen schema uses `Source_Person`. | PASS — live-verified 01-Oct-2026; Budget_Given, Employee_Spending, OOP_Claims and Salary_Admin use canonical Employee_ID, while Investments remains the explicit frozen Source_Person exception. |
+
+### Salary_Admin R57/R58 live verification evidence — 01-Oct-2026
+- Implementation: `Phase-4/Automation/Core/a4_14_salary_sheet_workflow.gs` in the existing MASTER COMPANY Phase 4 Automation project.
+- Salary_Admin remains the authoritative salary sheet with exactly 11 frozen columns; no Salary Form, response tab, Process column, or extra schema column was introduced.
+- Explicit UX: `Salary Actions → Generate Salary ID(s)`; no sidebar, floating panel, or separate Save/Process action.
+- Single-row and controlled 3-row bulk generation passed; all rows were pre-validated before SAL allocation.
+- Validation-before-ID issuance passed for missing/invalid Employee_ID, MBR misuse, missing Due_Amount, invalid frequency/period rules, and already-ID'd rows.
+- Canonical employee identity is `Employee_ID`; `Member_Record_ID` (`MBR-*`), names and email addresses are rejected as employee keys.
+- Duplicate employee/month batch protection passed; already-finalized rows cannot receive another ID.
+- SAL IDs are generated through A4-00 as `SAL-000001`-style six-digit IDs under LockService; generated ID cells are protected/immutable.
+- No ON_EDIT, ON_CHANGE or periodic trigger issues SAL IDs; issuance occurs only through the explicit Salary Actions menu.
+- Historical salary records remained unchanged; temporary verification records were removed and pre-existing data was preserved.
+- Overall: `SALARY_ADMIN_R57_LIVE_VERIFICATION = PASS`.
+
 
 ### Budget_Given R57/R58 live evidence — 01-Oct-2026
 - Authoritative workbook: `MASTER_COMPANY_FINANCE`
