@@ -43,7 +43,7 @@ R57 freezes the common UX and transaction contract for every user-created author
 7. The workflow performs the appropriate authoritative commit/finalization for that record type.
 8. The completed record is left in its approved post-creation state.
 
-R57 applies to direct Sheet-originated business records including Employee, Project Member, Project Note, Budget, Spending, OOP Claim, Salary and Investment records. Salary may use one explicit controlled bulk Generate Salary ID(s) action for a validated batch.
+R57 applies to direct Sheet-originated business records including Employee, Project Member, Project Note, Budget, Salary and Investment records. Employee_Spending and OOP_Claims are frozen Form-originated workflows and therefore remain automatic during controlled Form processing; they do not receive direct-Sheet Generate-ID UX. Salary may use one explicit controlled bulk Generate Salary ID(s) action for a validated batch.
 
 The following are prohibited for R57 ID issuance: generic onEdit/autosave, passive cell edits, spreadsheet-open triggers, row-position-based ID generation, manually typed business IDs, or a second Save/Process action required solely to complete ID generation.
 
