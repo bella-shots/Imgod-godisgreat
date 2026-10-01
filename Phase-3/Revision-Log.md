@@ -539,3 +539,17 @@ No new top-level Drive folder is introduced. Phase 4 must locate/verify these as
 The Form response tabs remain in their authoritative workbooks. This revision concerns the Form files themselves and does not change Phase 3 workbook boundaries. Form file-upload destinations remain governed by R54.
 
 R55 is frozen. Any change to these locations requires a new approved revision.
+
+### R41 — Submission_Index live validation alignment — 2026-10-01
+
+Corrected the live Google Sheets data-validation rule for `MASTER_COMPANY_ADMIN → Submission_Index → Processing_Status` to match the already-frozen Phase 3 contract exactly:
+- `Received`
+- `Processed`
+- `Validation Failed`
+- `Manual Review`
+
+The obsolete physical validation values `Submitted`, `Processing`, `Completed`, and `Failed` were removed from the live Processing_Status validation.
+
+The six-column Submission_Index schema, column order, workbook ownership, audit architecture, historical records, Apps Script implementation, and Phase boundary were unchanged. This is a physical workbook-validation correction only; it does not revise the Phase 3 schema or introduce a new architecture/business rule.
+
+The correction was required because the live workbook still contained stale validation that conflicted with the frozen Phase 3/A4-10/A4-11 contract. A4-11 live execution subsequently progressed past the validation blocker and reached its controlled failure scenarios.
