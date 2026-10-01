@@ -37,7 +37,7 @@ The user has confirmed that all required Phase 3 workbooks and Forms have been l
 - Report_Index and Submission_Index are owned by MASTER_COMPANY_ADMIN.
 - Forms collect human-readable identity; Phase 4 resolves to canonical IDs.
 - Universal stable IDs use independent PREFIX-000001 sequences.
-- Phase 4 implements the explicit Generate-ID workflows frozen in R52.
+- Phase 4 implements the explicit Generate-ID workflows frozen in R52 and the universal Sheet-originated transaction standard frozen in R57.
 - Form attachment routing follows R54.
 - Master Google Site, workbook, and Form Drive locations follow the revised R55 hierarchy.
 - No new folders, tabs, Forms, fields, or alternate schemas may be invented without an approved revision.
@@ -52,6 +52,7 @@ Implementation source of truth:
 4. Phase-4/Phase-4-Error-Handling.md
 5. Phase-4/Phase-4-Acceptance.md
 6. Frozen Phase 3 schemas, Forms map, revision log, and Drive contracts
+7. Phase-4/Universal-Stable-ID-Generation-Spec.md
 
 ## Current authoritative Drive hierarchy
 
@@ -129,7 +130,7 @@ All R55 placement and response-destination acceptance checks are now verified un
 - **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
-- **Employee Creation Workflow (R48/R52/R56): ONE-CLICK DIRECT SHEET IMPLEMENTATION — FROZEN & LIVE-VERIFIED.**
+- **Employee Creation Workflow (R48/R52/R56/R57): ONE-CLICK DIRECT SHEET IMPLEMENTATION — FROZEN & LIVE-VERIFIED.**
   - Uses the existing `Employees` tab directly; no employee-creation Form, sidebar, floating panel, Process column, or extra schema column.
   - The `Employees` schema remains exactly 15 columns in the frozen order.
   - User completes a pending employee row, selects the employee row/Employee_ID cell, and explicitly uses `Employee Actions → Generate Employee ID`.
@@ -137,15 +138,23 @@ All R55 placement and response-destination acceptance checks are now verified un
   - There is no separate `Save Employee` or `Process` action.
   - Employee_ID is generated only through A4-00; generic onEdit/autosave events never generate an ID.
   - User live-verified the one-click workflow on 01-Oct-2026; workflow is now frozen as the authoritative implementation baseline.
+- **R57 Universal Sheet-originated business-ID standard: FROZEN IN GITHUB — IMPLEMENTATION NOT YET APPLIED TO ALL INDIVIDUAL SHEETS.**
+  - Every user-created Sheet record requiring a business ID will use one explicit record-specific Generate-ID action.
+  - The action validates, checks applicable duplicates/identity constraints, invokes A4-00, writes/locks the ID and performs the appropriate commit/finalization.
+  - No generic onEdit/autosave/passive edit/spreadsheet-open event may issue business IDs.
+  - Salary supports a controlled bulk Generate Salary ID(s) action.
+  - Form/system-generated IDs remain automatic; Submission_ID remains system/index-generated.
+  - Individual Sheet implementations will be changed only after R57 is frozen and accepted as the Phase 4 contract.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
-  - Spreadsheet-level onFormSubmit trigger now ignores non-`Projects_Responses` sheets instead of throwing `A4_01_WRONG_SHEET`.
+  - Spreadsheet-level onFormSubmit trigger now ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. Live-verify A4-00 after the NOT-prefix correction using the current one-click employee workflow and controlled test data.
-2. Live-verify A4-01/A4-02 prerequisites.
-3. Run controlled FRM-01 end-to-end test.
-4. Continue A4-03 Expense Processing and R54 attachment routing.
-5. Continue remaining Phase 4 business rules, reporting, authorization, error handling, idempotency and acceptance tests.
+1. Implement R57 on each applicable direct Sheet-originated workflow, beginning with the next authoritative Sheet module after the already-verified Employees workflow.
+2. Live-verify A4-00 after the NOT-prefix correction using controlled test data.
+3. Live-verify A4-01/A4-02 prerequisites.
+4. Run controlled FRM-01 end-to-end test.
+5. Continue A4-03 Expense Processing and R54 attachment routing.
+6. Continue remaining Phase 4 business rules, reporting, authorization, error handling, idempotency and acceptance tests.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
