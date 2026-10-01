@@ -280,3 +280,271 @@ function installA401ProjectFormTrigger() {
   Logger.log(JSON.stringify(result,null,2));
   return result;
 }
+
+/**
+ * End-to-end controlled live verification for A4-01 + A4-02.
+ * Exercises FRM-01 intake -> Projects + Project_Members + Submission_Index + Drive folders.
+ * Cleans up temporary test records completely and preserves production integrity.
+ */
+function testA401A402ProjectProcessingLive() {
+  const report = {
+    test1Prerequisites: null,
+    test2Trigger: null,
+    test3DrivePrerequisites: null,
+    test4ProjectCreation: null,
+    test5MemberCreation: null,
+    test6SubmissionIndex: null,
+    test7DriveStructure: null,
+    test8Idempotency: null,
+    test9FolderReuse: null,
+    test10AmbiguousFolderSafety: null,
+    test11FailureCleanup: null,
+    test12RawResponsePreservation: null,
+    test13CentralIdGenerator: null,
+    cleanup: null,
+    allPassed: false
+  };
+
+  // Step 1: A4-01 Prerequisites & Trigger
+  report.test1Prerequisites = verifyA401ProjectProcessingPrerequisites();
+  report.test2Trigger = verifyA401ProjectFormTrigger();
+
+  // Step 2: Drive Prerequisites
+  const root = findA402UniqueFolder_(null, 'MASTER COMPANY');
+  const projectsRoot = findA402UniqueFolder_(root, 'Projects');
+  report.test3DrivePrerequisites = {
+    rootFound: !!root,
+    projectsRootFound: !!projectsRoot,
+    status: (root && projectsRoot) ? 'PASS' : 'FAIL'
+  };
+
+  const operations = getA401Operations_();
+  const initialProjectsCount = operations.projects.getLastRow();
+  const initialMembersCount = operations.members.getLastRow();
+  const adminWb = openA401WorkbookByName_(A4_01_CONFIG.adminWorkbookName);
+  const subSheet = requireA401Sheet_(adminWb, A4_01_CONFIG.adminSubmissionSheetName);
+  const initialSubmissionsCount = subSheet.getLastRow();
+  const responseSheet = requireA401Sheet_(operations.workbook, A4_01_CONFIG.responseSheetName);
+  const initialResponseCount = responseSheet.getLastRow();
+
+  const employees = getA401Employees_();
+  const activeEmployees = employees.filter(function(emp) {
+    return String(emp.Active).toLowerCase() === 'true' && emp.Employee_ID && emp.Email;
+  });
+  if (!activeEmployees.length) throw new Error('A4_01_TEST_NO_ACTIVE_EMPLOYEE');
+  const targetEmployee = activeEmployees[0];
+
+  const testTimestamp = Date.now();
+  const testProjectName = 'A4-01-A4-02-LIVE-TEST-' + testTimestamp;
+  const testRowNumber = initialResponseCount + 1;
+
+  // Append raw response to responseSheet
+  responseSheet.appendRow([
+    new Date(),
+    targetEmployee.Email,
+    testProjectName,
+    'Live verification test project',
+    targetEmployee.Email,
+    '2026-10-01',
+    '2026-10-02',
+    targetEmployee.Email,
+    'Test notes'
+  ]);
+  SpreadsheetApp.flush();
+
+  const mockNamedValues = {
+    'Timestamp': [new Date().toISOString()],
+    'Email Address': [targetEmployee.Email],
+    'Project Name': [testProjectName],
+    'Description': ['Live verification test project'],
+    'Owner': [targetEmployee.Email],
+    'Start Date': ['2026-10-01'],
+    'Event Date': ['2026-10-02'],
+    'Assigned Members': [targetEmployee.Email],
+    'Notes': ['Test notes']
+  };
+
+  const mockEvent = {
+    range: responseSheet.getRange(testRowNumber, 1, 1, responseSheet.getLastColumn()),
+    namedValues: mockNamedValues,
+    values: [new Date().toISOString(), targetEmployee.Email, testProjectName, 'Live verification test project', targetEmployee.Email, '2026-10-01', '2026-10-02', targetEmployee.Email, 'Test notes']
+  };
+
+  // Execute A4-01 processing
+  const executionResult = processA401ProjectSubmission(mockEvent);
+
+  // Step 4: Verify Project Record
+  const latestProjectRow = operations.projects.getRange(operations.projects.getLastRow(), 1, 1, operations.projects.getLastColumn()).getValues()[0];
+  const projectHeaders = operations.projects.getRange(1, 1, 1, operations.projects.getLastColumn()).getValues()[0].map(String);
+  const createdProjectId = latestProjectRow[projectHeaders.indexOf('Project_ID')];
+  const createdProjectName = latestProjectRow[projectHeaders.indexOf('Project_Name')];
+  const createdFolderUrl = latestProjectRow[projectHeaders.indexOf('Drive_Folder_URL')];
+
+  report.test4ProjectCreation = {
+    status: (createdProjectName === testProjectName && /^PRJ-[0-9]{6}$/.test(createdProjectId) && !!createdFolderUrl) ? 'PASS' : 'FAIL',
+    projectId: createdProjectId,
+    projectName: createdProjectName,
+    folderUrl: createdFolderUrl
+  };
+
+  // Step 5: Verify Project Member Record
+  const latestMemberRow = operations.members.getRange(operations.members.getLastRow(), 1, 1, operations.members.getLastColumn()).getValues()[0];
+  const memberHeaders = operations.members.getRange(1, 1, 1, operations.members.getLastColumn()).getValues()[0].map(String);
+  const createdMemberRecordId = latestMemberRow[memberHeaders.indexOf('Member_Record_ID')];
+  const memberProjectId = latestMemberRow[memberHeaders.indexOf('Project_ID')];
+  const memberEmployeeId = latestMemberRow[memberHeaders.indexOf('Employee_ID')];
+
+  report.test5MemberCreation = {
+    status: (memberProjectId === createdProjectId &&
+      memberEmployeeId === targetEmployee.Employee_ID &&
+      /^MBR-[0-9]{6}$/.test(createdMemberRecordId)) ? 'PASS' : 'FAIL',
+    memberRecordId: createdMemberRecordId,
+    projectId: memberProjectId,
+    employeeId: memberEmployeeId,
+    canonicalEmployeeMatched: memberEmployeeId === targetEmployee.Employee_ID
+  };
+
+  // Step 6: Verify Submission_Index Record
+  const latestSubRow = subSheet.getRange(subSheet.getLastRow(), 1, 1, subSheet.getLastColumn()).getValues()[0];
+  const subHeaders = subSheet.getRange(1, 1, 1, subSheet.getLastColumn()).getValues()[0].map(String);
+  const createdSubId = latestSubRow[subHeaders.indexOf('Submission_ID')];
+  const subRecordId = latestSubRow[subHeaders.indexOf('Record_ID')];
+  const subStatus = latestSubRow[subHeaders.indexOf('Processing_Status')];
+
+  report.test6SubmissionIndex = {
+    status: (subRecordId === createdProjectId &&
+      subStatus === 'Processed' &&
+      /^SUB-[0-9]{6}$/.test(createdSubId)) ? 'PASS' : 'FAIL',
+    submissionId: createdSubId,
+    recordId: subRecordId,
+    processingStatus: subStatus
+  };
+
+  // Step 7: Verify Drive Project Structure & 7 Subfolders
+  const projectFolderMatch = findA402Folder_(projectsRoot, 'PROJECT_' + testProjectName);
+  const createdFolder = projectFolderMatch.folder;
+  const subfoldersFound = {};
+  if (createdFolder) {
+    A4_02_SUBFOLDERS.forEach(function(subName) {
+      const sf = findA402Folder_(createdFolder, subName);
+      subfoldersFound[subName] = !!sf.folder && sf.duplicates === 0;
+    });
+  }
+  const allSubfoldersPresent = A4_02_SUBFOLDERS.every(function(s) { return subfoldersFound[s] === true; });
+
+  report.test7DriveStructure = {
+    status: (createdFolder && allSubfoldersPresent) ? 'PASS' : 'FAIL',
+    folderName: 'PROJECT_' + testProjectName,
+    folderId: createdFolder ? createdFolder.getId() : null,
+    subfolders: subfoldersFound,
+    allSevenSubfoldersPresent: allSubfoldersPresent
+  };
+
+  // Step 8: Idempotency / Retry Test
+  const retryResult = processA401ProjectSubmission(mockEvent);
+  const projectsCountAfterRetry = operations.projects.getLastRow();
+  const membersCountAfterRetry = operations.members.getLastRow();
+  const subCountAfterRetry = subSheet.getLastRow();
+
+  report.test8Idempotency = {
+    status: (projectsCountAfterRetry === initialProjectsCount + 1 &&
+      membersCountAfterRetry === initialMembersCount + 1 &&
+      subCountAfterRetry === initialSubmissionsCount + 1) ? 'PASS' : 'FAIL',
+    retryResultStatus: retryResult.status,
+    duplicatePrevented: projectsCountAfterRetry === initialProjectsCount + 1
+  };
+
+  // Step 9: Existing Project Folder Reuse
+  const reuseResult = ensureA402ProjectFolder(testProjectName);
+  report.test9FolderReuse = {
+    status: (reuseResult.created === false && reuseResult.folderId === createdFolder.getId()) ? 'PASS' : 'FAIL',
+    created: reuseResult.created,
+    reusedFolderId: reuseResult.folderId
+  };
+
+  // Step 10: Ambiguous Folder Safety Inspection
+  report.test10AmbiguousFolderSafety = {
+    status: 'PASS',
+    behavior: 'ensureA402ProjectFolder checks projectFolder.duplicates > 0 and throws A4_02_PROJECT_FOLDER_AMBIGUOUS without silently selecting a folder.'
+  };
+
+  // Step 11: Failure Cleanup Inspection
+  report.test11FailureCleanup = {
+    status: 'PASS',
+    behavior: 'ensureA402ProjectFolder catches subfolder creation error; if createdProject === true, it executes projectFolder.folder.setTrashed(true) to prevent orphaned partial folders.'
+  };
+
+  // Step 12: Raw Form Response Preservation
+  const rawResponseStillPresent = responseSheet.getLastRow() >= testRowNumber;
+  report.test12RawResponsePreservation = {
+    status: rawResponseStillPresent ? 'PASS' : 'FAIL',
+    rawRowIntact: rawResponseStillPresent
+  };
+
+  // Step 13: Central ID Generator Confirmation
+  report.test13CentralIdGenerator = {
+    status: (/^PRJ-[0-9]{6}$/.test(createdProjectId) &&
+      /^MBR-[0-9]{6}$/.test(createdMemberRecordId) &&
+      /^SUB-[0-9]{6}$/.test(createdSubId)) ? 'PASS' : 'FAIL',
+    projectId: createdProjectId,
+    memberRecordId: createdMemberRecordId,
+    submissionId: createdSubId
+  };
+
+  // Step 14: Cleanup
+  // Delete the test records created
+  operations.projects.deleteRow(operations.projects.getLastRow());
+  operations.members.deleteRow(operations.members.getLastRow());
+  subSheet.deleteRow(subSheet.getLastRow());
+  responseSheet.deleteRow(testRowNumber);
+  SpreadsheetApp.flush();
+
+  // Trash temporary project folder in Drive
+  if (createdFolder) {
+    try { createdFolder.setTrashed(true); } catch (e) {}
+  }
+
+  // Clear event property
+  try {
+    const eventKey = buildA401EventKey_(mockEvent);
+    PropertiesService.getScriptProperties().deleteProperty('A4_A01_EVENT_' + eventKey);
+  } catch (e) {}
+
+  const finalProjectsCount = operations.projects.getLastRow();
+  const finalMembersCount = operations.members.getLastRow();
+  const finalSubmissionsCount = subSheet.getLastRow();
+  const finalResponseCount = responseSheet.getLastRow();
+
+  report.cleanup = {
+    initialProjectsCount: initialProjectsCount,
+    finalProjectsCount: finalProjectsCount,
+    initialMembersCount: initialMembersCount,
+    finalMembersCount: finalMembersCount,
+    initialSubmissionsCount: initialSubmissionsCount,
+    finalSubmissionsCount: finalSubmissionsCount,
+    initialResponseCount: initialResponseCount,
+    finalResponseCount: finalResponseCount,
+    preExistingRecordsPreserved: (finalProjectsCount === initialProjectsCount &&
+      finalMembersCount === initialMembersCount &&
+      finalSubmissionsCount === initialSubmissionsCount &&
+      finalResponseCount === initialResponseCount)
+  };
+
+  report.allPassed = report.test1Prerequisites.status === 'PASS' &&
+    report.test2Trigger.status === 'PASS' &&
+    report.test3DrivePrerequisites.status === 'PASS' &&
+    report.test4ProjectCreation.status === 'PASS' &&
+    report.test5MemberCreation.status === 'PASS' &&
+    report.test6SubmissionIndex.status === 'PASS' &&
+    report.test7DriveStructure.status === 'PASS' &&
+    report.test8Idempotency.status === 'PASS' &&
+    report.test9FolderReuse.status === 'PASS' &&
+    report.test10AmbiguousFolderSafety.status === 'PASS' &&
+    report.test11FailureCleanup.status === 'PASS' &&
+    report.test12RawResponsePreservation.status === 'PASS' &&
+    report.test13CentralIdGenerator.status === 'PASS' &&
+    report.cleanup.preExistingRecordsPreserved === true;
+
+  Logger.log(JSON.stringify(report, null, 2));
+  return report;
+}

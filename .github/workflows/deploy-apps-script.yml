@@ -386,6 +386,31 @@ jobs:
             exit 1
           }
 
+          PRJ_MATCHES=$(grep -RIl "function processA401ProjectSubmission" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$PRJ_MATCHES" || {
+            echo "FAIL: processA401ProjectSubmission is missing from live Apps Script."
+            exit 1
+          }
+          PRJ_FILE=$(printf '%s\n' "$PRJ_MATCHES" | head -n 1)
+          grep -q "function verifyA401ProjectProcessingPrerequisites" "$PRJ_FILE" || {
+            echo "FAIL: verifyA401ProjectProcessingPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function verifyA401ProjectFormTrigger" "$PRJ_FILE" || {
+            echo "FAIL: verifyA401ProjectFormTrigger missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA401A402ProjectProcessingLive" "$PRJ_FILE" || {
+            echo "FAIL: testA401A402ProjectProcessingLive missing from live workflow."
+            exit 1
+          }
+
+          DRV_MATCHES=$(grep -RIl "function ensureA402ProjectFolder" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$DRV_MATCHES" || {
+            echo "FAIL: ensureA402ProjectFolder is missing from live Apps Script."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
