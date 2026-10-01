@@ -133,3 +133,8 @@ Form/system-generated IDs remain automatic. Form-processing workflows may genera
 Generic onEdit/autosave, passive cell edits, spreadsheet-open events, row-position-based generation, manual business-ID typing, and a separate Save/Process action required solely to complete ID generation are not permitted under R57.
 
 R57 standardizes the user interaction and transaction boundary; it does not change the canonical ID formats, Phase 3 schemas, or record-specific business rules.
+
+
+## R58 — Financial employee identity invariant
+
+For financial records that represent an employee-related transaction, `Employee_ID` remains the canonical employee identity reference. `Member_Record_ID` (`MBR-XXXXXX`) identifies only a Project_Members relationship and must never become the employee reference for `Budget_Given`, `Employee_Spending`, `OOP_Claims` or `Salary_Admin`. `Budget_Given` uses `Recipient Employee_ID`; `Employee_Spending`, `OOP_Claims` and `Salary_Admin` use `Employee_ID`. `Investments` remains the explicit exception because its frozen Phase 3 schema uses `Source_Person` and has no `Employee_ID` field.
