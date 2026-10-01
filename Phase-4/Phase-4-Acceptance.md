@@ -41,12 +41,26 @@
 ## R54 — Form attachment routing acceptance tests
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-27 | Submit FRM-02 with a receipt and valid project | Receipt is moved to the exact project's '03_Expenses' folder and final Attachment_URL is stored. | NOT STARTED |
-| P4-28 | Submit FRM-03 with proof and valid project | Proof is moved to the exact project's '03_Expenses' folder and final Proof_URL is stored. | NOT STARTED |
-| P4-29 | Submit FRM-04 with supporting document | Document is routed to 'MASTER COMPANY/HR' without public sharing. | NOT STARTED |
-| P4-30 | Retry an already-routed attachment event | No duplicate business copy is created. | NOT STARTED |
-| P4-31 | Use invalid/unresolved project name for an attachment submission | No guessed destination is used; submission is marked failed/manual review. | NOT STARTED |
-| P4-32 | Simulate destination/move failure | Source submission remains intact, original file reference is retained, and processing is visibly failed/pending. | NOT STARTED |
+| P4-27 | Submit FRM-02 with a receipt and valid project | Receipt is moved to the exact project's '03_Expenses' folder and final Attachment_URL is stored. | PASS — live-verified 01-Oct-2026. |
+| P4-28 | Submit FRM-03 with proof and valid project | Proof is moved to the exact project's '03_Expenses' folder and final Proof_URL is stored. | PASS — live-verified 01-Oct-2026. |
+| P4-29 | Submit FRM-04 with supporting document | Document is routed to 'MASTER COMPANY/HR' without public sharing. | PASS — live-verified 01-Oct-2026. |
+| P4-30 | Retry an already-routed attachment event | No duplicate business copy is created. | PASS — live-verified 01-Oct-2026. |
+| P4-31 | Use invalid/unresolved project name for an attachment submission | No guessed destination is used; submission is marked failed/manual review. | PASS — live-verified 01-Oct-2026. |
+| P4-32 | Simulate destination/move failure | Source submission remains intact, original file reference is retained, and processing is visibly failed/pending. | PASS — live-verified 01-Oct-2026. |
+
+### R54 attachment routing live verification evidence — 01-Oct-2026
+- Implementation: Phase-4/Automation/Core/a4_54_attachment_routing.gs integrated with A4-03, A4-04 and FRM-04 processing.
+- FRM-02 receipt routing: PASS; receipt moved to exact PROJECT_<ProjectName>/03_Expenses and final Attachment_URL persisted.
+- FRM-03 proof routing: PASS; proof moved to exact PROJECT_<ProjectName>/03_Expenses and final Proof_URL persisted.
+- R62 integrity: PASS; proof routing leaves OOP claim Pending Review and does not auto-approve.
+- FRM-04 HR routing: PASS; supporting document routed to MASTER COMPANY/HR with public sharing blocked.
+- Idempotency/retry: PASS; existing target parent is detected and duplicate movement/copy is avoided.
+- Invalid/unresolved project: PASS; A4_54_PROJECT_FOLDER_NOT_FOUND occurs before Drive mutation; no guessed destination is used.
+- Destination failure: PASS; controlled attachment errors leave raw intake available for audit/manual review.
+- Same filename handling: PASS; distinct Drive file IDs remain distinct.
+- Raw response preservation: PASS across Employee_Spending_Responses, OOP_Claims_Responses and HR_Requests_Responses.
+- Cleanup/data integrity: PASS; temporary artifacts removed and pre-existing records/assets preserved; no SPN/CLM sequence consumed.
+- Overall: R54_ATTACHMENT_ROUTING_LIVE_VERIFICATION = PASS.
 
 ## R55 — Master Drive asset placement acceptance tests
 | ID | Acceptance test | Expected result | Status |
