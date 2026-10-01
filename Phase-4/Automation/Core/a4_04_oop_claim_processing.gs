@@ -317,10 +317,17 @@ function hasOnEditTriggerForA404_() {
 }
 
 function recordA404Failure_(e, err) {
+  if (typeof handleA411Error === 'function') {
+    return handleA411Error({
+      module: 'A4-04 OOP Claim Processing',
+      sourceForm: 'FRM-03',
+      statusHint: 'Manual Review',
+      error: err,
+      eventKey: 'FRM-03-' + (e && e.range ? e.range.getSheet().getName() + '-' + e.range.getRow() : 'UNKNOWN')
+    });
+  }
   console.error(JSON.stringify({
     module:'A4-04', source:'FRM-03',
-    responseSheet:e && e.range ? e.range.getSheet().getName() : null,
-    row:e && e.range ? e.range.getRow() : null,
     error:String(err && err.message || err),
     timestamp:new Date().toISOString()
   }));
