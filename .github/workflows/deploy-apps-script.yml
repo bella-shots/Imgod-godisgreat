@@ -162,10 +162,10 @@ jobs:
 
           console.log('PASS: Google Apps Script projects.updateContent completed for the approved MASTER COMPANY project.');
 
-          // Create a fresh immutable version from the just-written source.
+          // Create one immutable version for this source update.
           const versionResponse = await script.projects.versions.create({
             scriptId,
-            requestBody: {description: 'GitHub Actions deployment for trigger installation'}
+            requestBody: {description: 'GitHub Actions source version'}
           });
 
           const versionNumber = versionResponse.data && versionResponse.data.versionNumber;
@@ -173,21 +173,51 @@ jobs:
             throw new Error('Apps Script version creation did not return a version number.');
           }
 
-          // Create an Execution API deployment for that version.
-          const deploymentResponse = await script.projects.deployments.create({
+          // Reuse the stable Execution API deployment instead of creating a new
+          // versioned deployment on every CI run. Google limits a project to
+          // 20 versioned deployments. Updating the existing deployment keeps
+          // one stable deployment ID while moving it to the newest version.
+          const deploymentsResponse = await script.projects.deployments.list({
             scriptId,
-            requestBody: {
-              versionNumber: versionNumber,
-              description: 'MASTER COMPANY automation execution deployment'
-            }
+            pageSize: 50
           });
+          const deployments = (deploymentsResponse.data && deploymentsResponse.data.deployments) || [];
+          const stableDescription = 'MASTER COMPANY automation execution deployment';
+          const stableDeployment = deployments.find(d => d.description === stableDescription);
 
-          const deploymentId = deploymentResponse.data && deploymentResponse.data.deploymentId;
-          if (!deploymentId) {
-            throw new Error('Apps Script deployment creation did not return a deployment ID.');
+          let deploymentId;
+          if (stableDeployment && stableDeployment.deploymentId) {
+            deploymentId = stableDeployment.deploymentId;
+            const deploymentResponse = await script.projects.deployments.update({
+              scriptId,
+              deploymentId,
+              requestBody: {
+                deploymentConfig: {
+                  versionNumber: versionNumber,
+                  manifestFileName: 'appsscript',
+                  description: stableDescription
+                }
+              }
+            });
+            if (!deploymentResponse.data || deploymentResponse.data.deploymentId !== deploymentId) {
+              throw new Error('Apps Script deployment update did not return the existing deployment ID.');
+            }
+            console.log('PASS: Existing Apps Script Execution API deployment updated: ' + deploymentId);
+          } else {
+            const deploymentResponse = await script.projects.deployments.create({
+              scriptId,
+              requestBody: {
+                versionNumber: versionNumber,
+                manifestFileName: 'appsscript',
+                description: stableDescription
+              }
+            });
+            deploymentId = deploymentResponse.data && deploymentResponse.data.deploymentId;
+            if (!deploymentId) {
+              throw new Error('Apps Script deployment creation did not return a deployment ID.');
+            }
+            console.log('PASS: Initial Apps Script Execution API deployment created: ' + deploymentId);
           }
-
-          console.log('PASS: Apps Script Execution API deployment created: ' + deploymentId);
 
           try {
             console.log('Attempting automated execution of setupEmployeeDirectSheetWorkflow via Apps Script API...');
