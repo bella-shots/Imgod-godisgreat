@@ -28,7 +28,7 @@ var A404_CONFIG = Object.freeze({
   PROJECT_SHEET: 'Projects',
   PREFIX: 'CLM',
   STATUS: 'Pending Review',
-  TOP_MANAGER_EMAIL_PROPERTY: 'TOP_MANAGER_EMAIL'
+  TOP_MANAGER_DESIGNATION: 'Director'
 });
 
 function processOopClaimFormSubmit(e) {
@@ -347,11 +347,36 @@ function classifyOopEligibility_(purpose, amount) {
  * Salary eligibility begins only after the Top Manager explicitly approves.
  */
 function getTopManagerEmail_() {
-  var email = String(PropertiesService.getScriptProperties().getProperty(A404_CONFIG.TOP_MANAGER_EMAIL_PROPERTY) || '').trim().toLowerCase();
-  if (!email || !isValidEmail_(email)) {
-    throw new Error('A4_04_TOP_MANAGER_NOT_CONFIGURED: Set Script Property TOP_MANAGER_EMAIL before processing OOP claims.');
+  var ss = findUniqueSpreadsheetByName_(A404_CONFIG.HR_WORKBOOK);
+  var sheet = ss.getSheetByName(A404_CONFIG.HR_SHEET);
+  if (!sheet) throw new Error('A4_04_HR_EMPLOYEES_SHEET_MISSING');
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var designationIdx = headers.indexOf('Designation');
+  var emailIdx = headers.indexOf('Email');
+  var activeIdx = headers.indexOf('Active');
+  if (designationIdx < 0 || emailIdx < 0 || activeIdx < 0) {
+    throw new Error('A4_04_EMPLOYEE_SCHEMA_MISSING: Employees must contain Designation, Email and Active.');
   }
-  return email;
+
+  var rows = sheet.getLastRow() < 2
+    ? []
+    : sheet.getRange(2, 1, sheet.getLastRow() - 1, sheet.getLastColumn()).getValues();
+
+  var matches = rows.filter(function(row) {
+    return String(row[designationIdx] || '').trim().toLowerCase() === A404_CONFIG.TOP_MANAGER_DESIGNATION.toLowerCase() &&
+      String(row[activeIdx] || '').trim().toLowerCase() === 'true' &&
+      isValidEmail_(String(row[emailIdx] || '').trim());
+  });
+
+  if (matches.length !== 1) {
+    throw new Error(
+      'A4_04_TOP_MANAGER_RESOLUTION_FAILED: Expected exactly one active ' +
+      A404_CONFIG.TOP_MANAGER_DESIGNATION + ' in Employees; found ' + matches.length + '.'
+    );
+  }
+
+  return String(matches[0][emailIdx]).trim().toLowerCase();
 }
 
 function notifyTopManagerOfOopClaim_(claimId, employeeId, projectId, dateValue, purpose, amount, proofUrl) {
@@ -484,9 +509,14 @@ function verifyA404ManagerApprovalPrerequisites() {
     status: 'FAIL'
   };
 
-  var email = String(PropertiesService.getScriptProperties().getProperty(A404_CONFIG.TOP_MANAGER_EMAIL_PROPERTY) || '').trim().toLowerCase();
-  result.topManagerEmailConfigured = !!email;
-  result.topManagerEmailValid = !!email && isValidEmail_(email);
+  var email = '';
+  try {
+    email = getTopManagerEmail_();
+    result.topManagerResolvedFromEmployees = true;
+    result.topManagerEmailValid = isValidEmail_(email);
+  } catch (err) {
+    result.topManagerResolutionError = String(err && err.message || err);
+  }
 
   try {
     var finance = findUniqueSpreadsheetByName_(A404_CONFIG.FINANCE_WORKBOOK);
@@ -513,6 +543,7 @@ function verifyA404ManagerApprovalPrerequisites() {
   result.salaryGateAvailable = typeof isSalaryEligibleOopRuleFlag_ === 'function';
 
   result.status =
+    result.topManagerResolvedFromEmployees &&
     result.topManagerEmailValid &&
     result.financeWorkbook &&
     result.oopClaimsSheet &&
