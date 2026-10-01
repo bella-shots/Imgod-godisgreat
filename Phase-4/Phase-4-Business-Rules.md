@@ -73,3 +73,29 @@ Examples:
 - ₹7,000 approved OOP → Salary + ₹5,000 + ₹2,000 excess = Salary + ₹7,000.
 
 Multiple approved OOP claims in the same month are aggregated by canonical `Employee_ID`. No separate ₹5,000 line is created. Claims remain subject to authorized review; the rule does not auto-approve claims. Salary history is preserved by creating the applicable monthly salary record rather than overwriting prior records.
+
+## R61 — Separate food allowance and company-essential spending rule (frozen)
+
+**Date:** 2026-10-01
+
+The monthly employee benefit is divided into two separate components:
+
+### A. Food / eatables allowance — ₹1,000 per month
+- Every eligible employee receives **₹1,000 every month** as a food/eatables allowance.
+- This ₹1,000 is unconditional: the employee may use it or not use it.
+- Unused food allowance does not reduce, cancel, or carry forward the next month's ₹1,000 allowance.
+- There is **no monthly spending cap based on actual usage** for the allowance: the monthly credited allowance remains ₹1,000 regardless of whether the employee spends ₹0, ₹500, ₹1,000 or does not use it.
+- Ordinary food/eatables expenses must **not** be treated as company-essential OOP spending under the separate ₹5,000 rule.
+
+### B. Company-essential spending baseline — ₹5,000 per month
+- The ₹5,000 monthly company-essential spending baseline is **separate from the ₹1,000 food allowance**.
+- Ordinary personal eating, meals, snacks, beverages and other routine food/eatables are excluded from the ₹5,000 company-essential category.
+- The ₹5,000 may be used for legitimate company-essential expenses. A claim must have a genuine business purpose and remain subject to the normal approval process.
+- An exceptional food-related expense may qualify only where the expense is genuinely necessary for a client, business meeting, hosted guest, or another documented company-essential circumstance. It must not be treated as ordinary personal food consumption.
+- The system must not assume that every food claim is eligible merely because it is submitted; the normal review/approval process determines eligibility.
+- The existing R60 salary-credit rule applies only to **approved company-essential OOP spend**, not to the ₹1,000 food allowance.
+
+### C. Salary treatment
+- The ₹1,000 monthly food allowance is credited independently every month and does not depend on OOP claim submission or actual food spending.
+- Approved company-essential OOP spend is handled separately under R60.
+- The two amounts must never be combined into one OOP calculation or double-counted in salary.
