@@ -33,16 +33,11 @@ function handleA411Error(options) {
   var recordId = safeA411Token_(options.recordId || '');
   var submissionId = safeA411Token_(options.submissionId || '');
   var sourceForm = safeA411Token_(options.sourceForm || options.source || A411_CONFIG.SOURCE_FORM_FALLBACK);
-  var status = String(options.statusHint || A411_CONFIG.STATUS_MANUAL_REVIEW).trim();
+  var status = normalizeA411StatusHint_(options.statusHint);
   var notifyAdmin = options.notifyAdmin !== false;
   var eventKey = String(options.eventKey || options.idempotencyKey || '').trim();
   var preserveSource = options.preserveSource !== false;
   var rethrow = options.rethrow === true;
-
-  if (status !== A411_CONFIG.STATUS_VALIDATION_FAILED &&
-      status !== A411_CONFIG.STATUS_MANUAL_REVIEW) {
-    status = A411_CONFIG.STATUS_MANUAL_REVIEW;
-  }
 
   var normalized = normalizeA411Error_(options.error);
   var safeError = redactA411Sensitive_(normalized.message);
@@ -323,7 +318,9 @@ function testA411ErrorHandlerLive() {
         notifyAdmin: false
       });
 
-      if (manual && manual.status === 'FAILED_HANDLED' && manual.errorCode && manual.module === 'A4-11 Live Test') {
+      var expectedModule = safeA411Token_('A4-11 Live Test');
+      if (manual && manual.status === 'FAILED_HANDLED' && manual.errorCode &&
+          manual.module === expectedModule && manual.sourcePreserved === true) {
         testResults[1].status = 'PASS';
       } else {
         testResults[1].detail = 'unexpected result: ' + JSON.stringify(manual);
@@ -747,4 +744,12 @@ function hasA411OwnTriggers_() {
   return ScriptApp.getProjectTriggers().some(function(t) {
     return /A411/i.test(t.getHandlerFunction());
   });
+}
+
+function normalizeA411StatusHint_(rawStatus) {
+  var s = String(rawStatus || '').trim().toUpperCase();
+  if (s === 'VALIDATION_FAILED' || s === 'VALIDATION FAILED') {
+    return A411_CONFIG.STATUS_VALIDATION_FAILED;
+  }
+  return A411_CONFIG.STATUS_MANUAL_REVIEW;
 }
