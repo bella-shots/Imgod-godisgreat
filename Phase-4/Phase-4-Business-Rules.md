@@ -37,3 +37,8 @@
 - No separate Save/Process action is required solely to complete a R57 Generate-ID transaction.
 - A4-14 is the shared implementation pattern; individual modules retain record-specific validation and business rules.
 - A4-00 remains the sole authoritative generator and all R49/R52/R56 stability, locking, reconciliation and no-reuse rules remain mandatory.
+
+
+## Financial employee-linkage invariant
+
+For employee-related money records, `Employee_ID` is the canonical employee identity reference. `Member_Record_ID` / `MBR-XXXXXX` is a project-membership record ID and must never be used as the employee identity or as the employee linkage for financial records. This applies to `Budget_Given` (`Recipient Employee_ID`), `Employee_Spending` (`Employee_ID`), `OOP_Claims` (`Employee_ID`) and `Salary_Admin` (`Employee_ID`). `Investments` remains the explicit exception because its frozen schema uses `Source_Person` and does not define an `Employee_ID` field.
