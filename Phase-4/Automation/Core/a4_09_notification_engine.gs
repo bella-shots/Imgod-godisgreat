@@ -688,6 +688,13 @@ function findA409Spreadsheet_(name) {
   throw new Error('A4_09_SPREADSHEET_NOT_FOUND: ' + name);
 }
 
+function setA409RowVal_(row, headers, colName, value) {
+  var idx = headers.indexOf(colName);
+  if (idx >= 0) {
+    row[idx] = value;
+  }
+}
+
 /* =========================================================================
  * 7. HEALTH CHECK & PREREQUISITES
  * ========================================================================= */
@@ -775,6 +782,41 @@ function testA409NotificationEngineLive() {
     }
 
     if (!activeEmp) throw new Error('A4_09_TEST_SETUP_NO_ACTIVE_EMPLOYEE');
+
+    // Case B: If no active Director exists in the test environment, create ONE temporary controlled fixture
+    var createdDirectorRowIndex = null;
+    if (!topManager) {
+      var existingEmpIds = [];
+      var empIdIdx = empHeaders.indexOf('Employee_ID');
+      for (var r = 0; r < empRows.length; r++) {
+        var eid = String(empRows[r][empIdIdx] || '').trim();
+        if (eid) existingEmpIds.push(eid);
+      }
+      var newDirectorEmpId = generateA4Id('EMP', existingEmpIds);
+
+      var directorRow = new Array(empHeaders.length).fill('');
+      setA409RowVal_(directorRow, empHeaders, 'Employee_ID', newDirectorEmpId);
+      setA409RowVal_(directorRow, empHeaders, 'Name', 'Controlled Test Director');
+      var directorEmail = activeEmp.email; // Send to active test runner email so MailApp succeeds
+      setA409RowVal_(directorRow, empHeaders, 'Email', directorEmail);
+      setA409RowVal_(directorRow, empHeaders, 'Role', 'Administrator');
+      setA409RowVal_(directorRow, empHeaders, 'Designation', 'Director');
+      setA409RowVal_(directorRow, empHeaders, 'Salary_Basis', 'Fixed Monthly');
+      setA409RowVal_(directorRow, empHeaders, 'Payment_Frequency', 'Monthly');
+      setA409RowVal_(directorRow, empHeaders, 'Active', true); // Boolean TRUE
+      setA409RowVal_(directorRow, empHeaders, 'Reimbursement_Eligible', true);
+      setA409RowVal_(directorRow, empHeaders, 'Project_Access', 'All');
+      setA409RowVal_(directorRow, empHeaders, 'Joining_Date', '2026-07-01');
+      setA409RowVal_(directorRow, empHeaders, 'Employment_Status', 'Full-Time');
+      setA409RowVal_(directorRow, empHeaders, 'HR_Notes', 'Temporary Controlled Test Director Fixture');
+      setA409RowVal_(directorRow, empHeaders, 'Reimbursement_Settings', 'Executive');
+      setA409RowVal_(directorRow, empHeaders, 'Created_At', new Date().toISOString());
+
+      empSheet.appendRow(directorRow);
+      SpreadsheetApp.flush();
+      createdDirectorRowIndex = empSheet.getLastRow();
+      topManager = { email: directorEmail, empId: newDirectorEmpId };
+    }
 
     var testTimestamp = Date.now();
     var testRecordId = 'RPT-TEST-' + testTimestamp;
@@ -1156,7 +1198,16 @@ function testA409NotificationEngineLive() {
     }
 
   } finally {
-    // Authoritative non-destructive cleanup: Delete only the test keys created during this test
+    // Authoritative non-destructive cleanup:
+    // 1. Delete temporary Director fixture row if created
+    if (createdDirectorRowIndex && empSheet) {
+      try {
+        empSheet.deleteRow(createdDirectorRowIndex);
+      } catch (delEmpErr) {
+        console.error('Failed to cleanup temporary test Director row: ' + delEmpErr.message);
+      }
+    }
+    // 2. Delete only the test keys created during this test
     var cleanProps = PropertiesService.getScriptProperties();
     for (var k = 0; k < trackedPropertyKeys.length; k++) {
       try {
