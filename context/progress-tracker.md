@@ -138,23 +138,24 @@ All R55 placement and response-destination acceptance checks are now verified un
   - There is no separate `Save Employee` or `Process` action.
   - Employee_ID is generated only through A4-00; generic onEdit/autosave events never generate an ID.
   - User live-verified the one-click workflow on 01-Oct-2026; workflow is now frozen as the authoritative implementation baseline.
-- **R57 Universal Sheet-originated business-ID standard: FROZEN IN GITHUB — IMPLEMENTATION NOT YET APPLIED TO ALL INDIVIDUAL SHEETS.**
-  - Every user-created Sheet record requiring a business ID will use one explicit record-specific Generate-ID action.
-  - The action validates, checks applicable duplicates/identity constraints, invokes A4-00, writes/locks the ID and performs the appropriate commit/finalization.
-  - No generic onEdit/autosave/passive edit/spreadsheet-open event may issue business IDs.
-  - Salary supports a controlled bulk Generate Salary ID(s) action.
-  - Form/system-generated IDs remain automatic; Submission_ID remains system/index-generated.
-  - Individual Sheet implementations will be changed only after R57 is frozen and accepted as the Phase 4 contract.
+- **Project_Members R57 workflow: IMPLEMENTED IN GITHUB — LIVE VERIFICATION PENDING.**
+  - New `Phase-4/Automation/Core/a4_14_project_member_sheet_workflow.gs`.
+  - Existing 7-column `Project_Members` schema is enforced.
+  - User selects the pending row and uses `Project Member Actions → Generate Project Member ID`.
+  - The single action validates required Project_ID/Employee_ID/Active values, validates approved Project_Role/Access_Level values when populated, verifies the referenced Project and Employee exist, rejects duplicate Project_ID + Employee_ID mappings, invokes A4-00, writes and locks `MBR-000001`-style ID, and finalizes the row.
+  - No generic onEdit/autosave ID generation.
+  - A4-01 Form processing remains automatic and separate; R57 does not alter FRM-01 behavior.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger now ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. Implement R57 on each applicable direct Sheet-originated workflow, beginning with the next authoritative Sheet module after the already-verified Employees workflow.
-2. Live-verify A4-00 after the NOT-prefix correction using controlled test data.
-3. Live-verify A4-01/A4-02 prerequisites.
-4. Run controlled FRM-01 end-to-end test.
-5. Continue A4-03 Expense Processing and R54 attachment routing.
-6. Continue remaining Phase 4 business rules, reporting, authorization, error handling, idempotency and acceptance tests.
+1. Live-verify the new Project_Members R57 workflow in the existing Phase 4 Apps Script project.
+2. Confirm A4-00 MBR generation, ID locking, validation rejection and duplicate-mapping protection.
+3. Do not mark P4-21/P4-25/P4-26 PASS until live evidence exists.
+4. After Project_Members passes, implement R57 for Project_Notes, then Budget_Given, Employee_Spending, OOP_Claims, Salary_Admin and Investments one workflow at a time.
+5. Live-verify A4-00 after the NOT-prefix correction using controlled test data.
+6. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
+7. Continue R54 attachment routing and remaining Phase 4 workflows.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
