@@ -194,7 +194,7 @@ All R55 placement and response-destination acceptance checks are now verified un
 
 - **Investments R58 Source_Person exception workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED PASS (01-Oct-2026).**
   - `Phase-4/Automation/Core/a4_15_investment_processing.gs` implements the frozen Form-originated workflow.
-  - FRM-07 Investment Entry → Investment_Responses → A4-07 → Investments.
+  - FRM-07 Investment Entry → Investment_Responses → A4-15 → Investments.
   - Investments remains exactly 8 frozen columns with Source_Person preserved; no Employee_ID is required or added.
   - Automatic A4-00 INV generation, LockService, validation-before-ID issuance, duplicate/idempotency protection and access control verified live.
   - Pre-existing production data preserved; temporary test records removed.
