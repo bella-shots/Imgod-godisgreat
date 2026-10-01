@@ -121,13 +121,13 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Counter reconciliation never moves counters backward.
   - Non-destructive verification helpers are available.
   - Full A4-00 acceptance remains open until real record-creation workflows exercise the generator.
-- **A4-01 Project Processing: IMPLEMENTED in GitHub; live verification pending.**
+- **A4-01 Project Processing: IMPLEMENTED in GitHub; live verification is the NEXT execution target.**
   - FRM-01 → Projects + Project_Members normalization.
   - Submission_Index traceability.
   - Human-facing member resolution to canonical Employee_ID.
   - Concurrent idempotency reservation.
   - PRJ/MBR generation through A4-00 only.
-- **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification pending.**
+- **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification is the NEXT execution target alongside A4-01.**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
 - **Employee Creation Workflow (R48/R52/R56/R57): ONE-CLICK DIRECT SHEET IMPLEMENTATION — FROZEN & LIVE-VERIFIED.**
@@ -191,6 +191,15 @@ All R55 placement and response-destination acceptance checks are now verified un
 2. **Next: live-verify A4-01/A4-02 and the controlled FRM-01 end-to-end test.**
 3. Continue R54 attachment routing and remaining Phase 4 workflows.
 4. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
+
+
+## Next live-verification target — A4-01 + A4-02
+- **Target:** controlled FRM-01 end-to-end project creation in the existing Phase 4 Apps Script project.
+- Flow: FRM-01 → Projects_Responses → A4-01 → A4-02 → Projects + Project_Members + Submission_Index + Drive project folder structure.
+- Verify canonical PRJ/MBR generation through A4-00, Employee_ID resolution, Submission_ID traceability, idempotency/concurrent-event protection, and preservation of the raw response on failure.
+- Verify A4-02 creates/locates exactly one PROJECT_<ProjectName> under MASTER COMPANY/Projects with the seven frozen subfolders: 01_Admin, 02_Checklist, 03_Expenses, 04_MOM, 05_Notes, 06_Files, 07_Reports.
+- Verify existing unique project folders are reused, duplicate/ambiguous folders are rejected, and failed subfolder creation does not leave an unintended partial project folder.
+- **Do not mark P4-02 PASS until live evidence is returned.**
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
