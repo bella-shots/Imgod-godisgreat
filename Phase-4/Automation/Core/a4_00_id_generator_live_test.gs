@@ -459,6 +459,9 @@ function testA400UniversalIdClosureLive() {
       var cleanupPassed = true;
       var cleanupDetails = [];
 
+      // 0. Remove only the temporary P4-18 trigger instances created by this harness
+      cleanupA400ConcurrentTriggers_();
+
       // 1. Remove temporary test properties created by the harness
       testPropertyKeys.forEach(function(k) {
         try {
