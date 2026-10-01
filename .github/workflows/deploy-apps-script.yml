@@ -19,7 +19,8 @@ jobs:
           node-version: 20
 
       - name: Install clasp and API client
-        run: npm install --global @google/clasp googleapis
+        run: npm install --global @google/clasp
+          npm install --no-save googleapis
 
       - name: Configure Google credentials
         env:
