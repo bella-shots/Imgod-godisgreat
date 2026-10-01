@@ -251,6 +251,10 @@ jobs:
             echo "FAIL: installEmployeeActionsPanel missing from live workflow."
             exit 1
           }
+          grep -q "function showEmployeeActionsFloatingPanel" "$NEW_FILE" || {
+            echo "FAIL: showEmployeeActionsFloatingPanel missing from live workflow."
+            exit 1
+          }
 
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
