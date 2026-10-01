@@ -13,6 +13,25 @@
 
 ## R55 — Master Drive asset placement and verification
 
+## R56 — Frozen Employee creation UX and transaction
+
+The Employee creation workflow is now frozen as a **single explicit action** against the existing MASTER_COMPANY_HR_ADMIN → Employees sheet.
+
+1. HR/Admin fills the pending employee row.
+2. HR/Admin selects the employee row/Employee_ID cell.
+3. HR/Admin invokes **Employee Actions → Generate Employee ID**.
+4. The workflow validates the complete employee record and duplicate email constraints.
+5. A4-00 generates the canonical EMP-XXXXXX ID.
+6. The workflow writes and locks Employee_ID.
+7. The workflow writes Created_At.
+8. The employee record is finalized immediately.
+
+The following are explicitly **not** part of the frozen workflow: separate Save Employee action, Process action, Process column, employee-creation Form, sidebar, floating panel, or generic onEdit/autosave ID generation.
+
+The authoritative Employees schema remains exactly the Phase 3 15-column schema.
+
+
+
 Phase 4 includes a controlled **Master Asset Placement / Verification** step. This step follows the revised Drive hierarchy established on 30-Sep-2026. It ensures the already-created Google Site, Phase 3 master workbooks, and Phase 3 Forms are stored in their frozen authoritative Drive locations.
 
 ### Frozen destinations
