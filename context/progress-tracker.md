@@ -308,13 +308,16 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - Existing records and columns A–E were preserved.
 - This correction is documented as Phase-3 Revision R41; it is a physical validation alignment, not a schema/architecture revision.
 
-### A4-11 Error Handler — current verification status — 01-Oct-2026
+### A4-11 Error Handler — LIVE VERIFICATION COMPLETE/PASS — 01-Oct-2026
 - A4-11 implementation and deployment/source verification are complete in GitHub; deployment run #93 is the successful corrected deployment after the literal-\\n syntax defect was fixed.
-- The live workbook validation blocker is now resolved.
-- `testA411ErrorHandlerLive()` has successfully entered the controlled failure scenarios and exercised the A4-10/A4-09 paths.
-- **A4-11 is NOT yet marked PASS.** The current execution log does not expose the required 13 individual live-test assertions/final summary, so acceptance evidence is incomplete.
-- Next action: Google/Gemini will revise only the A4-11 live-test harness logging/assertion reporting so the required 13 checks and cleanup result are explicitly reported. Production error-handling behavior must remain unchanged.
-- After that harness-only correction, rerun `testA411ErrorHandlerLive()`; update A4-11 acceptance/tracker status only after an actual 13/13 PASS.
+- The live workbook validation blocker was resolved without changing the frozen Submission_Index schema or architecture.
+- `testA411ErrorHandlerLive()` was executed against the live MASTER COMPANY Phase 4 Automation Apps Script project at 8:03:57 PM on 01-Oct-2026.
+- **All 13/13 required live checks passed.**
+- Passed checks: prerequisites; valid failure capture; existing Submission_ID → Manual Review; Validation Failed handling; missing Submission_ID handling; source preservation; duplicate idempotency; admin failure notification; notification-failure retryability; no uncontrolled retry; zero-cost boundary; ID non-reuse; cleanup.
+- Controlled failure/error log lines were observed as expected; the final execution summary explicitly reported `A4-11 LIVE VERIFICATION — PASS (13/13)`.
+- **A4-11 is now COMPLETE/PASS.**
+- P4-12 is recorded as PASS in `Phase-4/Phase-4-Acceptance.md`.
+- Next focus is A4-00 universal ID closure: P4-17, P4-18, P4-19 and P4-20. P4-13, P4-14, P4-15 and P4-16 remain independently open and are not being pre-marked.
 
 ### Current Phase 4 position — 01-Oct-2026
-**A4-11 Error Handler → live verification evidence completion → A4-00 universal closure (P4-17–P4-20) → P4-14/P4-15 → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
+**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) → P4-14/P4-15 → P4-16 Phase-4 closure. P4-13 remains independently open. Phase 5 remains blocked until Phase 4 is fully accepted.**
