@@ -329,6 +329,13 @@ jobs:
           grep_live_fn "verifyA411ErrorHandlerPrerequisites"
           grep_live_fn "testA411ErrorHandlerLive"
 
+          # A4-00 Universal ID Generator live verification
+          grep_live_fn "generateA4Id"
+          grep_live_fn "reconcileA4IdCounter"
+          grep_live_fn "previewA4Id"
+          grep_live_fn "testA400UniversalIdClosureLive"
+          grep_live_fn "testA400ConcurrentWorker"
+
           # Preserve the frozen Employee architecture gate.
           grep_live_fn "setupEmployeeDirectSheetWorkflow"
           grep_live_fn "onOpenEmployeeSheetMenu"
