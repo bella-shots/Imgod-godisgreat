@@ -175,7 +175,7 @@ function getA401Employees_() {
 
 function openA401WorkbookByName_(name) {
   const files=DriveApp.getFilesByName(name), matches=[];
-  while(files.hasNext()){const file=files.next();if(file.getMimeType()===MimeType.GOOGLE_SHEETS)matches.push(file);}
+  while(files.hasNext()){const file=files.next();if(file.getMimeType()===MimeType.GOOGLE_SHEETS && !file.isTrashed())matches.push(file);}
   if(matches.length!==1) throw new Error('A4_01_WORKBOOK_AMBIGUOUS_OR_MISSING: ' + name + ' / matches=' + matches.length);
   return SpreadsheetApp.openById(matches[0].getId());
 }
