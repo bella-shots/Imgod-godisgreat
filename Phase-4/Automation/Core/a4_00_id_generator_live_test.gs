@@ -26,21 +26,56 @@ var A400_ALL_PREFIXES = Object.freeze([
  * @param {string} runToken - Unique identifier for the concurrency test run.
  * @returns {Object} { id: string, runToken: string, timestamp: number }
  */
-function testA400ConcurrentWorker(prefix, runToken) {
+function testA400ConcurrentWorker(prefix, runToken, expectedWorkers) {
   prefix = prefix || 'SUB';
   runToken = runToken || 'DEFAULT';
+  expectedWorkers = Number(expectedWorkers || 1);
 
+  var props = PropertiesService.getScriptProperties();
+  var readyKey = 'A400_CONCURRENT_READY_' + runToken;
+  var storageKey = 'A400_CONCURRENT_POOL_' + runToken;
+  var readyLock = LockService.getScriptLock();
+
+  // Register this independent execution at the barrier.
+  readyLock.waitLock(30000);
+  try {
+    var readyRaw = props.getProperty(readyKey);
+    var readyList = readyRaw ? JSON.parse(readyRaw) : [];
+    readyList.push({
+      executionId: Utilities.getUuid(),
+      timestamp: Date.now()
+    });
+    props.setProperty(readyKey, JSON.stringify(readyList));
+  } finally {
+    readyLock.releaseLock();
+  }
+
+  // Wait until all independently scheduled executions are ready.
+  var deadline = Date.now() + 20000;
+  while (Date.now() < deadline) {
+    var currentReadyRaw = props.getProperty(readyKey);
+    var currentReady = currentReadyRaw ? JSON.parse(currentReadyRaw) : [];
+    if (currentReady.length >= expectedWorkers) break;
+    Utilities.sleep(250);
+  }
+
+  var finalReadyRaw = props.getProperty(readyKey);
+  var finalReady = finalReadyRaw ? JSON.parse(finalReadyRaw) : [];
+  if (finalReady.length < expectedWorkers) {
+    throw new Error('A4_P4_18_BARRIER_TIMEOUT: expected=' + expectedWorkers + ', ready=' + finalReady.length);
+  }
+
+  // All workers are now released into the generator concurrently.
   var id = generateA4Id(prefix, []);
 
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
-    var props = PropertiesService.getScriptProperties();
-    var storageKey = 'A400_CONCURRENT_POOL_' + runToken;
     var existingRaw = props.getProperty(storageKey);
     var list = existingRaw ? JSON.parse(existingRaw) : [];
     list.push({
       id: id,
+      executionId: Utilities.getUuid(),
       timestamp: Date.now()
     });
     props.setProperty(storageKey, JSON.stringify(list));
@@ -49,6 +84,50 @@ function testA400ConcurrentWorker(prefix, runToken) {
   }
 
   return { id: id, runToken: runToken, timestamp: Date.now() };
+}
+
+/**
+ * Time-based trigger entry point used only by the live P4-18 harness.
+ * Each independent execution claims one queued worker job.
+ */
+function testA400ConcurrentTrigger_() {
+  var props = PropertiesService.getScriptProperties();
+  var queueKeyPrefix = 'A400_CONCURRENT_QUEUE_';
+  var keys = props.getProperties();
+  var queueKey = null;
+  var job = null;
+
+  var lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    Object.keys(keys).some(function(key) {
+      if (key.indexOf(queueKeyPrefix) !== 0) return false;
+      var queue = JSON.parse(keys[key] || '[]');
+      if (!queue.length) return false;
+      queueKey = key;
+      job = queue.shift();
+      props.setProperty(key, JSON.stringify(queue));
+      return true;
+    });
+  } finally {
+    lock.releaseLock();
+  }
+
+  if (!job) return;
+  testA400ConcurrentWorker(job.prefix, job.runToken, job.expectedWorkers);
+}
+
+/**
+ * Deletes only temporary P4-18 test triggers created by this harness.
+ */
+function cleanupA400ConcurrentTriggers_() {
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'testA400ConcurrentTrigger_') {
+      try {
+        ScriptApp.deleteTrigger(trigger);
+      } catch (e) {}
+    }
+  });
 }
 
 /**
@@ -171,30 +250,46 @@ function testA400UniversalIdClosureLive() {
       var poolKey = 'A400_CONCURRENT_POOL_' + runToken;
       testPropertyKeys.push(poolKey);
 
-      // Part A: Verify LockService mutual exclusion (ScriptLock prevents simultaneous acquisition)
-      var primaryLock = LockService.getScriptLock();
-      primaryLock.waitLock(30000);
-      try {
-        var secondaryLock = LockService.getScriptLock();
-        var secondaryAcquired = secondaryLock.tryLock(50);
-        if (secondaryAcquired) {
-          p18Passed = false;
-          p18Evidence.push('FAIL: LockService failed to enforce mutual exclusion; secondaryLock was acquired while primaryLock was held');
-          secondaryLock.releaseLock();
-        } else {
-          p18Evidence.push('LockService mutual exclusion verified: concurrent tryLock(50) rejected while primary lock held');
-        }
-      } finally {
-        primaryLock.releaseLock();
+      // Part A: Real cross-execution concurrency barrier.
+      // The previous same-execution tryLock assertion was intentionally removed:
+      // it did not prove cross-execution contention. This harness now schedules
+      // five independent Apps Script executions that rendezvous before ID allocation.
+      var queueKey = 'A400_CONCURRENT_QUEUE_' + runToken;
+      var readyKey = 'A400_CONCURRENT_READY_' + runToken;
+      props.setProperty(queueKey, JSON.stringify([
+        {prefix:'SUB', runToken:runToken, expectedWorkers:5},
+        {prefix:'SUB', runToken:runToken, expectedWorkers:5},
+        {prefix:'SUB', runToken:runToken, expectedWorkers:5},
+        {prefix:'SUB', runToken:runToken, expectedWorkers:5},
+        {prefix:'SUB', runToken:runToken, expectedWorkers:5}
+      ]));
+      props.setProperty(readyKey, JSON.stringify([]));
+      testPropertyKeys.push(queueKey);
+      testPropertyKeys.push(readyKey);
+
+      cleanupA400ConcurrentTriggers_();
+      for (var t = 0; t < 5; t++) {
+        ScriptApp.newTrigger('testA400ConcurrentTrigger_')
+          .timeBased()
+          .after(1000)
+          .create();
+      }
+      Utilities.sleep(12000);
+
+      var readyRaw = props.getProperty(readyKey);
+      var readyList = readyRaw ? JSON.parse(readyRaw) : [];
+      if (readyList.length !== 5) {
+        p18Passed = false;
+        p18Evidence.push('FAIL: Expected 5 independent concurrent workers to reach barrier; observed ' + readyList.length);
+      } else {
+        p18Evidence.push('Real cross-execution barrier reached by 5 independent Apps Script executions');
       }
 
-      // Part B: Concurrency worker dispatch and collision safety
-      // Execute 5 rapid sequential worker dispatches simulating high-throughput concurrent load
+      // Part B: Verify IDs produced by the independently executing workers.
       var workerResults = [];
-      for (var w = 0; w < 5; w++) {
-        var res = testA400ConcurrentWorker('SUB', runToken);
-        workerResults.push(res.id);
-      }
+      var workerRaw = props.getProperty(poolKey);
+      var workerPoolBefore = workerRaw ? JSON.parse(workerRaw) : [];
+      workerResults = workerPoolBefore.map(function(item) { return item.id; });
 
       // Verify collected pool from ScriptProperties
       var poolRaw = props.getProperty(poolKey);
