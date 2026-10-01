@@ -1,17 +1,27 @@
 /** Employee Creation Workflow — Phase 4
- * Direct Employees-sheet workflow using native Google Sheets "Employee Actions" custom menu.
+ * Direct Employees-sheet workflow using native Google Sheets "Employee Actions" custom menu
+ * and a prominent visual "EMPLOYEE ACTIONS" button on the Employees sheet.
  *
- * The authoritative Employees tab remains exactly 15 columns.
+ * The authoritative Employees tab remains exactly 15 columns (Columns A:O).
  * No employee-creation Form, sidebar, or extra schema column is used.
  *
- * Explicit native menu controls:
- * 1. User selects an employee data row (row >= 2) in Employees tab.
- * 2. User clicks Employee Actions → Generate Employee ID.
- * 3. The script validates the row fields, generates EMP-000001 via A4-00,
- *    writes and protects Employee_ID, and tracks pending generation.
- * 4. User reviews the row, then clicks Employee Actions → Save Employee.
- * 5. The script validates generated ID/pending state, checks duplicates,
- *    writes system timestamp to Created_At, and commits the row.
+ * Native controls:
+ * 1. Native "Employee Actions" custom menu in the top Google Sheets menu bar:
+ *    • Generate Employee ID
+ *    • Save Employee
+ *    • Employee Actions Dialog...
+ * 2. Visually prominent dark-blue "EMPLOYEE ACTIONS" button control placed beside
+ *    the table at Column Q, Row 1 (outside the 15 schema columns).
+ *
+ * Workflow:
+ * 1. HR/Admin enters employee details directly in the Employees sheet.
+ * 2. User selects the employee row (row >= 2).
+ * 3. User clicks Employee Actions → Generate Employee ID (or uses the button).
+ * 4. Script validates row fields, generates EMP-000001 via A4-00, writes/protects
+ *    Employee_ID, and tracks pending generation in ScriptProperties.
+ * 5. User reviews the row, then clicks Employee Actions → Save Employee.
+ * 6. Script validates generated ID/pending state, checks duplicates, writes system
+ *    timestamp to Created_At, and commits the row.
  */
 
 const EMPLOYEE_CREATION_CONFIG = {
@@ -37,10 +47,85 @@ function onOpenEmployeeSheetMenu(e) {
     ui.createMenu('Employee Actions')
       .addItem('Generate Employee ID', 'generateSelectedEmployeeId')
       .addItem('Save Employee', 'saveSelectedEmployee')
+      .addSeparator()
+      .addItem('Employee Actions Dialog...', 'showEmployeeActionsDialog')
       .addToUi();
   } catch (err) {
     Logger.log('onOpenEmployeeSheetMenu UI note (expected in headless context): ' + err.message);
   }
+}
+
+/** Unified dialog providing Generate Employee ID and Save Employee options */
+function showEmployeeActionsDialog() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.alert(
+    'Employee Actions',
+    'Choose an action for the currently selected employee row:\n\n' +
+    '• Click [YES] to Generate Employee ID\n' +
+    '• Click [NO] to Save Employee\n' +
+    '• Click [CANCEL] to dismiss',
+    ui.ButtonSet.YES_NO_CANCEL
+  );
+  if (response === ui.Button.YES) {
+    return generateSelectedEmployeeId();
+  } else if (response === ui.Button.NO) {
+    return saveSelectedEmployee();
+  }
+}
+
+/** Installs the colored EMPLOYEE ACTIONS visual button on the Employees sheet */
+function installEmployeeActionsButton() {
+  const sheet = getEmployeeSheet_();
+
+  // Position at Column Q (column 17), Row 1 — beside the 15-column table (A:O)
+  // This preserves the exact 15-column schema and does not overwrite employee data
+  const buttonCell = sheet.getRange(1, 17);
+  buttonCell.setValue('EMPLOYEE ACTIONS');
+  buttonCell.setBackground('#1e3a8a'); // Dark blue
+  buttonCell.setFontColor('#ffffff'); // White
+  buttonCell.setFontWeight('bold');
+  buttonCell.setFontSize(11);
+  buttonCell.setHorizontalAlignment('center');
+  buttonCell.setVerticalAlignment('middle');
+  buttonCell.setNote(
+    'EMPLOYEE ACTIONS\n\n' +
+    '1. Select an employee row (row 2+)\n' +
+    '2. Use "Employee Actions" in the top menu to:\n' +
+    '   • Generate Employee ID\n' +
+    '   • Save Employee\n' +
+    '   • Employee Actions Dialog...'
+  );
+  sheet.setColumnWidth(17, 180);
+
+  // Insert OverGridImage button as a floating graphical control
+  try {
+    const images = sheet.getImages();
+    const existingButton = images.some(function(img) {
+      const anchor = img.getAnchorCell();
+      return anchor && anchor.getColumn() >= 16;
+    });
+
+    if (!existingButton) {
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="38" viewBox="0 0 200 38">' +
+        '<rect x="1" y="1" width="198" height="36" rx="6" ry="6" fill="#1e3a8a" stroke="#0f172a" stroke-width="1"/>' +
+        '<text x="100" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">EMPLOYEE ACTIONS</text>' +
+        '</svg>';
+      const blob = Utilities.newBlob(svg, 'image/svg+xml', 'employee_actions_button.svg').getAs('image/png');
+      sheet.insertImage(blob, 17, 1, 0, 0);
+    }
+  } catch (imgErr) {
+    Logger.log('OverGridImage note: ' + imgErr.message);
+  }
+
+  SpreadsheetApp.flush();
+  return {
+    status: 'PASS',
+    control: 'EMPLOYEE_ACTIONS_BUTTON',
+    column: 17,
+    columnLetter: 'Q',
+    row: 1,
+    schemaPreserved: sheet.getRange(1, 1, 1, 15).getValues()[0].length === 15
+  };
 }
 
 /** Legacy stub preserved for backward compatibility */
@@ -89,10 +174,12 @@ function verifyEmployeeSheetMenuTrigger() {
 /** Setup and prerequisite verification entry point */
 function setupEmployeeDirectSheetWorkflow() {
   const trigger = installEmployeeSheetMenuTrigger();
+  const button = installEmployeeActionsButton();
   const prerequisites = verifyEmployeeCreationPrerequisites();
   const result = {
-    status: trigger.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    status: trigger.status === 'PASS' && button.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
     trigger: trigger,
+    button: button,
     prerequisites: prerequisites
   };
   Logger.log(JSON.stringify(result, null, 2));
@@ -240,6 +327,7 @@ function verifyEmployeeCreationPrerequisites() {
     noEmployeeFormRequired: true,
     noSidebarRequired: true,
     employeeActionsMenuConfigured: true,
+    employeeActionsButtonConfigured: true,
     centralGeneratorAvailable: typeof generateA4Id === 'function',
     employeeSheetMenuTrigger: trigger.status === 'PASS'
   };
