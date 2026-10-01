@@ -44,3 +44,13 @@
 ## Financial employee-linkage invariant
 
 All employee-related financial workflows must resolve the employee through the canonical `Employee_ID`. `Member_Record_ID` is only a project-membership identifier and must not be substituted for `Employee_ID` in `Budget_Given`, `Employee_Spending`, `OOP_Claims` or `Salary_Admin`. `Investments` is the explicit exception under the frozen Phase 3 schema because it uses `Source_Person` rather than `Employee_ID`.
+
+## R62 — OOP approval workflow
+- **A4-04** now has an explicit Employee → Top Manager approval chain for FRM-03 claims.
+- On valid submission, the claim is created as `Pending Review` and the configured Top Manager is notified by Apps Script email.
+- The Top Manager has controlled actions: `Approve Company-Essential Claim`, `Approve Food Business Exception`, or `Reject OOP Claim`.
+- Ordinary food-related claims cannot be approved through the normal company-essential action; a genuine business exception requires the dedicated exception approval action.
+- Only explicitly approved claims receive `Approved_Amount` and an approved salary-eligible `OOP_Rule_Flag`.
+- **A4-05** aggregates only approved salary-eligible OOP claims. Pending, rejected, and food claims that remain `FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY` are excluded.
+- `APPROVED_FOOD_BUSINESS_EXCEPTION` is the only food-related classification that may enter the OOP salary component.
+- The existing 11-column `OOP_Claims` schema is preserved; no new approval columns are added.
