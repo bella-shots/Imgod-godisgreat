@@ -93,7 +93,7 @@ function generateEmployeeIdForRow_(sheet, rowNumber) {
     const row = readEmployeeRow_(sheet, rowNumber);
     validateEmployeeRow_(row);
     const existingId = String(row.Employee_ID || '').trim().toUpperCase();
-    if (existingId && existingId !== EMPLOYEE_CREATION_CONFIG.generateCommand) {
+    if (existingId) {
       throw new Error('EMPLOYEE_ID_GENERATION_BLOCKED: Employee_ID already exists: ' + row.Employee_ID);
     }
     const existingIds = readEmployeeColumn_(sheet, 'Employee_ID');
