@@ -50,3 +50,8 @@ The following are prohibited for R57 ID issuance: generic onEdit/autosave, passi
 Form/system-generated IDs remain automatic. Form-processing workflows may generate their business IDs within their controlled processing transaction, and Submission_ID remains system/index-generated.
 
 R57 does not change the frozen Phase 3 schemas or the A4-00 ID formats. It standardizes the user interaction and transaction boundary for direct Sheet-originated records.
+
+
+## R58 — Financial employee identity invariant
+
+Phase 4 financial automation must preserve the Phase 3 employee-linkage contract: `Employee_ID` is the canonical employee identity reference for `Budget_Given`, `Employee_Spending`, `OOP_Claims` and `Salary_Admin`. `Member_Record_ID` is never a substitute for `Employee_ID` in these workflows. `Investments` remains the explicit schema exception using `Source_Person`.
