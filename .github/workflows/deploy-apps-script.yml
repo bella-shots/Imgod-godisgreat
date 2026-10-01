@@ -183,7 +183,12 @@ jobs:
           });
           const deployments = (deploymentsResponse.data && deploymentsResponse.data.deployments) || [];
           const stableDescription = 'MASTER COMPANY automation execution deployment';
-          const stableDeployment = deployments.find(d => d.description === stableDescription);
+          const stableDeployment =
+            deployments.find(d => d.deploymentConfig && d.deploymentConfig.description === stableDescription) ||
+            deployments
+              .filter(d => d.deploymentId && Array.isArray(d.entryPoints) &&
+                d.entryPoints.some(ep => ep.entryPointType === 'EXECUTION_API'))
+              .sort((a, b) => String(b.updateTime || '').localeCompare(String(a.updateTime || '')))[0];
 
           let deploymentId;
           if (stableDeployment && stableDeployment.deploymentId) {
@@ -204,6 +209,12 @@ jobs:
             }
             console.log('PASS: Existing Apps Script Execution API deployment updated: ' + deploymentId);
           } else {
+            throw new Error(
+              'No existing Apps Script Execution API deployment is available to update. ' +
+              'The project is at the versioned-deployment limit; archive an obsolete deployment once in Apps Script ' +
+              'Manage deployments, then rerun this workflow.'
+            );
+          /*
             const deploymentResponse = await script.projects.deployments.create({
               scriptId,
               requestBody: {
@@ -217,6 +228,7 @@ jobs:
               throw new Error('Apps Script deployment creation did not return a deployment ID.');
             }
             console.log('PASS: Initial Apps Script Execution API deployment created: ' + deploymentId);
+          */
           }
 
           try {
