@@ -58,3 +58,18 @@ Examples:
 - ₹7,000 approved spend → Salary + ₹5,000 + ₹2,000 excess = Salary + ₹7,000.
 
 Therefore ₹5,000 is **not a reimbursement cap**. Do not create a separate additional ₹5,000 reimbursement line, and do not reduce an otherwise approved claim merely because it exceeds ₹5,000. Multiple approved OOP claims in the same month contribute to the applicable monthly approved-spend total. Salary history must be preserved. This rule does not itself authorize automatic claim approval.
+
+## R60 — OOP ₹5,000 monthly company-essential spending rule (frozen)
+
+**Date:** 2026-10-01
+
+The ₹5,000 amount is the employee's monthly company-essential spending baseline. It is not a reimbursement cap.
+
+For the next salary credit, add the **actual approved company-essential OOP spend** for the applicable month to the employee's designated/base salary.
+
+Examples:
+- ₹1,000 approved OOP → Salary + ₹1,000.
+- ₹5,000 approved OOP → Salary + ₹5,000.
+- ₹7,000 approved OOP → Salary + ₹5,000 + ₹2,000 excess = Salary + ₹7,000.
+
+Multiple approved OOP claims in the same month are aggregated by canonical `Employee_ID`. No separate ₹5,000 line is created. Claims remain subject to authorized review; the rule does not auto-approve claims. Salary history is preserved by creating the applicable monthly salary record rather than overwriting prior records.
