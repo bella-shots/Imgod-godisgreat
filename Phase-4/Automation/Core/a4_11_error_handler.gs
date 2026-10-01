@@ -279,7 +279,7 @@ function testA411ErrorHandlerLive() {
       status: 'Received',
       eventReservationKey: 'A410_EVENT_' + token + '_EXISTING'
     });
-    if (created1.status !== 'SUCCESS') throw new Error('A4_11_TEST_CREATE_EXISTING_FAILED');
+    if (created1.status !== 'SUCCESS') throw new Error('A4_11_TEST_CREATE_EXISTING_FAILED');\n    testKeys.push('A410_EVENT_' + token + '_EXISTING');
     createdSubmissionIds.push(created1.submissionId);
 
     var manual = handleA411Error({
@@ -325,7 +325,7 @@ function testA411ErrorHandlerLive() {
       eventKey: token + '_CREATE',
       notifyAdmin: false
     });
-    if (created2.submissionId) createdSubmissionIds.push(created2.submissionId);
+    if (created2.submissionId) createdSubmissionIds.push(created2.submissionId);\n    testKeys.push('A410_EVENT_' + token + '_CREATE');
     report.test4CreateMissingSubmission =
       !!created2.submissionId && created2.auditStatus === 'CREATED' ? 'PASS' : 'FAIL';
 
