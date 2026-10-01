@@ -1,6 +1,6 @@
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | NOT STARTED |
+| P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | PARTIAL — deployment/replace/live-content checkpoint PASS on 01-Oct-2026; required user-side trigger installation/authorization is still pending confirmation. |
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | PASS — live-verified 01-Oct-2026; FRM-01 → A4-01 → A4-02 created PRJ/MBR/SUB records, resolved Employee_ID, created/reused the exact seven-folder project Drive structure, passed idempotency and ambiguity safety, preserved the raw response, and passed failure cleanup. |
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
@@ -34,6 +34,16 @@
 - Raw response preservation: PASS; the native `Projects_Responses` intake row remains intact.
 - Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
 - Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
+
+## Phase 4 deployment/verification stabilization checkpoint — 01-Oct-2026
+- GitHub Actions runs #49–#64 were historically failing; the final blocker identified in #64 was the Apps Script 20-versioned-deployment limit.
+- Deployment workflow now creates a new immutable code version but reuses/updates an existing Apps Script Execution API deployment instead of creating a new deployment on every CI run. Google documents deployment update as the supported way to move an existing deployment to a new version. [Google Apps Script deployment management documentation]
+- The approved existing Apps Script project remains the sole deployment target.
+- Run #72 (commit 13db79dd0ad27d4eabe97364eb364c0e951b8162) completed SUCCESS: source replacement PASS; deployment/update path PASS; live Apps Script pull PASS; live manifest PASS; live A4-06 functions PASS; live A4-07 functions PASS; live Employee architecture gate PASS.
+- Employee obsolete compatibility wrappers were removed from the authoritative source; the CI verifier no longer requires the removed processEmployeeSheetControl function.
+- Investment internals were aligned to the frozen A4-15 module numbering.
+- Trigger installation/authorization is intentionally not marked PASS from CI evidence alone. Apps Script installable triggers run under the account that created them and require authorization; this remains a human-action verification item.
+- Phase 4 feature development remains paused until the trigger is confirmed and the live A4-06/A4-07 execution tests are re-run against the stabilized deployment.
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 acceptance tests: P4-21 Project_Members requires explicit Generate Project Member ID; P4-22 Project_Notes requires explicit Generate Project Note ID; P4-23 Budget_Given requires explicit Generate Budget ID; P4-24 Salary_Admin supports explicit Generate Salary ID(s), including controlled bulk generation; P4-25 concurrent Generate-ID actions produce unique IDs under LockService; P4-26 generated IDs become read-only/locked and cannot be manually overwritten.
