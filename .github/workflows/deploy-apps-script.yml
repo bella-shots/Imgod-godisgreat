@@ -324,6 +324,11 @@ jobs:
           grep_live_fn "verifyA410AuditLoggerPrerequisites"
           grep_live_fn "testA410AuditLoggerLive"
 
+          # A4-11 Error Handler verification
+          grep_live_fn "handleA411Error"
+          grep_live_fn "verifyA411ErrorHandlerPrerequisites"
+          grep_live_fn "testA411ErrorHandlerLive"
+
           # Preserve the frozen Employee architecture gate.
           grep_live_fn "setupEmployeeDirectSheetWorkflow"
           grep_live_fn "onOpenEmployeeSheetMenu"
