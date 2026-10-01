@@ -47,8 +47,8 @@ All employee-related financial workflows must resolve the employee through the c
 
 ## R62 — OOP approval workflow
 - **A4-04** now has an explicit Employee → Top Manager approval chain for FRM-03 claims.
-- On valid submission, the claim is created as `Pending Review` and the configured Top Manager is notified by Apps Script email.
-- The Top Manager has controlled actions: `Approve Company-Essential Claim`, `Approve Food Business Exception`, or `Reject OOP Claim`.
+- On valid submission, the claim is created as `Pending Review` and the single active `Director` in `MASTER_COMPANY_HR_ADMIN → Employees` is notified by Apps Script email.
+- The Director-designated Top Manager has controlled actions: `Approve Company-Essential Claim`, `Approve Food Business Exception`, or `Reject OOP Claim`.
 - Ordinary food-related claims cannot be approved through the normal company-essential action; a genuine business exception requires the dedicated exception approval action.
 - Only explicitly approved claims receive `Approved_Amount` and an approved salary-eligible `OOP_Rule_Flag`.
 - **A4-05** aggregates only approved salary-eligible OOP claims. Pending, rejected, and food claims that remain `FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY` are excluded.
