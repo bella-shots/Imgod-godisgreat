@@ -341,11 +341,18 @@ function hasOnEditTriggerForA403_() {
 }
 
 function recordA403Failure_(e, err) {
+  if (typeof handleA411Error === 'function') {
+    return handleA411Error({
+      module: 'A4-03 Expense Processing',
+      sourceForm: 'FRM-02',
+      statusHint: 'Manual Review',
+      error: err,
+      eventKey: 'FRM-02-' + (e && e.range ? e.range.getSheet().getName() + '-' + e.range.getRow() : 'UNKNOWN')
+    });
+  }
   console.error(JSON.stringify({
     module: 'A4-03',
     source: 'FRM-02',
-    responseSheet: e && e.range ? e.range.getSheet().getName() : null,
-    row: e && e.range ? e.range.getRow() : null,
     error: String(err && err.message || err),
     timestamp: new Date().toISOString()
   }));
