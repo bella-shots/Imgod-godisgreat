@@ -188,19 +188,19 @@ All R55 placement and response-destination acceptance checks are now verified un
 
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
-2. **Next: implement/live-verify R54 attachment routing (FRM-02, FRM-03, FRM-04) in the existing Phase 4 Apps Script project.**
-3. Continue Salary/Admin Generate-ID, Investment exception, MOM, reporting, notification, audit/error handling, and remaining Phase 4 workflows.
-4. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
-5. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
+2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
+3. **Next: Salary/Admin Generate-ID workflow, including controlled Salary bulk generation (P4-48).**
+4. Continue Investment exception, MOM, reporting, notification, audit/error handling, and remaining Phase 4 workflows.
+5. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
+6. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
 
 
-## Next live-verification target — R54 attachment routing
-- **Target:** controlled attachment routing for FRM-02, FRM-03 and FRM-04 in the existing Phase 4 Apps Script project.
-- FRM-02 receipt → exact project's `03_Expenses` folder → final `Attachment_URL`.
-- FRM-03 proof → exact project's `03_Expenses` folder → final `Proof_URL`.
-- FRM-04 supporting document → `MASTER COMPANY/HR`, without public sharing.
-- Verify retry idempotency, invalid/unresolved project handling, destination/move failure safety, source preservation, and no duplicate business copies.
-- Do not mark P4-27 through P4-32 PASS until live evidence is returned.
+## Next live-verification target — Salary/Admin Generate-ID
+- **Target:** controlled Salary_Admin Generate Salary ID(s) workflow in the existing Phase 4 Apps Script project.
+- Verify the frozen Salary_Admin schema and the explicit Generate Salary ID(s) action.
+- Verify validation-before-ID issuance, canonical A4-00 `SAL-XXXXXX` generation, locking/immutability, controlled bulk generation, duplicate/already-ID'd protection, and no generic onEdit/autosave issuance.
+- Preserve salary history and do not introduce a Salary Form/native response tab.
+- Do not mark P4-48 PASS until live evidence is returned.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
@@ -237,3 +237,13 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - OOP claims remain Pending Review until that Director explicitly approves or rejects them.
 - Non-Director users cannot approve/reject OOP claims.
 - GitHub implementation updated in Phase-4/Automation/Core/a4_04_oop_claim_processing.gs; related R62 build/business/error/acceptance documents aligned.
+
+### R54 attachment routing live verification evidence — 01-Oct-2026
+- A4-54 attachment routing implementation is live and integrated with A4-03, A4-04 and FRM-04 processing.
+- FRM-02 receipt routing to PROJECT_<ProjectName>/03_Expenses and Attachment_URL persistence: PASS.
+- FRM-03 proof routing to PROJECT_<ProjectName>/03_Expenses and Proof_URL persistence: PASS.
+- R62 Pending Review gate preserved; attachment routing never auto-approves OOP claims.
+- FRM-04 supporting-document routing to MASTER COMPANY/HR with public sharing blocked: PASS.
+- Retry/idempotency, same-filename handling, invalid-project safety, destination-failure safety, raw-response preservation, duplicate-copy protection, cleanup and pre-existing data preservation: PASS.
+- No SPN or CLM sequence numbers were consumed by the verification suite.
+- Overall: R54_ATTACHMENT_ROUTING_LIVE_VERIFICATION = PASS.
