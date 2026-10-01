@@ -447,11 +447,11 @@ jobs:
             exit 1
           }
           INV_FILE=$(printf '%s\n' "$INV_MATCHES" | head -n 1)
-          grep -q "function verifyA407InvestmentPrerequisites" "$INV_FILE" || {
+          grep -q "function verifyA415InvestmentPrerequisites" "$INV_FILE" || {
             echo "FAIL: verifyA407InvestmentPrerequisites missing from live workflow."
             exit 1
           }
-          grep -q "function testA407InvestmentWorkflowLive" "$INV_FILE" || {
+          grep -q "function testA415InvestmentWorkflowLive" "$INV_FILE" || {
             echo "FAIL: testA407InvestmentWorkflowLive missing from live workflow."
             exit 1
           }
