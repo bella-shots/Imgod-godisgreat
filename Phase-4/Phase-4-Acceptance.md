@@ -1,7 +1,7 @@
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
 | P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | NOT STARTED |
-| P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | NOT STARTED |
+| P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | PASS — live-verified 01-Oct-2026; FRM-01 → A4-01 → A4-02 created PRJ/MBR/SUB records, resolved Employee_ID, created/reused the exact seven-folder project Drive structure, passed idempotency and ambiguity safety, preserved the raw response, and passed failure cleanup. |
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
 | P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | PASS — live-verified 01-Oct-2026; FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims, CLM generation, Director routing and Pending Review behavior all passed. |
@@ -20,6 +20,20 @@
 | P4-18 | Test concurrent ID generation. | Simultaneous requests receive distinct IDs with no duplicate/collision. | NOT STARTED |
 | P4-19 | Test ID persistence/deletion behavior. | Issued IDs remain stable and are never reused; gaps are allowed. | NOT STARTED |
 | P4-20 | Test counter recovery. | A stored counter lower than an existing valid ID is reconciled before a new ID is issued. | NOT STARTED |
+
+### A4-01 + A4-02 live verification evidence — 01-Oct-2026
+- A4-01 prerequisites: PASS; exact Projects, Project_Members, Employees and Submission_Index schemas verified.
+- A4-01 trigger: PASS; exactly one ON_FORM_SUBMIT trigger for `processA401ProjectSubmission` on MASTER_COMPANY_OPERATIONS.
+- Controlled FRM-01 live processing: PASS; generated `SUB-000001`, `PRJ-000001`, and `MBR-000001` through A4-00; resolved `fromjul21@gmail.com` to canonical `EMP-000001`.
+- A4-02 Drive structure: PASS; exact `PROJECT_<ProjectName>` under `MASTER COMPANY/Projects` with `01_Admin`, `02_Checklist`, `03_Expenses`, `04_MOM`, `05_Notes`, `06_Files`, `07_Reports`.
+- Idempotency/re-entry: PASS; duplicate event reservation was refused and no duplicate Projects, Project_Members, Submission_Index records or Drive folders were created.
+- Existing-folder reuse: PASS; a unique existing project folder was reused without numbered duplicates.
+- Ambiguous-folder safety: PASS; duplicate project/subfolder names are rejected rather than silently selected.
+- Failure cleanup: PASS; A4-02 trashes a newly created project folder if required subfolder provisioning fails.
+- Submission_Index traceability: PASS; `SUB-000001` mapped to `PRJ-000001` with `Processing_Status=Processed` and `Source_Form=FRM-01 Create / Request Project`.
+- Raw response preservation: PASS; the native `Projects_Responses` intake row remains intact.
+- Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
+- Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 acceptance tests: P4-21 Project_Members requires explicit Generate Project Member ID; P4-22 Project_Notes requires explicit Generate Project Note ID; P4-23 Budget_Given requires explicit Generate Budget ID; P4-24 Salary_Admin supports explicit Generate Salary ID(s), including controlled bulk generation; P4-25 concurrent Generate-ID actions produce unique IDs under LockService; P4-26 generated IDs become read-only/locked and cannot be manually overwritten.
