@@ -2,8 +2,8 @@
 |---|---|---|---|
 | P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | NOT STARTED |
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | NOT STARTED |
-| P4-03 | Test expense processing. | Valid expense submission is validated, stored and given the correct processing status. | NOT STARTED |
-| P4-04 | Test invalid expense. | Invalid/missing data is flagged safely without corrupting the source record. | NOT STARTED |
+| P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | IMPLEMENTED — LIVE VERIFICATION PENDING |
 | P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | NOT STARTED |
 | P4-06 | Test ₹5,000 rule. | The approved rule is calculated exactly as specified; no unapproved interpretation is introduced. | NOT STARTED |
 | P4-07 | Test salary carry-forward. | Monthly salary records produce the approved carry-forward while preserving historical records. | NOT STARTED |
@@ -61,7 +61,7 @@
 | P4-46 | Test duplicate/already-ID'd protection. | Duplicate/identity violations or an already-generated ID prevent another sequence allocation; issued IDs are never reused. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-47 | Test no generic ID issuance. | onEdit/autosave/passive edit/spreadsheet-open events never issue business IDs for direct Sheet-originated records. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | NOT STARTED |
-| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | NOT STARTED — broader Phase 4 system/form verification remains pending. |
+| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PARTIAL — Employee_Spending is confirmed Form-originated; A4-03 implements automatic SPN generation through controlled FRM-02 processing. Broader system/form verification remains pending. |
 
 ## R58 — Financial employee identity invariant
 | ID | Acceptance test | Expected result | Status |
@@ -80,3 +80,14 @@
 - R58 passed for the tested workflow: canonical `EMP-000001` accepted and `MBR-000001` rejected.
 - Cleanup passed: temporary records removed, final sheet returned to header-only, pre-existing records preserved.
 - Overall: `BUDGET_GIVEN_R57_LIVE_VERIFICATION = PASS`.
+
+
+### Employee_Spending architecture decision — 01-Oct-2026
+- Frozen Phase 3 sources confirm `FRM-02 Employee Spending / Expense` is the authoritative creation path.
+- Native `Employee_Spending_Responses` is an intake-only response tab.
+- `Employee_Spending` is the authoritative Finance table.
+- Ordinary employees submit spending strictly through FRM-02 and do not receive direct access to the restricted Finance workbook.
+- Therefore R57 direct-Sheet Generate-ID UX is **not applicable** to Employee_Spending.
+- A4-03 automatically generates `SPN-XXXXXX` through A4-00 during controlled Form processing.
+- The implementation does not add a Generate Spending ID menu, direct-Sheet Save/Process action, new Form, new tab, or schema column.
+- A4-03 live verification remains pending.
