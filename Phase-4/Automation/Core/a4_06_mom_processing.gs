@@ -442,6 +442,37 @@ function verifyA406MomPrerequisites() {
 }
 
 /**
+ * Read-only verification of the A4-06 MOM installable trigger.
+ */
+function verifyA406MomTrigger() {
+  var triggers = ScriptApp.getProjectTriggers().filter(function(trigger) {
+    return trigger.getHandlerFunction() === 'processMomFormSubmit';
+  });
+  var valid = triggers.length === 1 &&
+    triggers[0].getEventType() === ScriptApp.EventType.ON_FORM_SUBMIT;
+  return {
+    status: valid ? 'PASS' : 'FAIL',
+    triggerCount: triggers.length,
+    handler: triggers.length ? triggers[0].getHandlerFunction() : '',
+    eventType: triggers.length ? String(triggers[0].getEventType()) : ''
+  };
+}
+
+/**
+ * Installs the installable ON_FORM_SUBMIT trigger for FRM-05 / MOM processing.
+ */
+function installA406MomTrigger() {
+  var ss = findUniqueA406Spreadsheet_(A406_CONFIG.OPERATIONS_WORKBOOK);
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'processMomFormSubmit') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
+  ScriptApp.newTrigger('processMomFormSubmit').forSpreadsheet(ss).onFormSubmit().create();
+  return verifyA406MomTrigger();
+}
+
+/**
  * Complete Live Test Suite for A4-06 MOM Processing.
  */
 function testA406MomProcessingLive() {

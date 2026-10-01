@@ -298,6 +298,7 @@ jobs:
           # Stabilization checkpoint: prove the newly deployed MOM modules are actually live.
           grep_live_fn "processMomFormSubmit"
           grep_live_fn "verifyA406MomPrerequisites"
+          grep_live_fn "verifyA406MomTrigger"
           grep_live_fn "testA406MomProcessingLive"
           grep_live_fn "sendMomDistributionEmail"
           grep_live_fn "verifyA407MomEmailPrerequisites"
