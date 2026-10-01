@@ -318,6 +318,25 @@ jobs:
             exit 1
           }
 
+          BDG_MATCHES=$(grep -RIl "function setupBudgetSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$BDG_MATCHES" || {
+            echo "FAIL: setupBudgetSheetWorkflow is missing from live Apps Script."
+            exit 1
+          }
+          BDG_FILE=$(printf '%s\n' "$BDG_MATCHES" | head -n 1)
+          grep -q "function onOpenBudgetSheetMenu" "$BDG_FILE" || {
+            echo "FAIL: onOpenBudgetSheetMenu missing from live workflow."
+            exit 1
+          }
+          grep -q "function generateSelectedBudgetId" "$BDG_FILE" || {
+            echo "FAIL: generateSelectedBudgetId missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA414BudgetGivenWorkflowLive" "$BDG_FILE" || {
+            echo "FAIL: testA414BudgetGivenWorkflowLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
