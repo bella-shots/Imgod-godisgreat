@@ -167,7 +167,7 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Does not add a Generate Spending ID menu, onEdit ID issuance, Save/Process UX, Form, tab, or schema column.
   - Live verification on 01-Oct-2026 returned `allPassed: true`.
   - Verified exact 10-column `Employee_Spending` schema, required workbook/sheet resolution, canonical Employee_ID and Project_ID resolution, A4-00 SPN availability, no SPN sequence consumption by the test, no onEdit ID issuance, R58 rejection of Member_Record_ID, and preservation of production data.
-- **A4-04 OOP Claims Processing: IMPLEMENTED IN GITHUB — FORM-ORIGINATED; R57 DIRECT-SHEET WORKFLOW DOES NOT APPLY — LIVE VERIFICATION PENDING.**
+- **A4-04 OOP Claims Processing: IMPLEMENTED IN GITHUB — FORM-ORIGINATED; R57 DIRECT-SHEET WORKFLOW DOES NOT APPLY — LIVE-VERIFIED PASS (01-Oct-2026).**
   - Frozen Phase 3 architecture confirms FRM-03 OOP Claim → OOP_Claims_Responses → OOP_Claims.
   - New `Phase-4/Automation/Core/a4_04_oop_claim_processing.gs` implements controlled FRM-03 processing and automatic CLM generation through A4-00.
   - Resolves Employee Email ID to canonical `Employee_ID`; `Member_Record_ID` is rejected.
@@ -175,20 +175,22 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Creates claims in `Pending Review` and does not auto-approve.
   - R60/R61 are now frozen: ₹5,000 is the company-essential monthly baseline; ordinary food is excluded; ₹1,000 food allowance is separate. A4-04 creates claims as `Pending Review`, routes them to the configured Top Manager, and leaves `Approved_Amount` unset until explicit approval.
   - Non-destructive live verification helper is included and does not consume a CLM sequence.
-- **A4-05 Salary Carry-Forward: IMPLEMENTED IN GITHUB — LIVE VERIFICATION PENDING.**
+  - Live verification generated `CLM-000001`, resolved `EMP-000001` and `PRJ-000001`, notified the single active Director, and confirmed Pending Review before approval.
+- **A4-05 Salary Carry-Forward: IMPLEMENTED IN GITHUB — LIVE-VERIFIED PASS (01-Oct-2026).**
   - `Phase-4/Automation/Core/a4_05_salary_carry_forward.gs` implements the frozen R60 OOP-to-salary calculation.
   - Aggregates only approved OOP claims by canonical Employee_ID and applicable claim month.
   - Next salary credit = designated/base salary + actual approved company-essential OOP spend; ₹5,000 is a baseline, not a cap.
   - Preserves salary history and does not add a duplicate ₹5,000 line.
   - Non-destructive `testA405OopSalaryRule()` covers ₹1,000, ₹5,000 and ₹7,000 cases.
+  - Live verification passed the ₹1,000, ₹5,000, ₹7,000, pending, rejected, ordinary-food, food-business-exception and separate ₹1,000 allowance cases.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. **Live-verify A4-04 + A4-05 in the existing Phase 4 Apps Script project.** Verify FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims and the R60 OOP-to-Salary calculation end-to-end.
-2. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
+1. **A4-04 + A4-05 live verification is COMPLETE/PASS.**
+2. **Next: live-verify A4-01/A4-02 and the controlled FRM-01 end-to-end test.**
 3. Continue R54 attachment routing and remaining Phase 4 workflows.
-4. Use Budget_Given + Employee_Spending evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
+4. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
@@ -198,7 +200,7 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 
 
 ### R61 — Food allowance / essential OOP separation
-- **FROZEN IN GITHUB — implementation updated, live verification pending.**
+- **FROZEN IN GITHUB — implementation updated, live verification PASS on 01-Oct-2026.**
 - Fixed ₹1,000 monthly food/eatables allowance is separate from company-essential OOP.
 - Ordinary food/eatables are excluded from the ₹5,000 company-essential OOP rule.
 - A4-04 flags food-related claims for review; documented company-essential exceptions require authorized classification/approval.
@@ -206,7 +208,7 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - R60 remains applicable to approved company-essential OOP only.
 
 ### R62 — OOP Top Manager approval gate
-- **FROZEN IN GITHUB — implementation updated, live verification pending.**
+- **FROZEN IN GITHUB — implementation updated, live verification PASS on 01-Oct-2026.**
 - OOP claims now follow: **Employee FRM-03 submission → A4-04 validation/CLM generation → `Pending Review` → configured Top Manager notification → explicit Top Manager approval/rejection → salary eligibility only after approval**.
 - A4-04 provides controlled manager actions for normal company-essential approval, food-business-exception approval, and rejection.
 - Ordinary food claims remain excluded from the ₹5,000 company-essential OOP calculation.
@@ -214,7 +216,7 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - A4-05 now accepts only `Approved` claims with `APPROVED_COMPANY_ESSENTIAL` or `APPROVED_FOOD_BUSINESS_EXCEPTION` for the OOP salary component.
 - `Pending Review`/`Rejected`/unclassified claims contribute ₹0 to next-month OOP salary.
 - The frozen 11-column `OOP_Claims` schema is unchanged.
-- Top Manager email is configured through Apps Script Script Property `TOP_MANAGER_EMAIL`.
+- Top Manager is resolved dynamically as the single active `Director` in `MASTER_COMPANY_HR_ADMIN → Employees`; no manager email Script Property is used.
 - Live verification of the complete employee → manager → approval → salary chain is pending.
 
 
