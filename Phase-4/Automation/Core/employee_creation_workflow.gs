@@ -1,29 +1,23 @@
-/** Deployment refresh: direct Employees-sheet workflow must be pushed to the existing Apps Script project. */
-
 /** Employee Creation Workflow — Phase 4
- * Direct Employees-sheet workflow.
+ * Direct Employees-sheet workflow using native Google Sheets "Employee Actions" custom menu.
  *
  * The authoritative Employees tab remains exactly 15 columns.
- * No employee-creation Form, sidebar, custom menu, or extra schema column is used.
+ * No employee-creation Form, sidebar, or extra schema column is used.
  *
- * Explicit sheet controls:
- * 1. In a new/pending row, type exactly "GENERATE EMPLOYEE ID" in Employee_ID.
- * 2. The script validates the row, generates EMP-000001 via A4-00, writes and
- *    protects Employee_ID, and records the pending generated record.
- * 3. After reviewing the row, type exactly "SAVE EMPLOYEE" in Created_At.
- * 4. The script validates the generated ID/pending state, writes Created_At,
- *    and commits the row.
- *
- * These are explicit user actions, not generic autosave/onEdit ID generation:
- * the edit trigger reacts only to the two exact control commands.
+ * Explicit native menu controls:
+ * 1. User selects an employee data row (row >= 2) in Employees tab.
+ * 2. User clicks Employee Actions → Generate Employee ID.
+ * 3. The script validates the row fields, generates EMP-000001 via A4-00,
+ *    writes and protects Employee_ID, and tracks pending generation.
+ * 4. User reviews the row, then clicks Employee Actions → Save Employee.
+ * 5. The script validates generated ID/pending state, checks duplicates,
+ *    writes system timestamp to Created_At, and commits the row.
  */
 
 const EMPLOYEE_CREATION_CONFIG = {
   workbookName: 'MASTER_COMPANY_HR_ADMIN',
   sheetName: 'Employees',
   idPrefix: 'EMP',
-  generateCommand: 'GENERATE EMPLOYEE ID',
-  saveCommand: 'SAVE EMPLOYEE',
   requiredHeaders: [
     'Employee_ID','Name','Email','Role','Designation','Salary_Basis',
     'Payment_Frequency','Active','Reimbursement_Eligible','Project_Access',
@@ -36,54 +30,123 @@ const EMPLOYEE_CREATION_CONFIG = {
 
 function getEmployeeCreationConfig() { return EMPLOYEE_CREATION_CONFIG; }
 
+/** Native menu builder invoked by installable ON_OPEN trigger on MASTER_COMPANY_HR_ADMIN */
+function onOpenEmployeeSheetMenu(e) {
+  try {
+    const ui = SpreadsheetApp.getUi();
+    ui.createMenu('Employee Actions')
+      .addItem('Generate Employee ID', 'generateSelectedEmployeeId')
+      .addItem('Save Employee', 'saveSelectedEmployee')
+      .addToUi();
+  } catch (err) {
+    Logger.log('onOpenEmployeeSheetMenu UI note (expected in headless context): ' + err.message);
+  }
+}
+
+/** Legacy stub preserved for backward compatibility */
+function processEmployeeSheetControl(e) {
+  return;
+}
+
+/** Installs the installable ON_OPEN trigger for onOpenEmployeeSheetMenu */
+function installEmployeeSheetMenuTrigger() {
+  const sheet = getEmployeeSheet_();
+  const ss = sheet.getParent();
+
+  // Remove duplicate or obsolete triggers for this menu/control
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    const handler = trigger.getHandlerFunction();
+    if (handler === 'onOpenEmployeeSheetMenu' || handler === 'processEmployeeSheetControl') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
+
+  // Create exactly one spreadsheet ON_OPEN trigger for onOpenEmployeeSheetMenu
+  ScriptApp.newTrigger('onOpenEmployeeSheetMenu')
+    .forSpreadsheet(ss)
+    .onOpen()
+    .create();
+
+  return verifyEmployeeSheetMenuTrigger();
+}
+
+/** Verifies that exactly one installable trigger exists for onOpenEmployeeSheetMenu */
+function verifyEmployeeSheetMenuTrigger() {
+  const ss = getEmployeeSheet_().getParent();
+  const matches = ScriptApp.getProjectTriggers().filter(function(trigger) {
+    return trigger.getHandlerFunction() === 'onOpenEmployeeSheetMenu' && trigger.getTriggerSourceId() === ss.getId();
+  });
+  return {
+    status: matches.length === 1 ? 'PASS' : 'FAIL',
+    triggerCount: matches.length,
+    handler: 'onOpenEmployeeSheetMenu',
+    eventType: 'ON_OPEN',
+    spreadsheetId: ss.getId(),
+    workbookName: ss.getName()
+  };
+}
+
+/** Setup and prerequisite verification entry point */
 function setupEmployeeDirectSheetWorkflow() {
-  const trigger = installEmployeeSheetControlTrigger();
+  const trigger = installEmployeeSheetMenuTrigger();
   const prerequisites = verifyEmployeeCreationPrerequisites();
-  const result = {status: trigger.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL', trigger: trigger, prerequisites: prerequisites};
+  const result = {
+    status: trigger.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    trigger: trigger,
+    prerequisites: prerequisites
+  };
   Logger.log(JSON.stringify(result, null, 2));
   return result;
 }
 
-function installEmployeeSheetControlTrigger() {
-  const sheet = getEmployeeSheet_();
-  const ss = sheet.getParent();
-  ScriptApp.getProjectTriggers().forEach(function(trigger) {
-    if (trigger.getHandlerFunction() === 'processEmployeeSheetControl') ScriptApp.deleteTrigger(trigger);
-  });
-  ScriptApp.newTrigger('processEmployeeSheetControl').forSpreadsheet(ss).onEdit().create();
-  return verifyEmployeeSheetControlTrigger();
-}
+/** Menu Item 1: Generate Employee ID for the selected row */
+function generateSelectedEmployeeId() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet() || getEmployeeSheet_().getParent();
+  const sheet = ss.getActiveSheet();
 
-function verifyEmployeeSheetControlTrigger() {
-  const ss = getEmployeeSheet_().getParent();
-  const matches = ScriptApp.getProjectTriggers().filter(function(trigger) {
-    return trigger.getHandlerFunction() === 'processEmployeeSheetControl' && trigger.getTriggerSourceId() === ss.getId();
-  });
-  return {status: matches.length === 1 ? 'PASS' : 'FAIL', triggerCount: matches.length, handler: 'processEmployeeSheetControl', eventType: 'ON_EDIT', spreadsheetId: ss.getId()};
-}
-
-function processEmployeeSheetControl(e) {
-  if (!e || !e.range) return;
-  const sheet = e.range.getSheet();
-  const sheetName = String(sheet.getName() || '').trim();
-  const workbookName = String(sheet.getParent().getName() || '').trim().toUpperCase();
-  if (sheetName !== EMPLOYEE_CREATION_CONFIG.sheetName || workbookName !== EMPLOYEE_CREATION_CONFIG.workbookName.toUpperCase()) return;
-  if (e.range.getNumRows() !== 1 || e.range.getNumColumns() !== 1) return;
-  const headers = getEmployeeHeaders_(sheet);
-  const header = headers[e.range.getColumn() - 1];
-  const rawValue = (e.value !== undefined && e.value !== null && String(e.value).trim() !== '') ? e.value : e.range.getValue();
-  const command = String(rawValue || '').trim().toUpperCase();
-  if (header === 'Employee_ID' && command === EMPLOYEE_CREATION_CONFIG.generateCommand) {
-    e.range.clearContent();
-    SpreadsheetApp.flush();
-    generateEmployeeIdForRow_(sheet, e.range.getRow());
+  if (sheet.getName().trim() !== EMPLOYEE_CREATION_CONFIG.sheetName) {
+    ss.toast('Please select an employee row in the "Employees" sheet.', 'Employee Actions', 6);
     return;
   }
-  if (header === 'Created_At' && command === EMPLOYEE_CREATION_CONFIG.saveCommand) {
-    e.range.clearContent();
-    SpreadsheetApp.flush();
-    saveEmployeeRow_(sheet, e.range.getRow());
+
+  const activeRange = sheet.getActiveRange();
+  if (!activeRange) {
+    ss.toast('No row selected. Please select a pending employee row.', 'Employee Actions', 6);
+    return;
   }
+
+  const rowNumber = activeRange.getRow();
+  if (rowNumber < 2) {
+    ss.toast('Header row cannot be an employee record. Please select row 2 or higher.', 'Employee Actions', 6);
+    return;
+  }
+
+  return generateEmployeeIdForRow_(sheet, rowNumber);
+}
+
+/** Menu Item 2: Save Employee for the selected row */
+function saveSelectedEmployee() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet() || getEmployeeSheet_().getParent();
+  const sheet = ss.getActiveSheet();
+
+  if (sheet.getName().trim() !== EMPLOYEE_CREATION_CONFIG.sheetName) {
+    ss.toast('Please select an employee row in the "Employees" sheet.', 'Employee Actions', 6);
+    return;
+  }
+
+  const activeRange = sheet.getActiveRange();
+  if (!activeRange) {
+    ss.toast('No row selected. Please select an employee row to save.', 'Employee Actions', 6);
+    return;
+  }
+
+  const rowNumber = activeRange.getRow();
+  if (rowNumber < 2) {
+    ss.toast('Header row cannot be an employee record. Please select row 2 or higher.', 'Employee Actions', 6);
+    return;
+  }
+
+  return saveEmployeeRow_(sheet, rowNumber);
 }
 
 function generateEmployeeIdForRow_(sheet, rowNumber) {
@@ -116,9 +179,10 @@ function generateEmployeeIdForRow_(sheet, rowNumber) {
       email: String(row.Email).trim().toLowerCase(),
       generatedAt: new Date().toISOString()
     }));
-    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then type SAVE EMPLOYEE in Created_At.', 'Employee Creation', 8);
+    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then use Employee Actions → Save Employee.', 'Employee Actions', 8);
+    return employeeId;
   } catch (error) {
-    sheet.getParent().toast(String(error.message || error), 'Employee Creation — BLOCKED', 10);
+    sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
     throw error;
   } finally {
     lock.releaseLock();
@@ -132,22 +196,33 @@ function saveEmployeeRow_(sheet, rowNumber) {
     const row = readEmployeeRow_(sheet, rowNumber);
     validateEmployeeRow_(row);
     const employeeId = String(row.Employee_ID || '').trim().toUpperCase();
-    if (!/^EMP-[0-9]{6}$/.test(employeeId)) throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first.');
+    if (!/^EMP-[0-9]{6}$/.test(employeeId)) {
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions → Generate Employee ID.');
+    }
     const pendingKey = 'EMPLOYEE_PENDING_' + employeeId;
     const pendingRaw = PropertiesService.getScriptProperties().getProperty(pendingKey);
-    if (!pendingRaw) throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID was not generated by the explicit Generate-ID control.');
+    if (!pendingRaw) {
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID was not generated by the explicit Generate Employee ID menu control.');
+    }
     const pending = JSON.parse(pendingRaw);
-    if (pending.spreadsheetId !== sheet.getParent().getId() || pending.sheetName !== sheet.getName() || Number(pending.rowNumber) !== Number(rowNumber)) throw new Error('EMPLOYEE_SAVE_BLOCKED: Generated Employee_ID is not associated with this pending row.');
+    if (pending.spreadsheetId !== sheet.getParent().getId() || pending.sheetName !== sheet.getName() || Number(pending.rowNumber) !== Number(rowNumber)) {
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generated Employee_ID is not associated with this pending row.');
+    }
     const existingIds = readEmployeeColumn_(sheet, 'Employee_ID');
-    if (existingIds.some(function(id,index){return String(id||'').trim().toUpperCase()===employeeId && (index+2)!==rowNumber;})) throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID already exists elsewhere: ' + employeeId);
+    if (existingIds.some(function(id, index) { return String(id || '').trim().toUpperCase() === employeeId && (index + 2) !== rowNumber; })) {
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID already exists elsewhere: ' + employeeId);
+    }
     const email = String(row.Email).trim().toLowerCase();
-    if (readEmployeeColumn_(sheet,'Email').some(function(value,index){return String(value||'').trim().toLowerCase()===email && (index+2)!==rowNumber;})) throw new Error('EMPLOYEE_SAVE_BLOCKED: Email already exists: ' + email);
+    if (readEmployeeColumn_(sheet, 'Email').some(function(value, index) { return String(value || '').trim().toLowerCase() === email && (index + 2) !== rowNumber; })) {
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Email already exists: ' + email);
+    }
     sheet.getRange(rowNumber, getEmployeeColumnIndex_(sheet, 'Created_At')).setValue(new Date());
     SpreadsheetApp.flush();
     PropertiesService.getScriptProperties().deleteProperty(pendingKey);
-    sheet.getParent().toast('Employee saved successfully: ' + employeeId,'Employee Creation',6);
+    sheet.getParent().toast('Employee saved successfully: ' + employeeId, 'Employee Actions', 6);
+    return employeeId;
   } catch (error) {
-    sheet.getParent().toast(String(error.message || error),'Employee Creation — BLOCKED',10);
+    sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
     throw error;
   } finally {
     lock.releaseLock();
@@ -157,17 +232,16 @@ function saveEmployeeRow_(sheet, rowNumber) {
 function verifyEmployeeCreationPrerequisites() {
   const sheet = getEmployeeSheet_();
   const headers = getEmployeeHeaders_(sheet);
-  const trigger = verifyEmployeeSheetControlTrigger();
+  const trigger = verifyEmployeeSheetMenuTrigger();
   const checks = {
     workbook: sheet.getParent().getName().trim().toUpperCase() === EMPLOYEE_CREATION_CONFIG.workbookName.toUpperCase(),
     sheet: sheet.getName().trim() === EMPLOYEE_CREATION_CONFIG.sheetName,
     exact15ColumnSchema: headers.length === 15 && EMPLOYEE_CREATION_CONFIG.requiredHeaders.every(function(h, i) { return headers[i] === h; }),
     noEmployeeFormRequired: true,
     noSidebarRequired: true,
-    noCustomMenuRequired: true,
+    employeeActionsMenuConfigured: true,
     centralGeneratorAvailable: typeof generateA4Id === 'function',
-    explicitGenerateAndSaveControls: true,
-    employeeSheetEditTrigger: trigger.status === 'PASS'
+    employeeSheetMenuTrigger: trigger.status === 'PASS'
   };
   checks.status = Object.keys(checks).every(function(k) { return checks[k] === true; }) ? 'PASS' : 'FAIL';
   Logger.log(JSON.stringify(checks, null, 2));
@@ -296,6 +370,3 @@ function testEmployeeDirectSheetWorkflowNonDestructive() {
   Logger.log(JSON.stringify(report, null, 2));
   return report;
 }
-
-
-

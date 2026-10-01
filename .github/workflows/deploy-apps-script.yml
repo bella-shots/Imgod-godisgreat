@@ -228,8 +228,20 @@ jobs:
             echo "FAIL: processEmployeeSheetControl missing from live workflow."
             exit 1
           }
+          grep -q "function onOpenEmployeeSheetMenu" "$NEW_FILE" || {
+            echo "FAIL: onOpenEmployeeSheetMenu missing from live workflow."
+            exit 1
+          }
+          grep -q "function generateSelectedEmployeeId" "$NEW_FILE" || {
+            echo "FAIL: generateSelectedEmployeeId missing from live workflow."
+            exit 1
+          }
+          grep -q "function saveSelectedEmployee" "$NEW_FILE" || {
+            echo "FAIL: saveSelectedEmployee missing from live workflow."
+            exit 1
+          }
 
-          OBSOLETE=$(grep -RIlE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
+          OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
             echo "$OBSOLETE"
