@@ -103,8 +103,8 @@
 - Canonical employee identity is `Employee_ID`; `Member_Record_ID` is explicitly rejected.
 - Project Name is resolved to canonical `Project_ID`; proof is required.
 - Claims enter `Pending Review`; no silent auto-approval is introduced.
-- The frozen Phase-4 source reviewed here does not contain the exact approved interpretation of the ₹5,000 rule. A4-04 therefore does **not** invent an allowance, excess, salary, or approval treatment; `Approved_Amount` remains unset and `OOP_Rule_Flag` is marked `PENDING_APPROVED_5000_RULE` until the approved interpretation is available.
-- Live verification is pending.
+- R60/R61 are now frozen: ₹5,000 is the company-essential monthly baseline, ordinary food is excluded, and ₹1,000 monthly food allowance is separate. A4-04 creates claims as `Pending Review` and routes them to the Top Manager for explicit approval; `Approved_Amount` remains unset until approval. A4-05 uses only explicitly approved salary-eligible claims.
+- Live verification of the complete approval and salary chain is pending.
 
 
 ### R60 — OOP-to-Salary rule implementation — 01-Oct-2026
