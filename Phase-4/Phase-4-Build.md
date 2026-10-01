@@ -30,35 +30,23 @@ The following are explicitly **not** part of the frozen workflow: separate Save 
 
 The authoritative Employees schema remains exactly the Phase 3 15-column schema.
 
+## R57 — Universal Sheet-originated business-ID creation standard
 
+R57 freezes the common UX and transaction contract for every user-created authoritative Sheet record that requires a business ID.
 
-Phase 4 includes a controlled **Master Asset Placement / Verification** step. This step follows the revised Drive hierarchy established on 30-Sep-2026. It ensures the already-created Google Site, Phase 3 master workbooks, and Phase 3 Forms are stored in their frozen authoritative Drive locations.
+1. User completes the pending record using the already-frozen Sheet schema.
+2. User selects the pending record.
+3. User invokes the record-specific **Generate-ID** action.
+4. The action validates the complete pending record and applicable duplicate/identity constraints.
+5. A4-00 generates the canonical stable ID.
+6. The workflow persists and locks the ID field.
+7. The workflow performs the appropriate authoritative commit/finalization for that record type.
+8. The completed record is left in its approved post-creation state.
 
-### Frozen destinations
-| Asset | Authoritative Drive location |
-|---|---|
-| Google Site file | `MASTER COMPANY/Site` |
-| MASTER_COMPANY_OPERATIONS | `MASTER COMPANY/Projects/MASTER_COMPANY_OPERATIONS` |
-| MASTER_COMPANY_FINANCE | `MASTER COMPANY/Finance/MASTER_COMPANY_FINANCE` |
-| MASTER_COMPANY_HR_ADMIN | `MASTER COMPANY/HR/MASTER_COMPANY_HR_ADMIN` |
-| MASTER_COMPANY_ADMIN | `MASTER COMPANY/Admin/MASTER_COMPANY_ADMIN` |
-| FRM-01 Projects | `MASTER COMPANY/Projects/FRM-01 Projects` |
-| FRM-02 Employee Spending | `MASTER COMPANY/Finance/FRM-02 Employee Spending` |
-| FRM-03 OOP Claims | `MASTER COMPANY/Finance/FRM-03 OOP Claims` |
-| FRM-04 HR Request | `MASTER COMPANY/HR/FRM-04 HR Request` |
-| FRM-05 MOM Input | `MASTER COMPANY/MOM/FRM-05 MOM Input` |
-| FRM-06 Report Request | `MASTER COMPANY/Reports/FRM-06 Report Request` |
-| FRM-07 Investment Input | `MASTER COMPANY/Finance/FRM-07 Investment Input` |
+R57 applies to direct Sheet-originated business records including Employee, Project Member, Project Note, Budget, Spending, OOP Claim, Salary and Investment records. Salary may use one explicit controlled bulk Generate Salary ID(s) action for a validated batch.
 
-### Required Phase 4 behavior
-1. Locate each asset by its frozen identity/name and verify its current Drive parent.
-2. If an existing asset is in the wrong Drive location and the authorized owner account can move it, move it to the frozen destination.
-3. Do not create duplicate workbooks, Forms, or Sites merely because an asset is misplaced.
-4. Preserve existing workbook contents, Form questions/response destinations, and Site content during placement.
-5. Verify the final Drive parent and retain the authoritative Drive file ID/URL where an approved index/configuration location already exists; do not add unauthorized Phase 3 schema columns solely for placement metadata.
-6. If an asset cannot be found, is ambiguous, is inaccessible, or cannot be moved without human action, preserve the current source state and surface **HUMAN ACTION REQUIRED**. Do not silently create a replacement.
-7. Placement is idempotent: rerunning it on correctly placed assets makes no duplicate and no unnecessary move.
-8. Form response destinations remain the existing authoritative Phase 3 workbooks/tabs. R54 continues to govern uploaded-file routing.
+The following are prohibited for R57 ID issuance: generic onEdit/autosave, passive cell edits, spreadsheet-open triggers, row-position-based ID generation, manually typed business IDs, or a second Save/Process action required solely to complete ID generation.
 
-### Phase boundary
-The asset-placement step is Phase 4 infrastructure/verification only. It does not authorize changing Phase 3 schemas, creating new response tabs, redesigning the Site, or changing Form questions.
+Form/system-generated IDs remain automatic. Form-processing workflows may generate their business IDs within their controlled processing transaction, and Submission_ID remains system/index-generated.
+
+R57 does not change the frozen Phase 3 schemas or the A4-00 ID formats. It standardizes the user interaction and transaction boundary for direct Sheet-originated records.
