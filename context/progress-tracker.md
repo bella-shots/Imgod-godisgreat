@@ -173,7 +173,7 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Resolves Employee Email ID to canonical `Employee_ID`; `Member_Record_ID` is rejected.
   - Resolves Project Name to canonical `Project_ID` and requires proof.
   - Creates claims in `Pending Review` and does not auto-approve.
-  - The exact approved ₹5,000 rule interpretation is not present in the frozen Phase-4 business-rule source reviewed for this implementation; therefore no allowance/excess/salary treatment was invented. `Approved_Amount` remains unset and `OOP_Rule_Flag` records pending rule evaluation until the approved interpretation is available.
+  - R60/R61 are now frozen: ₹5,000 is the company-essential monthly baseline; ordinary food is excluded; ₹1,000 food allowance is separate. A4-04 creates claims as `Pending Review`, routes them to the configured Top Manager, and leaves `Approved_Amount` unset until explicit approval.
   - Non-destructive live verification helper is included and does not consume a CLM sequence.
 - **A4-05 Salary Carry-Forward: IMPLEMENTED IN GITHUB — LIVE VERIFICATION PENDING.**
   - `Phase-4/Automation/Core/a4_05_salary_carry_forward.gs` implements the frozen R60 OOP-to-salary calculation.
