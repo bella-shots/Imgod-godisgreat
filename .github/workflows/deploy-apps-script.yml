@@ -58,6 +58,7 @@ jobs:
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
           node --input-type=commonjs <<'NODE'
+          (async () => {
           const fs = require('fs');
           const path = require('path');
           const {google} = require('googleapis');
@@ -138,6 +139,7 @@ jobs:
           }
 
           console.log('PASS: Google Apps Script projects.updateContent completed for the approved MASTER COMPANY project.');
+          })().catch(err => { console.error(err); process.exit(1); });
           NODE
 
       - name: Verify exact live Apps Script content
