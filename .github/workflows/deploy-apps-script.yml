@@ -304,6 +304,13 @@ jobs:
           grep_live_fn "verifyA407MomEmailPrerequisites"
           grep_live_fn "testA407MomEmailSenderLive"
 
+          # A4-08 Report Generator verification
+          grep_live_fn "generateA408Report"
+          grep_live_fn "verifyA408Prerequisites"
+          grep_live_fn "verifyA408ReportTrigger"
+          grep_live_fn "testA408ReportGeneratorLive"
+          grep_live_fn "processReportRequestFormSubmit"
+
           # Preserve the frozen Employee architecture gate.
           grep_live_fn "setupEmployeeDirectSheetWorkflow"
           grep_live_fn "onOpenEmployeeSheetMenu"
