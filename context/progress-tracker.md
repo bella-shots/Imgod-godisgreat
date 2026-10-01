@@ -299,3 +299,22 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - Test cleanup was strengthened to verify no leaked test rows/properties and restoration of the pre-test Submission_Index state.
 - A4-10 remains the sole authoritative Submission_Index audit/status writer.
 - Overall: `A4-10_AUDIT_LOGGER_LIVE_VERIFICATION = PASS (12/12)`.
+
+### Submission_Index physical validation correction — 01-Oct-2026
+- **Phase 3 workbook correction completed:** `MASTER_COMPANY_ADMIN → Submission_Index → Processing_Status` live data validation was corrected to the frozen values `Received`, `Processed`, `Validation Failed`, `Manual Review`.
+- The obsolete validation values `Submitted`, `Processing`, `Completed`, `Failed` were removed from the live validation rule.
+- Six-column `Submission_Index` schema and workbook ownership remain unchanged.
+- No Apps Script or GitHub automation source was changed for this workbook correction.
+- Existing records and columns A–E were preserved.
+- This correction is documented as Phase-3 Revision R41; it is a physical validation alignment, not a schema/architecture revision.
+
+### A4-11 Error Handler — current verification status — 01-Oct-2026
+- A4-11 implementation and deployment/source verification are complete in GitHub; deployment run #93 is the successful corrected deployment after the literal-\\n syntax defect was fixed.
+- The live workbook validation blocker is now resolved.
+- `testA411ErrorHandlerLive()` has successfully entered the controlled failure scenarios and exercised the A4-10/A4-09 paths.
+- **A4-11 is NOT yet marked PASS.** The current execution log does not expose the required 13 individual live-test assertions/final summary, so acceptance evidence is incomplete.
+- Next action: Google/Gemini will revise only the A4-11 live-test harness logging/assertion reporting so the required 13 checks and cleanup result are explicitly reported. Production error-handling behavior must remain unchanged.
+- After that harness-only correction, rerun `testA411ErrorHandlerLive()`; update A4-11 acceptance/tracker status only after an actual 13/13 PASS.
+
+### Current Phase 4 position — 01-Oct-2026
+**A4-11 Error Handler → live verification evidence completion → A4-00 universal closure (P4-17–P4-20) → P4-14/P4-15 → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
