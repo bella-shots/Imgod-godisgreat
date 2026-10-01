@@ -1,25 +1,20 @@
 /** Employee Creation Workflow — Phase 4
- * Direct Employees-sheet workflow using native Google Sheets "Employee Actions" custom menu
- * and a prominent visual "EMPLOYEE ACTIONS" button on the Employees sheet.
+ * Direct Employees-sheet workflow using:
+ * 1. Native Google Sheets "Employee Actions" custom menu (backup/secondary)
+ * 2. In-sheet visual "EMPLOYEE ACTIONS" panel (primary UX) with two distinct buttons:
+ *    • Generate Employee ID (vibrant blue)
+ *    • Save Employee (vibrant green)
  *
  * The authoritative Employees tab remains exactly 15 columns (Columns A:O).
  * No employee-creation Form, sidebar, or extra schema column is used.
  *
- * Native controls:
- * 1. Native "Employee Actions" custom menu in the top Google Sheets menu bar:
- *    • Generate Employee ID
- *    • Save Employee
- *    • Employee Actions Dialog...
- * 2. Visually prominent dark-blue "EMPLOYEE ACTIONS" button control placed beside
- *    the table at Column Q, Row 1 (outside the 15 schema columns).
- *
  * Workflow:
  * 1. HR/Admin enters employee details directly in the Employees sheet.
  * 2. User selects the employee row (row >= 2).
- * 3. User clicks Employee Actions → Generate Employee ID (or uses the button).
+ * 3. User clicks "Generate Employee ID" on the panel or menu.
  * 4. Script validates row fields, generates EMP-000001 via A4-00, writes/protects
  *    Employee_ID, and tracks pending generation in ScriptProperties.
- * 5. User reviews the row, then clicks Employee Actions → Save Employee.
+ * 5. User reviews the row, then clicks "Save Employee" on the panel or menu.
  * 6. Script validates generated ID/pending state, checks duplicates, writes system
  *    timestamp to Created_At, and commits the row.
  */
@@ -73,59 +68,130 @@ function showEmployeeActionsDialog() {
   }
 }
 
-/** Installs the colored EMPLOYEE ACTIONS visual button on the Employees sheet */
-function installEmployeeActionsButton() {
+/** Installs the styled EMPLOYEE ACTIONS visual panel on the Employees sheet */
+function installEmployeeActionsPanel() {
   const sheet = getEmployeeSheet_();
 
-  // Position at Column Q (column 17), Row 1 — beside the 15-column table (A:O)
-  // This preserves the exact 15-column schema and does not overwrite employee data
-  const buttonCell = sheet.getRange(1, 17);
-  buttonCell.setValue('EMPLOYEE ACTIONS');
-  buttonCell.setBackground('#1e3a8a'); // Dark blue
-  buttonCell.setFontColor('#ffffff'); // White
-  buttonCell.setFontWeight('bold');
-  buttonCell.setFontSize(11);
-  buttonCell.setHorizontalAlignment('center');
-  buttonCell.setVerticalAlignment('middle');
-  buttonCell.setNote(
-    'EMPLOYEE ACTIONS\n\n' +
-    '1. Select an employee row (row 2+)\n' +
-    '2. Use "Employee Actions" in the top menu to:\n' +
-    '   • Generate Employee ID\n' +
-    '   • Save Employee\n' +
-    '   • Employee Actions Dialog...'
-  );
-  sheet.setColumnWidth(17, 180);
+  // Position at Columns Q and R (columns 17 & 18), Rows 1 to 4 — beside table (A:O)
+  // Preserves the exact 15-column schema and does not overwrite employee data
 
-  // Insert OverGridImage button as a floating graphical control
+  // Set spacer column P width
+  sheet.setColumnWidth(16, 20);
+  sheet.setColumnWidth(17, 140);
+  sheet.setColumnWidth(18, 140);
+
+  // Row heights for the panel
+  sheet.setRowHeight(1, 38);
+  sheet.setRowHeight(2, 36);
+  sheet.setRowHeight(3, 36);
+  sheet.setRowHeight(4, 24);
+
+  // Clear previous panel range
+  const panelRange = sheet.getRange(1, 17, 4, 2);
+  panelRange.breakApart();
+
+  // 1. Heading: Q1:R1
+  const headingRange = sheet.getRange(1, 17, 1, 2);
+  headingRange.merge();
+  headingRange.setValue('EMPLOYEE ACTIONS');
+  headingRange.setBackground('#0f172a'); // Slate 900
+  headingRange.setFontColor('#ffffff');
+  headingRange.setFontWeight('bold');
+  headingRange.setFontSize(13);
+  headingRange.setHorizontalAlignment('center');
+  headingRange.setVerticalAlignment('middle');
+
+  // 2. Option 1: Q2:R2 - Generate Employee ID
+  const genRange = sheet.getRange(2, 17, 1, 2);
+  genRange.merge();
+  genRange.setValue('▶ Generate Employee ID');
+  genRange.setBackground('#2563eb'); // Vibrant Blue
+  genRange.setFontColor('#ffffff');
+  genRange.setFontWeight('bold');
+  genRange.setFontSize(11);
+  genRange.setHorizontalAlignment('center');
+  genRange.setVerticalAlignment('middle');
+  genRange.setNote(
+    'GENERATE EMPLOYEE ID\n\n' +
+    '1. Select the pending employee row (row 2+)\n' +
+    '2. Click here or use "Employee Actions → Generate Employee ID"'
+  );
+
+  // 3. Option 2: Q3:R3 - Save Employee
+  const saveRange = sheet.getRange(3, 17, 1, 2);
+  saveRange.merge();
+  saveRange.setValue('✔ Save Employee');
+  saveRange.setBackground('#16a34a'); // Vibrant Green
+  saveRange.setFontColor('#ffffff');
+  saveRange.setFontWeight('bold');
+  saveRange.setFontSize(11);
+  saveRange.setHorizontalAlignment('center');
+  saveRange.setVerticalAlignment('middle');
+  saveRange.setNote(
+    'SAVE EMPLOYEE\n\n' +
+    '1. Select the employee row after reviewing EMP-XXXXXX\n' +
+    '2. Click here or use "Employee Actions → Save Employee"'
+  );
+
+  // 4. Instruction: Q4:R4
+  const infoRange = sheet.getRange(4, 17, 1, 2);
+  infoRange.merge();
+  infoRange.setValue('Select row, then click action');
+  infoRange.setBackground('#f1f5f9'); // Light slate
+  infoRange.setFontColor('#475569');
+  infoRange.setFontStyle('italic');
+  infoRange.setFontSize(9);
+  infoRange.setHorizontalAlignment('center');
+  infoRange.setVerticalAlignment('middle');
+
+  // Outer border around the panel
+  panelRange.setBorder(true, true, true, true, null, null, '#334155', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
+
+  // Insert two separate floating graphical button controls (OverGridImages)
   try {
     const images = sheet.getImages();
-    const existingButton = images.some(function(img) {
+    // Remove old panel button images in column >= 16 to avoid stacking
+    images.forEach(function(img) {
       const anchor = img.getAnchorCell();
-      return anchor && anchor.getColumn() >= 16;
+      if (anchor && anchor.getColumn() >= 16) {
+        try { img.remove(); } catch (e) {}
+      }
     });
 
-    if (!existingButton) {
-      const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="38" viewBox="0 0 200 38">' +
-        '<rect x="1" y="1" width="198" height="36" rx="6" ry="6" fill="#1e3a8a" stroke="#0f172a" stroke-width="1"/>' +
-        '<text x="100" y="24" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="0.5">EMPLOYEE ACTIONS</text>' +
-        '</svg>';
-      const blob = Utilities.newBlob(svg, 'image/svg+xml', 'employee_actions_button.svg').getAs('image/png');
-      sheet.insertImage(blob, 17, 1, 0, 0);
-    }
+    // Button 1: Generate Employee ID
+    const genSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="270" height="34" viewBox="0 0 270 34">' +
+      '<rect x="1" y="1" width="268" height="32" rx="6" ry="6" fill="#2563eb" stroke="#1d4ed8" stroke-width="1.5"/>' +
+      '<text x="135" y="22" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">▶ Generate Employee ID</text>' +
+      '</svg>';
+    const genBlob = Utilities.newBlob(genSvg, 'image/svg+xml', 'btn_generate_id.svg').getAs('image/png');
+    sheet.insertImage(genBlob, 17, 2, 5, 1);
+
+    // Button 2: Save Employee
+    const saveSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="270" height="34" viewBox="0 0 270 34">' +
+      '<rect x="1" y="1" width="268" height="32" rx="6" ry="6" fill="#16a34a" stroke="#15803d" stroke-width="1.5"/>' +
+      '<text x="135" y="22" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle">✔ Save Employee</text>' +
+      '</svg>';
+    const saveBlob = Utilities.newBlob(saveSvg, 'image/svg+xml', 'btn_save_employee.svg').getAs('image/png');
+    sheet.insertImage(saveBlob, 17, 3, 5, 1);
   } catch (imgErr) {
-    Logger.log('OverGridImage note: ' + imgErr.message);
+    Logger.log('OverGridImage panel note: ' + imgErr.message);
   }
 
   SpreadsheetApp.flush();
   return {
     status: 'PASS',
-    control: 'EMPLOYEE_ACTIONS_BUTTON',
-    column: 17,
-    columnLetter: 'Q',
-    row: 1,
+    panelHeading: 'EMPLOYEE ACTIONS',
+    generateControl: '▶ Generate Employee ID',
+    saveControl: '✔ Save Employee',
+    columns: 'Q:R (17:18)',
+    rows: '1:4',
     schemaPreserved: sheet.getRange(1, 1, 1, 15).getValues()[0].length === 15
   };
+}
+
+/** Backward compatibility alias */
+function installEmployeeActionsButton() {
+  return installEmployeeActionsPanel();
 }
 
 /** Legacy stub preserved for backward compatibility */
@@ -174,12 +240,12 @@ function verifyEmployeeSheetMenuTrigger() {
 /** Setup and prerequisite verification entry point */
 function setupEmployeeDirectSheetWorkflow() {
   const trigger = installEmployeeSheetMenuTrigger();
-  const button = installEmployeeActionsButton();
+  const panel = installEmployeeActionsPanel();
   const prerequisites = verifyEmployeeCreationPrerequisites();
   const result = {
-    status: trigger.status === 'PASS' && button.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
+    status: trigger.status === 'PASS' && panel.status === 'PASS' && prerequisites.status === 'PASS' ? 'PASS' : 'FAIL',
     trigger: trigger,
-    button: button,
+    panel: panel,
     prerequisites: prerequisites
   };
   Logger.log(JSON.stringify(result, null, 2));
@@ -266,7 +332,7 @@ function generateEmployeeIdForRow_(sheet, rowNumber) {
       email: String(row.Email).trim().toLowerCase(),
       generatedAt: new Date().toISOString()
     }));
-    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then use Employee Actions → Save Employee.', 'Employee Actions', 8);
+    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then click Save Employee.', 'Employee Actions', 8);
     return employeeId;
   } catch (error) {
     sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
@@ -284,12 +350,12 @@ function saveEmployeeRow_(sheet, rowNumber) {
     validateEmployeeRow_(row);
     const employeeId = String(row.Employee_ID || '').trim().toUpperCase();
     if (!/^EMP-[0-9]{6}$/.test(employeeId)) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions → Generate Employee ID.');
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions.');
     }
     const pendingKey = 'EMPLOYEE_PENDING_' + employeeId;
     const pendingRaw = PropertiesService.getScriptProperties().getProperty(pendingKey);
     if (!pendingRaw) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID was not generated by the explicit Generate Employee ID menu control.');
+      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID was not generated by the explicit Generate Employee ID control.');
     }
     const pending = JSON.parse(pendingRaw);
     if (pending.spreadsheetId !== sheet.getParent().getId() || pending.sheetName !== sheet.getName() || Number(pending.rowNumber) !== Number(rowNumber)) {
@@ -327,7 +393,7 @@ function verifyEmployeeCreationPrerequisites() {
     noEmployeeFormRequired: true,
     noSidebarRequired: true,
     employeeActionsMenuConfigured: true,
-    employeeActionsButtonConfigured: true,
+    employeeActionsPanelConfigured: true,
     centralGeneratorAvailable: typeof generateA4Id === 'function',
     employeeSheetMenuTrigger: trigger.status === 'PASS'
   };
