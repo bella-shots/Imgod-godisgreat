@@ -52,7 +52,11 @@ function calculateOopSalaryCredit_(baseSalary, approvedOopTotal) {
   };
 }
 
-function calculateMonthlyFoodAllowance_() { return 1000; }\n\nfunction aggregateApprovedOopForMonth_(employeeId, month) {
+function calculateMonthlyFoodAllowance_() {
+  return 1000;
+}
+
+function aggregateApprovedOopForMonth_(employeeId, month) {
   var finance = findUniqueA405Spreadsheet_(A405_CONFIG.FINANCE_WORKBOOK);
   var sheet = finance.getSheetByName(A405_CONFIG.OOP_SHEET);
   if (!sheet) throw new Error('A4_05_OOP_SHEET_MISSING');

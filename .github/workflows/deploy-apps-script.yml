@@ -352,6 +352,40 @@ jobs:
             exit 1
           }
 
+          CLM_MATCHES=$(grep -RIl "function processOopClaimFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$CLM_MATCHES" || {
+            echo "FAIL: processOopClaimFormSubmit is missing from live Apps Script."
+            exit 1
+          }
+          CLM_FILE=$(printf '%s\n' "$CLM_MATCHES" | head -n 1)
+          grep -q "function verifyA404Architecture" "$CLM_FILE" || {
+            echo "FAIL: verifyA404Architecture missing from live workflow."
+            exit 1
+          }
+          grep -q "function verifyA404ManagerApprovalPrerequisites" "$CLM_FILE" || {
+            echo "FAIL: verifyA404ManagerApprovalPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA404ApprovalGateLogicNonDestructive" "$CLM_FILE" || {
+            echo "FAIL: testA404ApprovalGateLogicNonDestructive missing from live workflow."
+            exit 1
+          }
+
+          SAL_MATCHES=$(grep -RIl "function calculateOopSalaryCredit_" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$SAL_MATCHES" || {
+            echo "FAIL: calculateOopSalaryCredit_ is missing from live Apps Script."
+            exit 1
+          }
+          SAL_FILE=$(printf '%s\n' "$SAL_MATCHES" | head -n 1)
+          grep -q "function testA405OopSalaryRule" "$SAL_FILE" || {
+            echo "FAIL: testA405OopSalaryRule missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA405ApprovalGateRule" "$SAL_FILE" || {
+            echo "FAIL: testA405ApprovalGateRule missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"

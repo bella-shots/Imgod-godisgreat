@@ -304,7 +304,7 @@ function findUniqueSpreadsheetByName_(name) {
   return SpreadsheetApp.openById(found[0].getId());
 }
 
-function isValidEmail_(value) { return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(value)); }
+function isValidEmail_(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value)); }
 function isValidDate_(value) { return value instanceof Date && !isNaN(value.getTime()); }
 
 function hasOnEditTriggerForA404_() {
