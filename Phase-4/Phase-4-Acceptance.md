@@ -1,6 +1,6 @@
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | PARTIAL — deployment/replace/live-content checkpoint PASS on 01-Oct-2026; required user-side trigger installation/authorization is still pending confirmation. |
+| P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | PASS — deployment/update and live-content checkpoint verified 01-Oct-2026; stable Execution API deployment reused/updated (no deployment #21); installable ON_FORM_SUBMIT triggers installed and verified. |
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | PASS — live-verified 01-Oct-2026; FRM-01 → A4-01 → A4-02 created PRJ/MBR/SUB records, resolved Employee_ID, created/reused the exact seven-folder project Drive structure, passed idempotency and ambiguity safety, preserved the raw response, and passed failure cleanup. |
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
@@ -35,15 +35,20 @@
 - Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
 - Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
 
-## Phase 4 deployment/verification stabilization checkpoint — 01-Oct-2026
+## Phase 4 deployment/verification stabilization checkpoint — CLOSED (01-Oct-2026)
 - GitHub Actions runs #49–#64 were historically failing; the final blocker identified in #64 was the Apps Script 20-versioned-deployment limit.
 - Deployment workflow now creates a new immutable code version but reuses/updates an existing Apps Script Execution API deployment instead of creating a new deployment on every CI run. Google documents deployment update as the supported way to move an existing deployment to a new version. [Google Apps Script deployment management documentation]
 - The approved existing Apps Script project remains the sole deployment target.
 - Run #72 (commit 13db79dd0ad27d4eabe97364eb364c0e951b8162) completed SUCCESS: source replacement PASS; deployment/update path PASS; live Apps Script pull PASS; live manifest PASS; live A4-06 functions PASS; live A4-07 functions PASS; live Employee architecture gate PASS.
 - Employee obsolete compatibility wrappers were removed from the authoritative source; the CI verifier no longer requires the removed processEmployeeSheetControl function.
 - Investment internals were aligned to the frozen A4-15 module numbering.
-- Trigger installation/authorization is intentionally not marked PASS from CI evidence alone. Apps Script installable triggers run under the account that created them and require authorization; this remains a human-action verification item.
-- Phase 4 feature development remains paused until the trigger is confirmed and the live A4-06/A4-07 execution tests are re-run against the stabilized deployment.
+- MOM Trigger verified live: installable ON_FORM_SUBMIT trigger for `processMomFormSubmit` on `MASTER_COMPANY_OPERATIONS` was installed and verified live via `installA406MomTrigger()`.
+- Initial A4-06 cell H2 Status data validation issue resolved at source: `ALLOWED_STATUSES` aligned with authoritative dropdown values (`Draft, In Review, Approved, Published, Archived`), `REVISED_STATUS: 'Revised'` removed, and `finalStatus` keeps valid `Published` status while revisions are tracked via `Version` sequence (`v1.0` → `v1.1`), `Published_At`, and Google Doc artifacts.
+- A4-06 MOM Processing live test suite executed: `testA406MomProcessingLive()` returned 17/17 checks PASS, cleanup PASS.
+- A4-07 MOM Email Sender live test suite executed: `testA407MomEmailSenderLive()` returned 9/9 checks PASS, cleanup PASS.
+- P4-08 (MOM Processing) = PASS; P4-09 (MOM Email Sender) = PASS; P4-49 (Form/System ID Architecture) = PASS.
+- **STABILIZATION CHECKPOINT = CLOSED.**
+- **A4-08 Report Generator = NOT STARTED / NEXT PHASE.**
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 acceptance tests: P4-21 Project_Members requires explicit Generate Project Member ID; P4-22 Project_Notes requires explicit Generate Project Note ID; P4-23 Budget_Given requires explicit Generate Budget ID; P4-24 Salary_Admin supports explicit Generate Salary ID(s), including controlled bulk generation; P4-25 concurrent Generate-ID actions produce unique IDs under LockService; P4-26 generated IDs become read-only/locked and cannot be manually overwritten.
@@ -99,7 +104,7 @@
 | P4-46 | Test duplicate/already-ID'd protection. | Duplicate/identity violations or an already-generated ID prevent another sequence allocation; issued IDs are never reused. | PASS — live-verified 01-Oct-2026 across Employee, Project_Members, Project_Notes, Budget_Given and Salary_Admin. |
 | P4-47 | Test no generic ID issuance. | onEdit/autosave/passive edit/spreadsheet-open events never issue business IDs for direct Sheet-originated records. | PASS — live-verified 01-Oct-2026 across Employee, Project_Members, Project_Notes, Budget_Given and Salary_Admin. |
 | P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | PASS — live-verified 01-Oct-2026; single-row and 3-row bulk generation, validation-before-ID issuance, duplicate protection, locking, concurrency and no generic ID issuance all passed. |
-| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PARTIAL — Employee_Spending is now live-verified Form-originated with automatic SPN generation through controlled FRM-02 processing; broader system/form verification remains pending. |
+| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PASS — live-verified 01-Oct-2026; direct-Sheet records enforce explicit single-action Generate-ID controls (Employee, Member, Note, Budget, Salary) while Form-originated records (PRJ/MBR/SUB via FRM-01, SPN via FRM-02, CLM via FRM-03, HRR/SUB via FRM-04, MOM via FRM-05, INV via FRM-07) generate IDs automatically within controlled processing via central A4-00; R58 Employee_ID financial invariant and Investment Source_Person exception verified. |
 
 ## R58 — Financial employee identity invariant
 | ID | Acceptance test | Expected result | Status |
@@ -130,17 +135,45 @@
 - Overall: `INVESTMENT_R58_LIVE_VERIFICATION = PASS`.
 
 ### MOM Processing (A4-06) & Email Sender (A4-07) live verification evidence — 01-Oct-2026
-- Implementation: `Phase-4/Automation/Core/a4_06_mom_processing.gs` and `Phase-4/Automation/Core/a4_07_mom_email_sender.gs` in the existing MASTER COMPANY Phase 4 Automation project.
+- Implementation: `Phase-4/Automation/Core/a4_06_mom_processing.gs` and `Phase-4/Automation/Core/a4_07_mom_email_sender.gs` in the existing MASTER COMPANY Phase 4 Automation project (`1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W`).
 - Architecture: `FRM-05 — MOM Input` → `MOM_Responses` (in `MASTER_COMPANY_OPERATIONS`) → `A4-06` → `Project_MOM_Index` + Google Doc in `04_MOM` folder → `A4-07` → approved recipients.
 - Schema: `Project_MOM_Index` preserved with exact 11 frozen columns (`MOM_ID`, `Project_ID`, `Meeting_Date`, `Title`, `Participants`, `Registered_Email_IDs`, `Version`, `Status`, `Drive_URL`, `Published_At`, `Published_By`).
 - Project resolution: Human-facing `Project Name` resolved to canonical `Project_ID` against `Projects` table.
 - ID generation: Universal A4-00 `MOM-000001`-style ID generation under LockService.
 - Drive placement: Verified artifact creation in `MASTER COMPANY/Projects/PROJECT_<ProjectName>/04_MOM/`.
-- Versioning & Update: New submissions start at `v1.0` with status `Published`; updates increment to `v1.1` while preserving valid status (`Published` in dropdown `Draft, In Review, Approved, Published, Archived`).
-- Idempotency & Failure safety: Duplicate trigger processing preserved existing MOM_ID and prevented duplicate artifacts; invalid projects/dates rejected before commit; raw `MOM_Responses` preserved.
-- Email distribution (A4-07): Parsed and deduplicated attendee emails; verified subject, meeting date, version, notes excerpt, and Drive doc link; duplicate email dispatch prevented via `ScriptProperties`; send status and timestamps logged; zero additional cost using native MailApp.
-- Cleanup: Temporary test index rows and Drive docs removed; pre-existing production data preserved.
-- Overall: `A4-06 MOM PROCESSING LIVE VERIFICATION = PASS` and `A4-07 MOM EMAIL SENDER LIVE VERIFICATION = PASS`.
+- Status validation resolution: Initial execution failure attempting to write `'Revised'` to column H (`Status`) was resolved at the source by aligning `ALLOWED_STATUSES` to authoritative dropdown values (`Draft, In Review, Approved, Published, Archived`), removing `REVISED_STATUS: 'Revised'`, and keeping `finalStatus` as valid `Published` while revisions are tracked via `Version` (`v1.0` → `v1.1`), `Published_At`, and the Google Doc artifact.
+- Trigger verification: Installable ON_FORM_SUBMIT trigger for `processMomFormSubmit` on `MASTER_COMPANY_OPERATIONS` verified installed and active (`installA406MomTrigger()` / `verifyA406MomTrigger()`).
+- **A4-06 Live Test Suite (`testA406MomProcessingLive()`): PASS — 17/17 checks:**
+  1. `test1Prerequisites`: PASS (`MASTER_COMPANY_OPERATIONS`, `Project_MOM_Index`, `Projects`, `MOM_Responses` schema verified).
+  2. `test2ValidSubmission`: PASS (Valid MOM input parsed).
+  3. `test3MomIdGeneration`: PASS (A4-00 generates canonical `MOM-000001`).
+  4. `test4CanonicalProjectId`: PASS (Canonical `Project_ID` resolved).
+  5. `test5ParticipantPreservation`: PASS (Participant list preserved).
+  6. `test6RecipientEmailResolution`: PASS (Attendee emails extracted and formatted).
+  7. `test7ProjectDriveResolution`: PASS (Project Drive folder resolved via A4-02).
+  8. `test8PlacementIn04Mom`: PASS (Artifact placed in `04_MOM`).
+  9. `test9MomArtifactCreated`: PASS (Google Doc created in Drive).
+  10. `test10IndexRecordCreated`: PASS (Row created in `Project_MOM_Index`).
+  11. `test11VersionIndexBehavior`: PASS (Initial version is `v1.0`).
+  12. `test12RepeatedTriggerIdempotency`: PASS (Duplicate trigger preserves MOM ID without duplicate rows).
+  13. `test13UpdateBehavior`: PASS (Revisions increment version to `v1.1` and retain valid `Status: Published`).
+  14. `test14InvalidProjectRejection`: PASS (Unregistered project rejected).
+  15. `test15InvalidRecipientRejection`: PASS (Invalid date format rejected).
+  16. `test16FailureHandling`: PASS (Validation errors throw before index commits; raw intake remains intact).
+  17. `test17RawResponsePreserved`: PASS (`MOM_Responses` intake row untouched).
+  - Cleanup: PASS (Temporary test index rows and test Drive docs removed; pre-existing production records preserved).
+- **A4-07 Live Test Suite (`testA407MomEmailSenderLive()`): PASS — 9/9 checks:**
+  1. `test1Prerequisites`: PASS (Prerequisites & MailApp available).
+  2. `test2ApprovedEmail`: PASS (Approved MOM email structured correctly).
+  3. `test3RecipientResolution`: PASS (Attendee emails parsed and deduplicated).
+  4. `test4ContentDriveLink`: PASS (Subject, meeting date, version, notes excerpt, and Drive doc URL verified).
+  5. `test5DuplicateSendPrevention`: PASS (Duplicate email dispatch suppressed via `ScriptProperties` key `A407_MOM_SENT_<momId>_<version>`).
+  6. `test6SendResult`: PASS (Send result status logged).
+  7. `test7SendTimestamp`: PASS (Send timestamp recorded).
+  8. `test8FailureHandling`: PASS (Email delivery failure safely handled).
+  9. `test9RetryBehavior`: PASS (Retry logic verified).
+  - Cleanup: PASS (Test script properties cleaned up).
+- Overall: `P4-08 (A4-06 MOM PROCESSING) = PASS` and `P4-09 (A4-07 MOM EMAIL SENDER) = PASS`.
 
 
 ### Budget_Given R57/R58 live evidence — 01-Oct-2026
