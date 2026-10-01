@@ -343,7 +343,7 @@ function classifyOopEligibility_(purpose, amount) {
 
 /**
  * R61/R60 approval gate.
- * Every FRM-03 claim is routed to the configured Top Manager.
+ * Every FRM-03 claim is routed to the single active `Director` resolved from the authoritative Employees master.
  * Salary eligibility begins only after the Top Manager explicitly approves.
  */
 function getTopManagerEmail_() {
@@ -443,7 +443,7 @@ function finalizeOopManagerDecision_(decision) {
   var manager = String(Session.getActiveUser().getEmail() || '').trim().toLowerCase();
   var configured = getTopManagerEmail_();
   if (!manager || manager !== configured) {
-    throw new Error('A4_04_MANAGER_AUTHORIZATION_REQUIRED: Only the configured Top Manager may approve or reject OOP claims.');
+    throw new Error('A4_04_MANAGER_AUTHORIZATION_REQUIRED: Only the resolved active Director may approve or reject OOP claims.');
   }
 
   var ss = SpreadsheetApp.getActiveSpreadsheet();
