@@ -316,6 +316,14 @@ jobs:
           grep_live_fn "verifyA409NotificationEnginePrerequisites"
           grep_live_fn "testA409NotificationEngineLive"
 
+          # A4-10 Audit Logger verification
+          grep_live_fn "createA410SubmissionEntry"
+          grep_live_fn "updateA410SubmissionStatus"
+          grep_live_fn "logA410AutomationAction"
+          grep_live_fn "getA410SubmissionById"
+          grep_live_fn "verifyA410AuditLoggerPrerequisites"
+          grep_live_fn "testA410AuditLoggerLive"
+
           # Preserve the frozen Employee architecture gate.
           grep_live_fn "setupEmployeeDirectSheetWorkflow"
           grep_live_fn "onOpenEmployeeSheetMenu"

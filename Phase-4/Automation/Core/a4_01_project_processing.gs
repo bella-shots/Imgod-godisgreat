@@ -215,6 +215,16 @@ function appendA401Record_(sheet,record,requiredHeaders) {
 }
 
 function createA401SubmissionIndex_(raw,recordId,status) {
+  if (typeof createA410SubmissionEntry === 'function') {
+    var res = createA410SubmissionEntry({
+      sourceForm: A4_01_CONFIG.sourceFormName,
+      recordId: recordId || '',
+      submittedBy: raw.submittedBy || '',
+      submittedAt: raw.submittedAt,
+      status: status
+    });
+    return res.submissionId;
+  }
   const workbook=openA401WorkbookByName_(A4_01_CONFIG.adminWorkbookName);
   const sheet=requireA401Sheet_(workbook,A4_01_CONFIG.adminSubmissionSheetName);
   const submissionId=generateA4Id('SUB',readA401Column_(sheet,'Submission_ID'));
@@ -223,6 +233,9 @@ function createA401SubmissionIndex_(raw,recordId,status) {
 }
 
 function updateA401SubmissionStatus_(submissionId,recordId,status) {
+  if (typeof updateA410SubmissionStatus === 'function') {
+    return updateA410SubmissionStatus(submissionId, recordId, status);
+  }
   const sheet=requireA401Sheet_(openA401WorkbookByName_(A4_01_CONFIG.adminWorkbookName),A4_01_CONFIG.adminSubmissionSheetName);
   const values=sheet.getDataRange().getValues(),headers=values[0].map(String);
   const idCol=headers.indexOf('Submission_ID'),recordCol=headers.indexOf('Record_ID'),statusCol=headers.indexOf('Processing_Status');
