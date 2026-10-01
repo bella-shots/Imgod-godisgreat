@@ -221,7 +221,17 @@ All R55 placement and response-destination acceptance checks are now verified un
 - A4-07 live test suite (`testA407MomEmailSenderLive()`): 9/9 checks PASS, cleanup PASS.
 - Acceptance requirements verified: P4-08 = PASS, P4-09 = PASS, P4-49 = PASS.
 - **STABILIZATION CHECKPOINT = CLOSED.**
-- **A4-08 Report Generator = NOT STARTED / NEXT PHASE.**
+- **A4-08 Report Generator: IMPLEMENTED in GitHub — LIVE VERIFICATION REQUIRED.**
+  - Added `Phase-4/Automation/Core/a4_08_report_generator.gs`.
+  - Implements FRM-06 → A4-08 → authorized report artifact → Report_Index.
+  - Implements all four frozen report types: Company Summary, Project Report, Finance Report, HR Report.
+  - Validates the frozen inclusive `YYYY-MM-DD to YYYY-MM-DD` Period format.
+  - Uses canonical Employee_ID resolution; does not infer authorization from `Employees.Role` or `Designation`.
+  - Self-scope is preserved; broader finance/HR scope requires explicit access to the corresponding restricted workbook.
+  - Project Report additionally checks project membership for requesters without broader workbook access.
+  - Generates an RPT ID through A4-00, writes the frozen Report_Index schema, and creates a human-readable Drive artifact plus PDF in `MASTER COMPANY/Reports`.
+  - Includes non-destructive prerequisite/period/authorization verification.
+  - **Not yet acceptance-PASS:** the real FRM-06 record-creation workflow must be exercised live.
 
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
@@ -232,7 +242,7 @@ All R55 placement and response-destination acceptance checks are now verified un
 6. **MOM Trigger verified active on MASTER_COMPANY_OPERATIONS.**
 7. **P4-49 Universal Form/System-Generated ID architecture is COMPLETE/PASS.**
 8. **Phase 4 MOM Stabilization Checkpoint is CLOSED.**
-9. **Next Phase: Report Generator (A4-08 / P4-10) — NOT STARTED.**
+9. **Current Phase: Report Generator (A4-08 / P4-10) — IMPLEMENTED; LIVE VERIFICATION PENDING.**
 10. Notification Engine (A4-09), Audit Logger (A4-10), Error Handler (A4-11), and universal A4-00 closure.
 
 ## Rule
