@@ -441,6 +441,21 @@ jobs:
             exit 1
           }
 
+          INV_MATCHES=$(grep -RIl "function processInvestmentFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$INV_MATCHES" || {
+            echo "FAIL: processInvestmentFormSubmit is missing from live Apps Script."
+            exit 1
+          }
+          INV_FILE=$(printf '%s\n' "$INV_MATCHES" | head -n 1)
+          grep -q "function verifyA407InvestmentPrerequisites" "$INV_FILE" || {
+            echo "FAIL: verifyA407InvestmentPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA407InvestmentWorkflowLive" "$INV_FILE" || {
+            echo "FAIL: testA407InvestmentWorkflowLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"

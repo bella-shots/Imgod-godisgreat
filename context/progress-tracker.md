@@ -192,23 +192,24 @@ All R55 placement and response-destination acceptance checks are now verified un
   - A4-00 prefix `SAL`, LockService, ID protection, duplicate protection and no generic onEdit/autosave issuance all passed live verification.
   - Salary history and production data were preserved; temporary test records were removed.
 
+- **Investments R58 Source_Person exception workflow: IMPLEMENTED IN GITHUB — LIVE-VERIFIED PASS (01-Oct-2026).**
+  - `Phase-4/Automation/Core/a4_07_investment_processing.gs` implements the frozen Form-originated workflow.
+  - FRM-07 Investment Entry → Investment_Responses → A4-07 → Investments.
+  - Investments remains exactly 8 frozen columns with Source_Person preserved; no Employee_ID is required or added.
+  - Automatic A4-00 INV generation, LockService, validation-before-ID issuance, duplicate/idempotency protection and access control verified live.
+  - Pre-existing production data preserved; temporary test records removed.
+
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
-3. **Salary/Admin Generate-ID workflow is COMPLETE/PASS — P4-48 and the applicable R57 direct-Sheet acceptance gates are now verified.**
-4. **Next: Investment exception workflow, then remaining MOM/reporting/notification/audit/error-handling workflows.**
-5. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
-6. R58 financial employee-identity acceptance is now PASS for all applicable money workflows; Investments remains the explicit frozen Source_Person exception.
-
-
-## Next live-verification target — Investment exception workflow
-- **Target:** verify the frozen Investments workflow and its explicit R58 `Source_Person` exception in the existing Phase 4 Apps Script project.
-- Preserve the authoritative Phase 3 Investments schema and the frozen distinction that Investments uses `Source_Person`, not Employee_ID, as its explicit exception.
-- Verify the controlled workflow, A4-00 `INV` generation where applicable, validation, duplicate/idempotency safety, access controls, and production-data preservation.
-- Do not mark the Investment workflow PASS until live evidence is returned.
+3. **Salary/Admin Generate-ID workflow is COMPLETE/PASS — P4-48 verified live.**
+4. **Investments R58 Source_Person exception workflow is COMPLETE/PASS.**
+5. **Next: MOM processing (A4-06/A4-07) and Report generation (A4-10).**
+6. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
+7. R58 financial employee-identity acceptance is PASS across all financial workflows (`Budget_Given`, `Employee_Spending`, `OOP_Claims`, `Salary_Admin`, and the explicit `Investments` `Source_Person` exception).
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
