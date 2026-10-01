@@ -99,3 +99,22 @@ The monthly employee benefit is divided into two separate components:
 - The ₹1,000 monthly food allowance is credited independently every month and does not depend on OOP claim submission or actual food spending.
 - Approved company-essential OOP spend is handled separately under R60.
 - The two amounts must never be combined into one OOP calculation or double-counted in salary.
+
+## R62 — OOP Top Manager approval gate (frozen)
+
+**Date:** 2026-10-01
+
+Every FRM-03 OOP claim must pass an explicit **Top Manager approval gate** before it can affect the next month's salary credit.
+
+1. Employee submits the OOP claim through FRM-03 with purpose, amount, project and proof.
+2. A4-04 creates the authoritative claim with a CLM ID and status `Pending Review`.
+3. The claim is routed/notified to the configured Top Manager.
+4. The Top Manager reviews the claim and explicitly approves or rejects it.
+5. Only a claim with `Status = Approved`, a positive `Approved_Amount`, and an approved company-essential rule classification is eligible for the next salary calculation.
+6. `Pending Review` and `Rejected` claims contribute **₹0** to the OOP salary component.
+7. Ordinary food/eatables claims remain excluded. If the Top Manager determines that a food-related expense is a genuine company-essential business exception, the manager must use the dedicated **Approve Food Business Exception** action; that explicit decision changes the rule classification to `APPROVED_FOOD_BUSINESS_EXCEPTION` and makes the approved amount eligible.
+8. A normal company-essential claim uses `APPROVED_COMPANY_ESSENTIAL` after approval.
+9. No employee, generic edit trigger, form submission, or salary process may self-approve an OOP claim.
+10. The ₹1,000 monthly food allowance remains independent and is credited regardless of OOP claims.
+
+The authoritative OOP schema remains unchanged at 11 columns. Manager routing and approval metadata are represented through the existing `Status`, `Approved_Amount`, and `OOP_Rule_Flag` fields plus the controlled Apps Script workflow; no extra schema column is introduced.
