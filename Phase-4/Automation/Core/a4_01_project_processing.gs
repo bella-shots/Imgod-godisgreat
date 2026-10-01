@@ -80,6 +80,17 @@ function processA401ProjectSubmission(e) {
     setA401EventState_(eventKey, finalState);
     return finalState;
   } catch (err) {
+    if (typeof handleA411Error === 'function') {
+      handleA411Error({
+        module: 'A4-01 Project Processing',
+        sourceForm: A4_01_CONFIG.sourceFormName,
+        submissionId: submissionId,
+        recordId: '',
+        statusHint: 'Manual Review',
+        error: err,
+        eventKey: eventKey || ('A4-01-' + (e.range.getRow ? e.range.getRow() : 'UNKNOWN'))
+      });
+    }
     if (submissionId) { try { updateA401SubmissionStatus_(submissionId, '', 'Manual Review'); } catch (statusErr) {} }
     const failureState = {submissionId:submissionId, recordId:'', status:'Manual Review', message:String(err && err.message ? err.message : err)};
     setA401EventState_(eventKey, failureState);
