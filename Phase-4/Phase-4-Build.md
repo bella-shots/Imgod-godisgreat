@@ -55,3 +55,18 @@ R57 does not change the frozen Phase 3 schemas or the A4-00 ID formats. It stand
 ## R58 — Financial employee identity invariant
 
 Phase 4 financial automation must preserve the Phase 3 employee-linkage contract: `Employee_ID` is the canonical employee identity reference for `Budget_Given`, `Employee_Spending`, `OOP_Claims` and `Salary_Admin`. `Member_Record_ID` is never a substitute for `Employee_ID` in these workflows. `Investments` remains the explicit schema exception using `Source_Person`.
+
+## R62 — OOP Employee → Top Manager approval transaction
+
+The OOP workflow is now explicitly human-approved before salary eligibility:
+
+1. Employee submits FRM-03.
+2. A4-04 validates the submission, resolves `Employee_ID`/`Project_ID`, generates `CLM-XXXXXX`, stores the claim as `Pending Review`, and requires proof.
+3. A4-04 notifies the configured Top Manager by email.
+4. The Top Manager opens `MASTER_COMPANY_FINANCE → OOP_Claims`, selects the claim, and uses the controlled `Top Manager Actions` menu.
+5. `Approve Company-Essential Claim` changes the claim to `Approved`, writes `Approved_Amount`, and classifies it as `APPROVED_COMPANY_ESSENTIAL`.
+6. `Approve Food Business Exception` is required for a food-related claim that the Top Manager determines is a genuine business exception; it writes `Approved_Amount` and `APPROVED_FOOD_BUSINESS_EXCEPTION`.
+7. `Reject OOP Claim` sets `Rejected` and clears salary eligibility.
+8. A4-05 includes only `Approved` claims with a salary-eligible approval flag in the next monthly salary calculation.
+
+The configured Top Manager email is stored in Apps Script Script Properties as `TOP_MANAGER_EMAIL`. Approval actions verify the active manager identity against that configured address. No new Sheet column, Form, or employee-facing approval form is introduced.
