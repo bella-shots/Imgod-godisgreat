@@ -18,9 +18,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install clasp and API client
-        run: npm install --global @google/clasp
+      - name: Install deployment tools
+        run: |
+          rm -rf "$RUNNER_TEMP/deployment-runtime"
+          mkdir -p "$RUNNER_TEMP/deployment-runtime"
+          npm install --prefix "$RUNNER_TEMP/deployment-runtime" @google/clasp googleapis
           rm -rf "$RUNNER_TEMP/googleapis-runtime"
+          ln -s "$RUNNER_TEMP/deployment-runtime/node_modules" "$RUNNER_TEMP/googleapis-runtime"
           mkdir -p "$RUNNER_TEMP/googleapis-runtime"
           npm install --prefix "$RUNNER_TEMP/googleapis-runtime" googleapis
 
@@ -49,7 +53,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/live-before"
           cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/live-before/.clasp.json"
           cd "$RUNNER_TEMP/live-before"
-          clasp pull --force
+          "$RUNNER_TEMP/deployment-runtime/node_modules/.bin/clasp" pull --force
           test -f appsscript.json || { echo "FAIL: live project manifest was not returned"; exit 1; }
           cp appsscript.json "$RUNNER_TEMP/apps-script/appsscript.json"
           echo "=== LIVE MANIFEST PRESERVED ==="
@@ -59,7 +63,7 @@ jobs:
         env:
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
-          NODE_PATH="$RUNNER_TEMP/googleapis-runtime/node_modules" node --input-type=commonjs <<'NODE'
+          NODE_PATH="$RUNNER_TEMP/deployment-runtime/node_modules" node --input-type=commonjs <<'NODE'
           (async () => {
           const fs = require('fs');
           const path = require('path');
