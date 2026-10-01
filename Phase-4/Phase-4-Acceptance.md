@@ -110,7 +110,7 @@
 - Overall: `SALARY_ADMIN_R57_LIVE_VERIFICATION = PASS`.
 
 ### Investments R58 live verification evidence — 01-Oct-2026
-- Implementation: `Phase-4/Automation/Core/a4_07_investment_processing.gs` in the existing MASTER COMPANY Phase 4 Automation project.
+- Implementation: `Phase-4/Automation/Core/a4_15_investment_processing.gs` in the existing MASTER COMPANY Phase 4 Automation project.
 - Investments remains the authoritative administrative capital ledger with exactly 8 frozen columns: `Investment_ID`, `Source_Person`, `Amount`, `Taken_Date`, `Expected_Return_Date`, `Actual_Return_Date`, `Status`, `Notes`.
 - Creation path: Form-originated via `FRM-07 — Investment Entry` → `Investment_Responses` → `A4-15` → `Investments`. No manual Generate Investment ID menu or extra Form was introduced.
 - R58 Source_Person exception: PASS; `Source_Person` is preserved as the authoritative investor/entity identifier; `Employee_ID` is not required or added; `Member_Record_ID` is strictly prohibited from substitution.
