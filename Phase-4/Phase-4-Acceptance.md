@@ -21,10 +21,8 @@
 | P4-19 | Test ID persistence/deletion behavior. | Issued IDs remain stable and are never reused; gaps are allowed. | NOT STARTED |
 | P4-20 | Test counter recovery. | A stored counter lower than an existing valid ID is reconciled before a new ID is issued. | NOT STARTED |
 
-
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 - R52 acceptance tests: P4-21 Project_Members requires explicit Generate Project Member ID; P4-22 Project_Notes requires explicit Generate Project Note ID; P4-23 Budget_Given requires explicit Generate Budget ID; P4-24 Salary_Admin supports explicit Generate Salary ID(s), including controlled bulk generation; P4-25 concurrent Generate-ID actions produce unique IDs under LockService; P4-26 generated IDs become read-only/locked and cannot be manually overwritten.
-
 
 ## R54 — Form attachment routing acceptance tests
 | ID | Acceptance test | Expected result | Status |
@@ -53,3 +51,14 @@
 | P4-40 | Test the frozen one-click Employees-sheet employee creation workflow. | Existing `Employees` sheet remains exactly 15 columns; user completes a pending row, selects the employee row/Employee_ID cell, and explicitly invokes `Employee Actions → Generate Employee ID`. The single action validates the complete row, checks duplicate email, generates and locks a unique `EMP-000001`-style ID through A4-00, writes `Created_At`, and finalizes the employee immediately. No separate Save/Process action, Process column, typed command, sidebar, employee Form, or floating panel is required. | PASS — user live-verified on 01-Oct-2026. |
 | P4-41 | Test Employee_ID generation rejection. | Missing/invalid required employee data prevents ID generation; no Employee_ID is issued and no employee is finalized. Generic edit/autosave events never generate an ID. | PASS — included in live one-click workflow verification on 01-Oct-2026. |
 | P4-42 | Test duplicate/invalid finalization protection. | Duplicate email, invalid required data, or an already-generated Employee_ID prevents another employee-creation transaction; issued IDs are not reused and the Employee_ID remains immutable. There is no separate Save Employee action. | PASS — included in live one-click workflow verification on 01-Oct-2026. |
+
+## R57 — Universal explicit Generate-ID acceptance tests for user-created Sheet records
+| ID | Acceptance test | Expected result | Status |
+|---|---|---|---|
+| P4-43 | Verify common Generate-ID UX for Sheet-originated business records. | Each applicable direct-Sheet workflow exposes one record-specific Generate-ID action; no separate Save/Process action is required solely to complete ID generation. | NOT STARTED |
+| P4-44 | Test validation-before-ID issuance across applicable Sheet workflows. | Incomplete/invalid pending records are rejected before A4-00 issuance; no business ID is created and no authoritative finalization occurs. | NOT STARTED |
+| P4-45 | Test ID generation + locking + finalization. | A valid pending Sheet record receives the correct canonical ID through A4-00, the ID is persisted and locked, and the appropriate authoritative commit/finalization completes in the same controlled action. | NOT STARTED |
+| P4-46 | Test duplicate/already-ID'd protection. | Duplicate/identity violations or an already-generated ID prevent another sequence allocation; issued IDs are never reused. | NOT STARTED |
+| P4-47 | Test no generic ID issuance. | onEdit/autosave/passive edit/spreadsheet-open events never issue business IDs for direct Sheet-originated records. | NOT STARTED |
+| P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | NOT STARTED |
+| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | NOT STARTED |
