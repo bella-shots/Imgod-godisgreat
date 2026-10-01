@@ -115,3 +115,12 @@
 - Only claims with Status = Approved and a positive Approved_Amount contribute to the salary addition.
 - Salary history is preserved; prior Salary_Admin records are not overwritten.
 - Live verification of A4-04 and A4-05 remains pending.
+
+### R61 — Food allowance vs company-essential OOP — 01-Oct-2026
+- Every eligible employee receives a fixed ₹1,000 food/eatables allowance each month independently of actual food spending.
+- The ₹1,000 allowance is not reduced when unused and does not depend on an OOP claim.
+- Ordinary food/eatables are excluded from the ₹5,000 company-essential OOP rule.
+- Food-related expenses may enter the OOP workflow only for documented company-essential exceptions such as a necessary client/business meeting or hosted guest expense; approval alone does not make an ordinary personal food expense eligible.
+- A4-04 flags food-related claims for review instead of automatically treating them as company-essential OOP.
+- A4-05 includes only approved company-essential OOP in the OOP salary addition and adds the fixed ₹1,000 monthly food allowance separately.
+- The ₹1,000 food allowance and approved company-essential OOP amount must never be merged or double-counted.
