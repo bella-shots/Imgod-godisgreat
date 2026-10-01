@@ -175,11 +175,17 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Creates claims in `Pending Review` and does not auto-approve.
   - The exact approved ₹5,000 rule interpretation is not present in the frozen Phase-4 business-rule source reviewed for this implementation; therefore no allowance/excess/salary treatment was invented. `Approved_Amount` remains unset and `OOP_Rule_Flag` records pending rule evaluation until the approved interpretation is available.
   - Non-destructive live verification helper is included and does not consume a CLM sequence.
+- **A4-05 Salary Carry-Forward: IMPLEMENTED IN GITHUB — LIVE VERIFICATION PENDING.**
+  - `Phase-4/Automation/Core/a4_05_salary_carry_forward.gs` implements the frozen R60 OOP-to-salary calculation.
+  - Aggregates only approved OOP claims by canonical Employee_ID and applicable claim month.
+  - Next salary credit = designated/base salary + actual approved company-essential OOP spend; ₹5,000 is a baseline, not a cap.
+  - Preserves salary history and does not add a duplicate ₹5,000 line.
+  - Non-destructive `testA405OopSalaryRule()` covers ₹1,000, ₹5,000 and ₹7,000 cases.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. **Live-verify A4-04 OOP Claims in the existing Phase 4 Apps Script project.** The authoritative path is FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims; R57 direct-Sheet UX does not apply.
+1. **Live-verify A4-04 + A4-05 in the existing Phase 4 Apps Script project.** Verify FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims and the R60 OOP-to-Salary calculation end-to-end.
 2. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
 3. Continue R54 attachment routing and remaining Phase 4 workflows.
 4. Use Budget_Given + Employee_Spending evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
