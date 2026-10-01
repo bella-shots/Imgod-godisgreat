@@ -311,6 +311,11 @@ jobs:
           grep_live_fn "testA408ReportGeneratorLive"
           grep_live_fn "processReportRequestFormSubmit"
 
+          # A4-09 Notification Engine verification
+          grep_live_fn "dispatchA409Notification"
+          grep_live_fn "verifyA409NotificationEnginePrerequisites"
+          grep_live_fn "testA409NotificationEngineLive"
+
           # Preserve the frozen Employee architecture gate.
           grep_live_fn "setupEmployeeDirectSheetWorkflow"
           grep_live_fn "onOpenEmployeeSheetMenu"

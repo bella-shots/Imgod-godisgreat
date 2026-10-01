@@ -385,6 +385,27 @@ function getTopManagerEmail_() {
 }
 
 function notifyTopManagerOfOopClaim_(claimId, employeeId, projectId, dateValue, purpose, amount, proofUrl) {
+  if (typeof dispatchA409Notification === 'function') {
+    try {
+      return dispatchA409Notification({
+        eventType: 'OOP_APPROVAL_REQUEST',
+        recordId: claimId,
+        status: 'Pending Review',
+        recipient: { role: 'TOP_MANAGER' },
+        data: {
+          employeeId: employeeId,
+          projectId: projectId,
+          date: Utilities.formatDate(new Date(dateValue), Session.getScriptTimeZone() || 'GMT', 'yyyy-MM-dd'),
+          purpose: purpose,
+          amount: amount,
+          proofUrl: proofUrl
+        }
+      });
+    } catch (e) {
+      console.warn('A4_09 dispatch failed in A4_04; falling back to direct notification: ' + e.message);
+    }
+  }
+
   var managerEmail = getTopManagerEmail_();
   var finance = findUniqueSpreadsheetByName_(A404_CONFIG.FINANCE_WORKBOOK);
   var url = finance.getUrl();
