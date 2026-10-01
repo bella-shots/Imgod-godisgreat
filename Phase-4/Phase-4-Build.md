@@ -62,11 +62,11 @@ The OOP workflow is now explicitly human-approved before salary eligibility:
 
 1. Employee submits FRM-03.
 2. A4-04 validates the submission, resolves `Employee_ID`/`Project_ID`, generates `CLM-XXXXXX`, stores the claim as `Pending Review`, and requires proof.
-3. A4-04 notifies the configured Top Manager by email.
+3. A4-04 resolves the approval authority from the single active employee whose `Employees.Designation` is `Director` and notifies that person by email.
 4. The Top Manager opens `MASTER_COMPANY_FINANCE → OOP_Claims`, selects the claim, and uses the controlled `Top Manager Actions` menu.
 5. `Approve Company-Essential Claim` changes the claim to `Approved`, writes `Approved_Amount`, and classifies it as `APPROVED_COMPANY_ESSENTIAL`.
 6. `Approve Food Business Exception` is required for a food-related claim that the Top Manager determines is a genuine business exception; it writes `Approved_Amount` and `APPROVED_FOOD_BUSINESS_EXCEPTION`.
 7. `Reject OOP Claim` sets `Rejected` and clears salary eligibility.
 8. A4-05 includes only `Approved` claims with a salary-eligible approval flag in the next monthly salary calculation.
 
-The configured Top Manager email is stored in Apps Script Script Properties as `TOP_MANAGER_EMAIL`. Approval actions verify the active manager identity against that configured address. No new Sheet column, Form, or employee-facing approval form is introduced.
+The Top Manager is resolved from the authoritative `Employees` master using `Designation = Director`; no manually entered manager email or Script Property is used. Approval actions verify the active user's identity against the resolved Director email. No new Sheet column, Form, or employee-facing approval form is introduced.
