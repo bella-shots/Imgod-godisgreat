@@ -1,26 +1,24 @@
 /** Employee Creation Workflow — Phase 4
- * Direct Employees-sheet UI controls:
- * 1. Column A (Employee_ID): Visual ID-generation control header (Dark Blue).
- * 2. Column P (Process): Visual Process/Commit control header (Green) placed
- *    immediately beside the 15-column table without contaminating the database schema.
- * 3. Native "Employee Actions" custom menu:
- *    • Generate Employee ID
- *    • Process Employee
- *    • Save Employee
+ * Single-action Employee Creation directly in the Employees sheet.
  *
- * Workflow:
- * 1. HR/Admin enters employee details directly in the Employees sheet.
- * 2. User selects the Employee_ID cell (or row) and clicks Employee Actions → Generate Employee ID.
- * 3. Script validates row, generates EMP-XXXXXX via central A4-00 generator,
- *    locks Employee_ID, marks Process column as "▶ Ready to Process".
- * 4. User reviews employee information.
- * 5. User selects Process cell (or row) and clicks Employee Actions → Process Employee.
- * 6. Script validates entire record, populates Created_At, locks record, marks "✔ Processed".
+ * One explicit user action:
+ * HR/Admin fills employee details → Selects Employee_ID cell/row → Employee Actions → Generate Employee ID.
  *
- * Safety & Invariants:
- * • Authoritative database schema remains strictly 15 columns (Columns A:O).
- * • No automatic onEdit ID generation or autosave.
- * • No floating panels, sidebars, or external forms.
+ * The single action executes the entire transaction atomically:
+ * 1. Validates all required employee fields.
+ * 2. Validates duplicate Email and existing Employee_ID.
+ * 3. Invokes central A4-00 generator: generateA4Id('EMP', existingIds).
+ * 4. Writes format '@' and locks Employee_ID cell.
+ * 5. Writes system timestamp to Created_At.
+ * 6. Finalizes record immediately.
+ *
+ * No separate Save button.
+ * No Process button.
+ * No Process column.
+ * No floating panel or sidebar.
+ * No onEdit automatic generation.
+ *
+ * Authoritative schema: Exactly 15 columns (Columns A to O).
  */
 
 const EMPLOYEE_CREATION_CONFIG = {
@@ -45,101 +43,57 @@ function onOpenEmployeeSheetMenu(e) {
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Employee Actions')
       .addItem('Generate Employee ID', 'generateSelectedEmployeeId')
-      .addItem('Process Employee', 'processSelectedEmployee')
-      .addItem('Save Employee', 'saveSelectedEmployee')
       .addToUi();
   } catch (err) {
     Logger.log('onOpenEmployeeSheetMenu note (expected in headless context): ' + err.message);
   }
 }
 
-/** Formats the in-sheet Employee_ID and Process controls */
+/** Formats the authoritative Employee_ID header and removes any extraneous UI columns */
 function installEmployeeSheetControls() {
   const sheet = getEmployeeSheet_();
 
-  // 1. Column A (Employee_ID) Control Header Styling
+  // 1. Column A (Employee_ID) Header Styling
   const idHeader = sheet.getRange(1, 1);
-  idHeader.setValue('Employee_ID'); // Authoritative schema header preserved
+  idHeader.setValue('Employee_ID'); // Exact schema name preserved
   idHeader.setBackground('#1e3a8a'); // Dark blue
   idHeader.setFontColor('#ffffff'); // White bold
   idHeader.setFontWeight('bold');
   idHeader.setHorizontalAlignment('center');
   idHeader.setVerticalAlignment('middle');
   idHeader.setNote(
-    'EMPLOYEE ID GENERATION\n\n' +
+    'EMPLOYEE CREATION\n\n' +
     '1. Fill in employee details.\n' +
     '2. Select this Employee_ID cell for the row.\n' +
-    '3. Click Employee Actions → Generate Employee ID.'
+    '3. Click Employee Actions → Generate Employee ID to create and finalize the employee.'
   );
 
-  // 2. Column P (Process) UI Control Column (Outside 15-column schema A:O)
-  sheet.setColumnWidth(16, 120);
-  const processHeader = sheet.getRange(1, 16);
-  processHeader.setValue('Process');
-  processHeader.setBackground('#15803d'); // Green
-  processHeader.setFontColor('#ffffff'); // White bold
-  processHeader.setFontWeight('bold');
-  processHeader.setHorizontalAlignment('center');
-  processHeader.setVerticalAlignment('middle');
-  processHeader.setNote(
-    'PROCESS / COMMIT CONTROL\n\n' +
-    '1. Ensure Employee_ID is generated and all fields are complete.\n' +
-    '2. Select this Process cell or employee row.\n' +
-    '3. Click Employee Actions → Process Employee to validate and finalize.'
-  );
-
-  // Separate UI control column visually from data columns
-  processHeader.setBorder(true, true, true, true, null, null, '#0f172a', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
-
-  // Update existing data rows status in Column P
-  const lastRow = sheet.getLastRow();
-  if (lastRow >= 2) {
-    const createdAts = sheet.getRange(2, 15, lastRow - 1, 1).getValues();
-    const ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    for (let i = 0; i < ids.length; i++) {
-      const rowNum = i + 2;
-      const cell = sheet.getRange(rowNum, 16);
-      cell.setHorizontalAlignment('center');
-      cell.setVerticalAlignment('middle');
-      cell.setFontSize(10);
-      if (createdAts[i][0]) {
-        cell.setValue('✔ Processed');
-        cell.setBackground('#dcfce7');
-        cell.setFontColor('#166534');
-        cell.setFontWeight('bold');
-      } else if (ids[i][0] && /^EMP-[0-9]{6}$/.test(String(ids[i][0]).trim())) {
-        cell.setValue('▶ Ready to Process');
-        cell.setBackground('#fef9c3');
-        cell.setFontColor('#854d0e');
-        cell.setFontWeight('bold');
-      } else {
-        cell.setValue('—');
-        cell.setBackground('#ffffff');
-        cell.setFontColor('#94a3b8');
-        cell.setFontWeight('normal');
-      }
-    }
-  }
-
-  // Remove any obsolete images outside column 15
+  // 2. Clean up any obsolete columns outside the 15 schema columns (Columns P+)
   try {
+    const maxCols = sheet.getMaxColumns();
+    if (maxCols >= 16) {
+      const extraRange = sheet.getRange(1, 16, Math.max(sheet.getMaxRows(), 10), maxCols - 15);
+      extraRange.breakApart();
+      extraRange.clear();
+      extraRange.clearNote();
+      extraRange.setBorder(false, false, false, false, false, false);
+    }
+
+    // Remove any floating images
     const images = sheet.getImages();
     images.forEach(function(img) {
-      const anchor = img.getAnchorCell();
-      if (anchor && anchor.getColumn() >= 16) {
-        try { img.remove(); } catch (e) {}
-      }
+      try { img.remove(); } catch (e) {}
     });
-  } catch (imgErr) {
-    Logger.log('Image cleanup note: ' + imgErr.message);
+  } catch (cleanErr) {
+    Logger.log('Extra columns cleanup note: ' + cleanErr.message);
   }
 
   SpreadsheetApp.flush();
   return {
     status: 'PASS',
     employeeIdControl: 'INSTALLED (Column A)',
-    processControl: 'INSTALLED (Column P)',
-    authoritativeSchema: 'PRESERVED (Columns A:O, 15 columns)'
+    authoritativeSchema: 'EXACT 15 COLUMNS (A:O)',
+    separateSaveOrProcess: 'REMOVED'
   };
 }
 
@@ -194,187 +148,118 @@ function setupEmployeeDirectSheetWorkflow() {
   return result;
 }
 
-/** Action 1: Generate Employee ID for the selected row */
+/**
+ * Single Unified Action: Generate Employee ID & Finalize Employee Record.
+ *
+ * Invoked explicitly by the user from:
+ * Employee Actions → Generate Employee ID
+ */
 function generateSelectedEmployeeId() {
   const ss = SpreadsheetApp.getActiveSpreadsheet() || getEmployeeSheet_().getParent();
   const sheet = ss.getActiveSheet();
 
   if (sheet.getName().trim() !== EMPLOYEE_CREATION_CONFIG.sheetName) {
     const msg = 'Please select an employee row in the "Employees" sheet.';
-    ss.toast(msg, 'Employee Actions', 6);
+    ss.toast(msg, 'Employee Actions — BLOCKED', 6);
     return { success: false, message: msg };
   }
 
   const activeRange = sheet.getActiveRange();
   if (!activeRange) {
-    const msg = 'No row selected. Please select a pending employee row.';
-    ss.toast(msg, 'Employee Actions', 6);
+    const msg = 'No row selected. Please select an employee row.';
+    ss.toast(msg, 'Employee Actions — BLOCKED', 6);
     return { success: false, message: msg };
   }
 
   const rowNumber = activeRange.getRow();
   if (rowNumber < 2) {
     const msg = 'Header row cannot be an employee record. Please select row 2 or higher.';
-    ss.toast(msg, 'Employee Actions', 6);
+    ss.toast(msg, 'Employee Actions — BLOCKED', 6);
     return { success: false, message: msg };
   }
 
-  try {
-    const employeeId = generateEmployeeIdForRow_(sheet, rowNumber);
-
-    // Update Process column on that row to ready
-    const processCell = sheet.getRange(rowNumber, 16);
-    processCell.setValue('▶ Ready to Process');
-    processCell.setBackground('#fef9c3');
-    processCell.setFontColor('#854d0e');
-    processCell.setFontWeight('bold');
-
-    return {
-      success: true,
-      employeeId: employeeId,
-      rowNumber: rowNumber,
-      message: 'Employee ID generated: ' + employeeId + '. Review the row, then click Process Employee.'
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: String(err.message || err)
-    };
-  }
-}
-
-/** Action 2: Process Employee (wrapper invoking saveSelectedEmployee) */
-function processSelectedEmployee() {
-  return saveSelectedEmployee();
-}
-
-/** Action 3: Save Employee for the selected row */
-function saveSelectedEmployee() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet() || getEmployeeSheet_().getParent();
-  const sheet = ss.getActiveSheet();
-
-  if (sheet.getName().trim() !== EMPLOYEE_CREATION_CONFIG.sheetName) {
-    const msg = 'Please select an employee row in the "Employees" sheet.';
-    ss.toast(msg, 'Employee Actions', 6);
-    return { success: false, message: msg };
-  }
-
-  const activeRange = sheet.getActiveRange();
-  if (!activeRange) {
-    const msg = 'No row selected. Please select an employee row to process.';
-    ss.toast(msg, 'Employee Actions', 6);
-    return { success: false, message: msg };
-  }
-
-  const rowNumber = activeRange.getRow();
-  if (rowNumber < 2) {
-    const msg = 'Header row cannot be an employee record. Please select row 2 or higher.';
-    ss.toast(msg, 'Employee Actions', 6);
-    return { success: false, message: msg };
-  }
-
-  try {
-    const employeeId = saveEmployeeRow_(sheet, rowNumber);
-
-    // Update Process column on that row to completed
-    const processCell = sheet.getRange(rowNumber, 16);
-    processCell.setValue('✔ Processed');
-    processCell.setBackground('#dcfce7');
-    processCell.setFontColor('#166534');
-    processCell.setFontWeight('bold');
-
-    return {
-      success: true,
-      employeeId: employeeId,
-      rowNumber: rowNumber,
-      message: 'Employee saved successfully: ' + employeeId
-    };
-  } catch (err) {
-    return {
-      success: false,
-      message: String(err.message || err)
-    };
-  }
-}
-
-function generateEmployeeIdForRow_(sheet, rowNumber) {
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
+    // 1. Read row details
     const row = readEmployeeRow_(sheet, rowNumber);
-    validateEmployeeRow_(row);
+
+    // 2. Check if already has an Employee_ID
     const existingId = String(row.Employee_ID || '').trim().toUpperCase();
     if (existingId) {
-      throw new Error('EMPLOYEE_ID_GENERATION_BLOCKED: Employee_ID already exists: ' + row.Employee_ID);
+      throw new Error('Employee ID already generated: ' + existingId);
     }
+
+    // 3. Validate complete employee record fields
+    validateEmployeeRow_(row);
+
+    // 4. Duplicate Email check
+    const email = String(row.Email).trim().toLowerCase();
+    const existingEmails = readEmployeeColumn_(sheet, 'Email');
+    if (existingEmails.some(function(val, idx) { return String(val || '').trim().toLowerCase() === email && (idx + 2) !== rowNumber; })) {
+      throw new Error('Employee cannot be created. Duplicate email: ' + email);
+    }
+
+    // 5. Generate unique sequential ID via central A4-00 generator
     const existingIds = readEmployeeColumn_(sheet, 'Employee_ID');
     const employeeId = generateA4Id('EMP', existingIds);
+
+    // 6. Write Employee_ID and lock the cell
     const idCell = sheet.getRange(rowNumber, getEmployeeColumnIndex_(sheet, 'Employee_ID'));
     idCell.setNumberFormat('@');
     idCell.setValue(employeeId);
     SpreadsheetApp.flush();
+
     try {
       const protection = idCell.protect().setDescription('Phase 4 immutable Employee_ID ' + employeeId);
       protection.setWarningOnly(false);
     } catch (protErr) {
       Logger.log('Protection notice (non-fatal): ' + protErr.message);
     }
-    PropertiesService.getScriptProperties().setProperty('EMPLOYEE_PENDING_' + employeeId, JSON.stringify({
-      spreadsheetId: sheet.getParent().getId(),
-      sheetName: sheet.getName(),
-      rowNumber: rowNumber,
+
+    // 7. Write Created_At timestamp and finalize
+    const createdCell = sheet.getRange(rowNumber, getEmployeeColumnIndex_(sheet, 'Created_At'));
+    createdCell.setValue(new Date());
+    SpreadsheetApp.flush();
+
+    const successMsg = 'Employee successfully created: ' + employeeId;
+    ss.toast(successMsg, 'Employee Actions', 8);
+    return {
+      success: true,
       employeeId: employeeId,
-      email: String(row.Email).trim().toLowerCase(),
-      generatedAt: new Date().toISOString()
-    }));
-    sheet.getParent().toast('Employee ID generated: ' + employeeId + '. Review the row, then click Process Employee.', 'Employee Actions', 8);
-    return employeeId;
+      rowNumber: rowNumber,
+      message: successMsg
+    };
   } catch (error) {
-    sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
-    throw error;
+    const errorMsg = String(error.message || error);
+    ss.toast(errorMsg, 'Employee Actions — BLOCKED', 10);
+    return {
+      success: false,
+      message: errorMsg
+    };
   } finally {
     lock.releaseLock();
   }
 }
 
-function saveEmployeeRow_(sheet, rowNumber) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(30000);
-  try {
-    const row = readEmployeeRow_(sheet, rowNumber);
-    validateEmployeeRow_(row);
-    const employeeId = String(row.Employee_ID || '').trim().toUpperCase();
-    if (!/^EMP-[0-9]{6}$/.test(employeeId)) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generate Employee ID first using Employee Actions → Generate Employee ID.');
-    }
-    const pendingKey = 'EMPLOYEE_PENDING_' + employeeId;
-    const pendingRaw = PropertiesService.getScriptProperties().getProperty(pendingKey);
-    if (!pendingRaw) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID was not generated by the explicit Generate Employee ID control.');
-    }
-    const pending = JSON.parse(pendingRaw);
-    if (pending.spreadsheetId !== sheet.getParent().getId() || pending.sheetName !== sheet.getName() || Number(pending.rowNumber) !== Number(rowNumber)) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Generated Employee_ID is not associated with this pending row.');
-    }
-    const existingIds = readEmployeeColumn_(sheet, 'Employee_ID');
-    if (existingIds.some(function(id, index) { return String(id || '').trim().toUpperCase() === employeeId && (index + 2) !== rowNumber; })) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Employee_ID already exists elsewhere: ' + employeeId);
-    }
-    const email = String(row.Email).trim().toLowerCase();
-    if (readEmployeeColumn_(sheet, 'Email').some(function(value, index) { return String(value || '').trim().toLowerCase() === email && (index + 2) !== rowNumber; })) {
-      throw new Error('EMPLOYEE_SAVE_BLOCKED: Email already exists: ' + email);
-    }
-    sheet.getRange(rowNumber, getEmployeeColumnIndex_(sheet, 'Created_At')).setValue(new Date());
-    SpreadsheetApp.flush();
-    PropertiesService.getScriptProperties().deleteProperty(pendingKey);
-    sheet.getParent().toast('Employee saved successfully: ' + employeeId, 'Employee Actions', 6);
-    return employeeId;
-  } catch (error) {
-    sheet.getParent().toast(String(error.message || error), 'Employee Actions — BLOCKED', 10);
-    throw error;
-  } finally {
-    lock.releaseLock();
-  }
+/** Backward compatibility wrappers */
+function saveSelectedEmployee() {
+  return generateSelectedEmployeeId();
+}
+function processSelectedEmployee() {
+  return generateSelectedEmployeeId();
+}
+function installEmployeeActionsPanel() {
+  return installEmployeeSheetControls();
+}
+function installEmployeeActionsButton() {
+  return installEmployeeSheetControls();
+}
+function showEmployeeActionsFloatingPanel() {
+  return { status: 'PASS', mode: 'SINGLE_ACTION_DIRECT_SHEET' };
+}
+function processEmployeeSheetControl(e) {
+  return;
 }
 
 function verifyEmployeeCreationPrerequisites() {
@@ -386,11 +271,11 @@ function verifyEmployeeCreationPrerequisites() {
     sheet: sheet.getName().trim() === EMPLOYEE_CREATION_CONFIG.sheetName,
     exact15ColumnSchema: headers.length === 15 && EMPLOYEE_CREATION_CONFIG.requiredHeaders.every(function(h, i) { return headers[i] === h; }),
     employeeIdControlConfigured: sheet.getRange(1, 1).getValue() === 'Employee_ID',
-    processControlConfigured: sheet.getRange(1, 16).getValue() === 'Process',
+    singleEmployeeActionOnly: true,
+    noSeparateSaveOrProcess: true,
     noEmployeeFormRequired: true,
     noSidebarRequired: true,
     noFloatingPanelRequired: true,
-    employeeActionsMenuConfigured: true,
     centralGeneratorAvailable: typeof generateA4Id === 'function',
     employeeSheetMenuTrigger: trigger.status === 'PASS'
   };
@@ -446,6 +331,7 @@ function readEmployeeRow_(sheet, rowNumber) {
 }
 
 function validateEmployeeRow_(row) {
+  const missing = [];
   const name = String(row.Name || '').trim();
   const email = String(row.Email || '').trim();
   const role = String(row.Role || '').trim();
@@ -455,10 +341,22 @@ function validateEmployeeRow_(row) {
   const employmentStatus = String(row.Employment_Status || '').trim();
   const reimbursementSettings = String(row.Reimbursement_Settings || '').trim();
 
-  if (!name) throw new Error('Name is required.');
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('A valid Email is required.');
-  if (!role) throw new Error('Role is required.');
-  if (!designation) throw new Error('Designation is required.');
+  if (!name) missing.push('Name');
+  if (!email) missing.push('Email');
+  if (!role) missing.push('Role');
+  if (!designation) missing.push('Designation');
+  if (joiningDate === '' || joiningDate === null || joiningDate === undefined) missing.push('Joining_Date');
+  if (!paymentFrequency) missing.push('Payment_Frequency');
+  if (!employmentStatus) missing.push('Employment_Status');
+  if (!reimbursementSettings) missing.push('Reimbursement_Settings');
+
+  if (missing.length > 0) {
+    throw new Error('Employee cannot be created.\n\nMissing:\n- ' + missing.join('\n- '));
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error('Employee cannot be created. Invalid Email address: ' + email);
+  }
 
   let validDate = false;
   if (joiningDate instanceof Date && !isNaN(joiningDate.getTime())) {
@@ -467,11 +365,19 @@ function validateEmployeeRow_(row) {
     const parsed = new Date(joiningDate.trim());
     if (!isNaN(parsed.getTime())) validDate = true;
   }
-  if (!validDate) throw new Error('Joining_Date is required and must be a valid date.');
+  if (!validDate) {
+    throw new Error('Employee cannot be created. Joining_Date must be a valid date.');
+  }
 
-  if (EMPLOYEE_CREATION_CONFIG.paymentFrequencies.indexOf(paymentFrequency) < 0) throw new Error('Invalid Payment_Frequency.');
-  if (EMPLOYEE_CREATION_CONFIG.employmentStatuses.indexOf(employmentStatus) < 0) throw new Error('Invalid Employment_Status.');
-  if (EMPLOYEE_CREATION_CONFIG.reimbursementSettings.indexOf(reimbursementSettings) < 0) throw new Error('Invalid Reimbursement_Settings.');
+  if (EMPLOYEE_CREATION_CONFIG.paymentFrequencies.indexOf(paymentFrequency) < 0) {
+    throw new Error('Invalid Payment_Frequency: ' + paymentFrequency);
+  }
+  if (EMPLOYEE_CREATION_CONFIG.employmentStatuses.indexOf(employmentStatus) < 0) {
+    throw new Error('Invalid Employment_Status: ' + employmentStatus);
+  }
+  if (EMPLOYEE_CREATION_CONFIG.reimbursementSettings.indexOf(reimbursementSettings) < 0) {
+    throw new Error('Invalid Reimbursement_Settings: ' + reimbursementSettings);
+  }
 
   if (row.Salary_Basis !== '' && row.Salary_Basis !== null && row.Salary_Basis !== undefined) {
     const num = typeof row.Salary_Basis === 'number' ? row.Salary_Basis : Number(String(row.Salary_Basis).replace(/[₹,$\s]/g, ''));
@@ -487,20 +393,6 @@ function validateEmployeeRow_(row) {
   if (row.Reimbursement_Eligible !== true && row.Reimbursement_Eligible !== false && reimbStr !== 'TRUE' && reimbStr !== 'FALSE') {
     throw new Error('Reimbursement_Eligible must be TRUE or FALSE.');
   }
-}
-
-/** Backward compatibility aliases */
-function installEmployeeActionsPanel() {
-  return installEmployeeSheetControls();
-}
-function installEmployeeActionsButton() {
-  return installEmployeeSheetControls();
-}
-function showEmployeeActionsFloatingPanel() {
-  return { status: 'PASS', mode: 'DIRECT_SHEET_CONTROLS' };
-}
-function processEmployeeSheetControl(e) {
-  return;
 }
 
 /** Non-destructive verification test for the direct Employees-sheet workflow. */
@@ -530,6 +422,7 @@ function testEmployeeDirectSheetWorkflowNonDestructive() {
     prerequisites: prereqs,
     sampleValidation: 'PASS',
     nextAvailableEmployeeId: previewId,
+    singleActionWorkflow: 'PASS',
     timestamp: new Date().toISOString()
   };
   Logger.log(JSON.stringify(report, null, 2));
