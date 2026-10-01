@@ -249,6 +249,31 @@ function getA414ProjectMemberSheet_() {
   return sheet;
 }
 
+function getA414EmployeesSheet_() {
+  const files = DriveApp.getFilesByName(A4_14_PROJECT_MEMBER_CONFIG.employeesWorkbookName);
+  const matches = [];
+
+  while (files.hasNext()) {
+    const file = files.next();
+    if (file.getMimeType() === MimeType.GOOGLE_SHEETS && !file.isTrashed()) {
+      matches.push(file);
+    }
+  }
+
+  if (matches.length !== 1) {
+    throw new Error(
+      'A4_14_EMPLOYEES_WORKBOOK_AMBIGUOUS_OR_MISSING: ' +
+      matches.length
+    );
+  }
+
+  const sheet = SpreadsheetApp.openById(matches[0].getId())
+    .getSheetByName(A4_14_PROJECT_MEMBER_CONFIG.employeesSheetName);
+
+  if (!sheet) throw new Error('A4_14_EMPLOYEES_SHEET_MISSING');
+  return sheet;
+}
+
 function getA414Headers_(sheet) {
   const lastColumn = sheet.getLastColumn();
   if (lastColumn < A4_14_PROJECT_MEMBER_CONFIG.headers.length) return [];
@@ -332,28 +357,7 @@ function validateA414ProjectExists_(projectId) {
 }
 
 function validateA414EmployeeExists_(employeeId) {
-  const files = DriveApp.getFilesByName(A4_14_PROJECT_MEMBER_CONFIG.employeesWorkbookName);
-  const matches = [];
-
-  while (files.hasNext()) {
-    const file = files.next();
-    if (file.getMimeType() === MimeType.GOOGLE_SHEETS && !file.isTrashed()) {
-      matches.push(file);
-    }
-  }
-
-  if (matches.length !== 1) {
-    throw new Error(
-      'A4_14_EMPLOYEES_WORKBOOK_AMBIGUOUS_OR_MISSING: ' +
-      matches.length
-    );
-  }
-
-  const sheet = SpreadsheetApp.openById(matches[0].getId())
-    .getSheetByName(A4_14_PROJECT_MEMBER_CONFIG.employeesSheetName);
-
-  if (!sheet) throw new Error('A4_14_EMPLOYEES_SHEET_MISSING');
-
+  const sheet = getA414EmployeesSheet_();
   const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
   const ids = readA414Column_(sheet, headers, 'Employee_ID')
     .map(function(value) { return String(value).trim(); });
@@ -422,7 +426,8 @@ function protectA414IdCell_(cell, id) {
 
 /**
  * Automated Live Verification Suite for Tests 1 through 7.
- * Can be executed in the Apps Script project to perform all required checks safely.
+ * Operates on MASTER_COMPANY_OPERATIONS and MASTER_COMPANY_HR_ADMIN.
+ * Cleans up temporary test rows and preserves all pre-existing records.
  */
 function testA414ProjectMemberWorkflowLive() {
   const report = {
@@ -433,20 +438,19 @@ function testA414ProjectMemberWorkflowLive() {
     test5DuplicateMembership: null,
     test6AlreadyIddRow: null,
     test7EmployeeMultipleProjects: null,
+    cleanup: null,
     allPassed: false
   };
+
+  const sheet = getA414ProjectMemberSheet_();
+  const initialLastRow = sheet.getLastRow();
 
   // Test 1: Prerequisites
   report.test1Prerequisites = setupProjectMemberSheetWorkflow();
 
-  const sheet = getA414ProjectMemberSheet_();
   const opsWb = getA414OperationsWorkbook_();
   const projectsSheet = opsWb.getSheetByName(A4_14_PROJECT_MEMBER_CONFIG.projectsSheetName);
-
-  const hrFiles = DriveApp.getFilesByName(A4_14_PROJECT_MEMBER_CONFIG.employeesWorkbookName);
-  if (!hrFiles.hasNext()) throw new Error('HR_WORKBOOK_MISSING');
-  const hrSheet = SpreadsheetApp.openById(hrFiles.next().getId())
-    .getSheetByName(A4_14_PROJECT_MEMBER_CONFIG.employeesSheetName);
+  const hrSheet = getA414EmployeesSheet_();
 
   // Get valid Project_ID and valid Employee_ID
   const projectHeaders = projectsSheet.getRange(1, 1, 1, projectsSheet.getLastColumn()).getValues()[0].map(String);
@@ -587,43 +591,63 @@ function testA414ProjectMemberWorkflowLive() {
   };
 
   // Test 7: Employee Can Have Multiple Projects
+  let tempProjectCreated = false;
+  let validProjectId2 = '';
+  let tempProjectRow = 0;
+
   if (validProjectIds.length > 1) {
-    const validProjectId2 = String(validProjectIds[1]).trim();
-    const test7Row = sheet.getLastRow() + 1;
-    sheet.getRange(test7Row, 1, 1, 7).setValues([[
-      '',
-      validProjectId2,
-      validEmployeeId,
-      'Lead',
-      'Admin',
-      true,
-      new Date()
-    ]]);
-    SpreadsheetApp.flush();
-
-    const test7Result = generateSelectedProjectMemberId(test7Row);
-    const generatedMbr2 = test7Result.memberRecordId;
-
-    report.test7EmployeeMultipleProjects = {
-      status: (generatedMbr2 && generatedMbr2 !== generatedMbr1 && /^MBR-[0-9]{6}$/.test(generatedMbr2)) ? 'PASS' : 'FAIL',
-      employeeId: validEmployeeId,
-      project1: validProjectId1,
-      mbr1: generatedMbr1,
-      project2: validProjectId2,
-      mbr2: generatedMbr2
-    };
-
-    // Clean up test rows to keep authoritative workbook pristine
-    sheet.deleteRow(test7Row);
+    validProjectId2 = String(validProjectIds[1]).trim();
   } else {
-    report.test7EmployeeMultipleProjects = {
-      status: 'PASS',
-      note: 'Only one project existed in Projects; multiple project rule verified by schema and mapping check.'
-    };
+    tempProjectRow = projectsSheet.getLastRow() + 1;
+    validProjectId2 = 'PRJ-TEST-TEMP';
+    projectsSheet.getRange(tempProjectRow, 1).setValue(validProjectId2);
+    SpreadsheetApp.flush();
+    tempProjectCreated = true;
   }
 
-  // Clean up Test 2 row as well if it was purely a test verification row
+  const test7Row = sheet.getLastRow() + 1;
+  sheet.getRange(test7Row, 1, 1, 7).setValues([[
+    '',
+    validProjectId2,
+    validEmployeeId,
+    'Lead',
+    'Admin',
+    true,
+    new Date()
+  ]]);
+  SpreadsheetApp.flush();
+
+  const test7Result = generateSelectedProjectMemberId(test7Row);
+  const generatedMbr2 = test7Result.memberRecordId;
+
+  report.test7EmployeeMultipleProjects = {
+    status: (generatedMbr2 && generatedMbr2 !== generatedMbr1 && /^MBR-[0-9]{6}$/.test(generatedMbr2)) ? 'PASS' : 'FAIL',
+    employeeId: validEmployeeId,
+    project1: validProjectId1,
+    mbr1: generatedMbr1,
+    project2: validProjectId2,
+    mbr2: generatedMbr2
+  };
+
+  // Clean up Test 7 row from Project_Members
+  sheet.deleteRow(test7Row);
+
+  // Clean up temporary project in Projects if created
+  if (tempProjectCreated && tempProjectRow > 0) {
+    projectsSheet.deleteRow(tempProjectRow);
+  }
+
+  // Clean up Test 2 row from Project_Members
   sheet.deleteRow(test2Row);
+  SpreadsheetApp.flush();
+
+  const finalLastRow = sheet.getLastRow();
+  report.cleanup = {
+    initialLastRow: initialLastRow,
+    finalLastRow: finalLastRow,
+    temporaryRecordsRemaining: Math.max(0, finalLastRow - initialLastRow),
+    preExistingRecordsPreserved: finalLastRow === initialLastRow
+  };
 
   report.allPassed = report.test1Prerequisites.status === 'PASS' &&
     report.test2ValidMember.status === 'PASS' &&
@@ -631,7 +655,8 @@ function testA414ProjectMemberWorkflowLive() {
     report.test4InvalidEmployee.status === 'PASS' &&
     report.test5DuplicateMembership.status === 'PASS' &&
     report.test6AlreadyIddRow.status === 'PASS' &&
-    report.test7EmployeeMultipleProjects.status === 'PASS';
+    report.test7EmployeeMultipleProjects.status === 'PASS' &&
+    report.cleanup.preExistingRecordsPreserved === true;
 
   Logger.log(JSON.stringify(report, null, 2));
   return report;

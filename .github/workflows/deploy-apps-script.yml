@@ -210,6 +210,26 @@ jobs:
             console.log('Apps Script API forbids headless scripts.run without a linked custom GCP project.');
             console.log('The script source is successfully deployed. Run setupEmployeeDirectSheetWorkflow() once in the Apps Script editor to install the trigger.');
           }
+
+          try {
+            console.log('Attempting automated execution of testA414ProjectMemberWorkflowLive via Apps Script API...');
+            const testResponse = await script.scripts.run({
+              scriptId,
+              requestBody: {
+                function: 'testA414ProjectMemberWorkflowLive',
+                devMode: false
+              }
+            });
+
+            if (testResponse.data && testResponse.data.error) {
+              console.log('TEST SUITE ERROR (API execution response):', JSON.stringify(testResponse.data.error));
+            } else {
+              const testResult = testResponse.data && testResponse.data.response && testResponse.data.response.result;
+              console.log('LIVE VERIFICATION RESULT (testA414ProjectMemberWorkflowLive):', JSON.stringify(testResult || {}));
+            }
+          } catch (testErr) {
+            console.log('NOTICE on testA414ProjectMemberWorkflowLive execution:', testErr.message);
+          }
           })().catch(err => { console.error(err); process.exit(1); });
           NODE
 
