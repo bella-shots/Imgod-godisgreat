@@ -159,12 +159,20 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Live verification on 01-Oct-2026 returned `allPassed: true`; generated `BDG-000001`; invalid Employee_ID, invalid Project_ID, invalid Amount, Used > Given, Returned > To Be Returned, missing Purpose, and already-ID'd rows were rejected; persistence/locking and no generic edit issuance passed.
   - R58 evidence: `EMP-000001` accepted; `MBR-000001` explicitly rejected before ID generation.
   - Cleanup passed: final last row returned to header-only and pre-existing records were preserved.
+- **A4-03 Employee Spending / Expense Processing: IMPLEMENTED in GitHub — FORM-ORIGINATED; R57 DIRECT-SHEET WORKFLOW DOES NOT APPLY.**
+  - Frozen Phase 3 architecture confirms ordinary employees submit spending strictly through FRM-02; `Employee_Spending_Responses` is intake-only and `Employee_Spending` is authoritative.
+  - New `Phase-4/Automation/Core/a4_03_expense_processing.gs` implements controlled FRM-02 processing and automatic SPN generation through A4-00.
+  - Resolves the respondent's explicit Employee Email ID to canonical `Employee_ID`; `Member_Record_ID` is never accepted as employee identity.
+  - Resolves human-facing Project Name to canonical `Project_ID`.
+  - Does not add a Generate Spending ID menu, onEdit ID issuance, Save/Process UX, Form, tab, or schema column.
+  - Live verification is still pending; no SPN sequence was consumed by the non-destructive test harness.
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. Implement and live-verify the next R57 Sheet-originated workflow: Employee_Spending only if its authoritative creation path is confirmed as direct-Sheet; otherwise preserve its Form/system-generated ID path under R57 exception rules.
-2. Continue the frozen R57 sequence for OOP_Claims, Salary_Admin and Investments according to their authoritative creation paths; do not convert Form/system-generated workflows into manual Generate-ID workflows without an approved revision.
+1. Live-verify A4-03 FRM-02 Employee Spending processing in the existing Phase 4 Apps Script project.
+2. Preserve Employee_Spending as Form/system-generated under R57; do not create a direct-Sheet Generate Spending ID action.
+3. After A4-03 verification, continue OOP_Claims, Salary_Admin and Investments according to their authoritative creation paths; do not convert Form/system-generated workflows into manual Generate-ID workflows without an approved revision.
 3. Continue A4-01/A4-02 live verification and the controlled FRM-01 end-to-end test.
 4. Continue R54 attachment routing and remaining Phase 4 workflows.
 5. Use Budget_Given live evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
