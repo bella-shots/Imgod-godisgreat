@@ -204,3 +204,15 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - A4-04 flags food-related claims for review; documented company-essential exceptions require authorized classification/approval.
 - A4-05 adds the fixed ₹1,000 allowance separately and excludes unclassified FOOD_ claims from the OOP salary component.
 - R60 remains applicable to approved company-essential OOP only.
+
+### R62 — OOP Top Manager approval gate
+- **FROZEN IN GITHUB — implementation updated, live verification pending.**
+- OOP claims now follow: **Employee FRM-03 submission → A4-04 validation/CLM generation → `Pending Review` → configured Top Manager notification → explicit Top Manager approval/rejection → salary eligibility only after approval**.
+- A4-04 provides controlled manager actions for normal company-essential approval, food-business-exception approval, and rejection.
+- Ordinary food claims remain excluded from the ₹5,000 company-essential OOP calculation.
+- A genuine food-related business exception can enter salary only through the dedicated Top Manager exception approval action.
+- A4-05 now accepts only `Approved` claims with `APPROVED_COMPANY_ESSENTIAL` or `APPROVED_FOOD_BUSINESS_EXCEPTION` for the OOP salary component.
+- `Pending Review`/`Rejected`/unclassified claims contribute ₹0 to next-month OOP salary.
+- The frozen 11-column `OOP_Claims` schema is unchanged.
+- Top Manager email is configured through Apps Script Script Property `TOP_MANAGER_EMAIL`.
+- Live verification of the complete employee → manager → approval → salary chain is pending.
