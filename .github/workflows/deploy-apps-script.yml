@@ -20,7 +20,9 @@ jobs:
 
       - name: Install clasp and API client
         run: npm install --global @google/clasp
-          npm install --no-save googleapis
+          rm -rf "$RUNNER_TEMP/googleapis-runtime"
+          mkdir -p "$RUNNER_TEMP/googleapis-runtime"
+          npm install --prefix "$RUNNER_TEMP/googleapis-runtime" googleapis
 
       - name: Configure Google credentials
         env:
@@ -57,7 +59,7 @@ jobs:
         env:
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
-          node --input-type=commonjs <<'NODE'
+          NODE_PATH="$RUNNER_TEMP/googleapis-runtime/node_modules" node --input-type=commonjs <<'NODE'
           (async () => {
           const fs = require('fs');
           const path = require('path');
