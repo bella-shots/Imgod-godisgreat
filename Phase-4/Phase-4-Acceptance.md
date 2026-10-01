@@ -136,7 +136,7 @@
 - Project resolution: Human-facing `Project Name` resolved to canonical `Project_ID` against `Projects` table.
 - ID generation: Universal A4-00 `MOM-000001`-style ID generation under LockService.
 - Drive placement: Verified artifact creation in `MASTER COMPANY/Projects/PROJECT_<ProjectName>/04_MOM/`.
-- Versioning & Update: New submissions start at `v1.0` with status `Published`; updates increment to `v1.1` with status `Revised`.
+- Versioning & Update: New submissions start at `v1.0` with status `Published`; updates increment to `v1.1` while preserving valid status (`Published` in dropdown `Draft, In Review, Approved, Published, Archived`).
 - Idempotency & Failure safety: Duplicate trigger processing preserved existing MOM_ID and prevented duplicate artifacts; invalid projects/dates rejected before commit; raw `MOM_Responses` preserved.
 - Email distribution (A4-07): Parsed and deduplicated attendee emails; verified subject, meeting date, version, notes excerpt, and Drive doc link; duplicate email dispatch prevented via `ScriptProperties`; send status and timestamps logged; zero additional cost using native MailApp.
 - Cleanup: Temporary test index rows and Drive docs removed; pre-existing production data preserved.

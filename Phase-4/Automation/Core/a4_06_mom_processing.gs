@@ -36,8 +36,7 @@ var A406_CONFIG = Object.freeze({
   PREFIX: 'MOM',
   INITIAL_VERSION: 'v1.0',
   DEFAULT_STATUS: 'Published',
-  REVISED_STATUS: 'Revised',
-  ALLOWED_STATUSES: ['Draft', 'Published', 'Revised'],
+  ALLOWED_STATUSES: ['Draft', 'In Review', 'Approved', 'Published', 'Archived'],
   HEADERS: [
     'MOM_ID',
     'Project_ID',
@@ -129,7 +128,9 @@ function processMomRecord_(input, ops, indexSheet) {
 
   var finalMomId = isUpdate ? targetMomId : generateA4Id(A406_CONFIG.PREFIX, getMomExistingIds_(indexSheet, headers));
   var finalVersion = isUpdate ? incrementMomVersion_(existingVersion) : A406_CONFIG.INITIAL_VERSION;
-  var finalStatus = isUpdate ? A406_CONFIG.REVISED_STATUS : A406_CONFIG.DEFAULT_STATUS;
+  var finalStatus = (input.status && A406_CONFIG.ALLOWED_STATUSES.indexOf(input.status) >= 0)
+    ? input.status
+    : A406_CONFIG.DEFAULT_STATUS;
 
   // Resolve project Drive folder and 04_MOM subfolder via A4-02
   var folderResult = ensureA402ProjectFolder(project.projectName);
@@ -605,7 +606,7 @@ function testA406MomProcessingLive() {
   // 13. Update Behavior (Version increment)
   var updatedRowVals = indexSheet.getRange(testMomRowIdx, 1, 1, headers.length).getValues()[0];
   report.test13UpdateBehavior = {
-    status: (updatedRowVals[headers.indexOf('Version')] === 'v1.1' && updatedRowVals[headers.indexOf('Status')] === 'Revised') ? 'PASS' : 'FAIL',
+    status: (updatedRowVals[headers.indexOf('Version')] === 'v1.1' && updatedRowVals[headers.indexOf('Status')] === 'Published') ? 'PASS' : 'FAIL',
     newVersion: updatedRowVals[headers.indexOf('Version')],
     newStatus: updatedRowVals[headers.indexOf('Status')]
   };
