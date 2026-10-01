@@ -31,3 +31,8 @@
 - Concurrent Generate-ID actions must remain serialized by LockService.
 - Generic edit/autosave triggers must never be used as a fallback path for ID issuance after an explicit action fails.
 - Form/system-generated IDs continue to use their controlled processing/error-handling path and are not converted into R57 manual actions.
+
+
+## R58 — Financial employee-linkage validation
+
+Financial employee-related workflows must reject or flag any attempt to resolve an employee through `Member_Record_ID`. The canonical employee reference is `Employee_ID` for `Budget_Given`, `Employee_Spending`, `OOP_Claims` and `Salary_Admin`. `Investments` is excluded from this rule because its frozen schema uses `Source_Person`.
