@@ -216,3 +216,12 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - The frozen 11-column `OOP_Claims` schema is unchanged.
 - Top Manager email is configured through Apps Script Script Property `TOP_MANAGER_EMAIL`.
 - Live verification of the complete employee → manager → approval → salary chain is pending.
+
+
+### R62 authority correction — 2026-10-01
+- Corrected A4-04 Top Manager resolution: the approval authority is not a manually configured email or Script Property.
+- The authoritative designation hierarchy in Phase 3 is Intern → Executive → Senior Executive → Lead → Manager → Senior Manager → Director.
+- Therefore the Top Manager is resolved dynamically from MASTER_COMPANY_HR_ADMIN → Employees as the single active employee with Designation = Director.
+- OOP claims remain Pending Review until that Director explicitly approves or rejects them.
+- Non-Director users cannot approve/reject OOP claims.
+- GitHub implementation updated in Phase-4/Automation/Core/a4_04_oop_claim_processing.gs; related R62 build/business/error/acceptance documents aligned.
