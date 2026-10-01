@@ -2,8 +2,8 @@
 |---|---|---|---|
 | P4-01 | Deploy the approved Apps Script project. | Script is associated with the approved Google environment and required authorizations are granted. | NOT STARTED |
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | NOT STARTED |
-| P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
+| P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
 | P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | NOT STARTED |
 | P4-06 | Test ₹5,000 rule. | The approved rule is calculated exactly as specified; no unapproved interpretation is introduced. | NOT STARTED |
 | P4-07 | Test salary carry-forward. | Monthly salary records produce the approved carry-forward while preserving historical records. | NOT STARTED |
@@ -61,12 +61,12 @@
 | P4-46 | Test duplicate/already-ID'd protection. | Duplicate/identity violations or an already-generated ID prevent another sequence allocation; issued IDs are never reused. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-47 | Test no generic ID issuance. | onEdit/autosave/passive edit/spreadsheet-open events never issue business IDs for direct Sheet-originated records. | PARTIAL — Employee, Project_Members, Project_Notes and Budget_Given verified; remaining applicable workflows pending. |
 | P4-48 | Test controlled Salary bulk generation. | A validated Salary batch can use one explicit Generate Salary ID(s) action; each SAL ID is generated through A4-00 and no generic edit trigger issues IDs. | NOT STARTED |
-| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PARTIAL — Employee_Spending is confirmed Form-originated; A4-03 implements automatic SPN generation through controlled FRM-02 processing. Broader system/form verification remains pending. |
+| P4-49 | Verify Form/system-generated exception. | Form-triggered business IDs and Submission_ID remain automatic within their controlled system processing workflows; R57 does not require manual Generate-ID actions for them. | PARTIAL — Employee_Spending is now live-verified Form-originated with automatic SPN generation through controlled FRM-02 processing; broader system/form verification remains pending. |
 
 ## R58 — Financial employee identity invariant
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-50 | Verify employee linkage for money-related records. | `Budget_Given` uses `Recipient Employee_ID`; `Employee_Spending`, `OOP_Claims`, and `Salary_Admin` use `Employee_ID`; no financial workflow uses `Member_Record_ID` as the employee reference. `Investments` remains the explicit exception because its frozen schema uses `Source_Person`. | PARTIAL — Budget_Given live verification PASS on 01-Oct-2026: `EMP-000001` accepted; `MBR-000001` explicitly rejected before ID generation. Remaining applicable money workflows pending. |
+| P4-50 | Verify employee linkage for money-related records. | `Budget_Given` uses `Recipient Employee_ID`; `Employee_Spending`, `OOP_Claims`, and `Salary_Admin` use `Employee_ID`; no financial workflow uses `Member_Record_ID` as the employee reference. `Investments` remains the explicit exception because its frozen schema uses `Source_Person`. | PARTIAL — Budget_Given and Employee_Spending are now live-verified; remaining applicable money workflows pending. |
 
 ### Budget_Given R57/R58 live evidence — 01-Oct-2026
 - Authoritative workbook: `MASTER_COMPANY_FINANCE`
@@ -81,7 +81,6 @@
 - Cleanup passed: temporary records removed, final sheet returned to header-only, pre-existing records preserved.
 - Overall: `BUDGET_GIVEN_R57_LIVE_VERIFICATION = PASS`.
 
-
 ### Employee_Spending architecture decision — 01-Oct-2026
 - Frozen Phase 3 sources confirm `FRM-02 Employee Spending / Expense` is the authoritative creation path.
 - Native `Employee_Spending_Responses` is an intake-only response tab.
@@ -90,4 +89,6 @@
 - Therefore R57 direct-Sheet Generate-ID UX is **not applicable** to Employee_Spending.
 - A4-03 automatically generates `SPN-XXXXXX` through A4-00 during controlled Form processing.
 - The implementation does not add a Generate Spending ID menu, direct-Sheet Save/Process action, new Form, new tab, or schema column.
-- A4-03 live verification remains pending.
+- **Live verification on 01-Oct-2026 returned `allPassed: true`.**
+- Verified exact 10-column schema, workbook/sheet resolution, Employee_ID and Project_ID resolution, A4-00 SPN availability, no SPN sequence consumption by the test, no onEdit ID issuance, R58 rejection of Member_Record_ID, and production-data preservation.
+- **Overall: A4-03 Employee Spending Form-Originated Workflow = PASS.**
