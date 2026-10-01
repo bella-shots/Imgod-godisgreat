@@ -94,6 +94,11 @@ function processEmployeeSpendingRecord_(input, target) {
     throw new Error('A4_03_PROJECT_NOT_FOUND: ' + projectName);
   }
 
+  // R54: Route uploaded receipt to project 03_Expenses folder
+  if (attachmentUrl && typeof routeAttachmentToProjectExpenses_ === 'function') {
+    attachmentUrl = routeAttachmentToProjectExpenses_(attachmentUrl, project.projectName);
+  }
+
   var headers = target.getRange(1, 1, 1, target.getLastColumn()).getValues()[0];
   assertExactEmployeeSpendingHeaders_(headers);
 

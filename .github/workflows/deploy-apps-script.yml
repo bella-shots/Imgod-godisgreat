@@ -411,6 +411,21 @@ jobs:
             exit 1
           }
 
+          R54_MATCHES=$(grep -RIl "function routeAttachmentToProjectExpenses_" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$R54_MATCHES" || {
+            echo "FAIL: routeAttachmentToProjectExpenses_ is missing from live Apps Script."
+            exit 1
+          }
+          R54_FILE=$(printf '%s\n' "$R54_MATCHES" | head -n 1)
+          grep -q "function routeAttachmentToHr_" "$R54_FILE" || {
+            echo "FAIL: routeAttachmentToHr_ missing from live workflow."
+            exit 1
+          }
+          grep -q "function testR54AttachmentRoutingLive" "$R54_FILE" || {
+            echo "FAIL: testR54AttachmentRoutingLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"

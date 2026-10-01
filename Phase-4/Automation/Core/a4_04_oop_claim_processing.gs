@@ -86,6 +86,11 @@ function processOopClaimRecord_(input, target) {
   assertExactOopHeaders_(headers);
   getTopManagerEmail_();
 
+  // R54: Route uploaded proof to project 03_Expenses folder
+  if (proofUrl && typeof routeAttachmentToProjectExpenses_ === 'function') {
+    proofUrl = routeAttachmentToProjectExpenses_(proofUrl, project.projectName);
+  }
+
   var existingIds = getOopColumnValues_(target, headers, 'Claim_ID')
     .filter(function(v) { return /^CLM-[0-9]{6}$/.test(String(v).trim()); });
   var claimId = generateA4Id('CLM', existingIds);
