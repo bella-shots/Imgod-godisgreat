@@ -121,13 +121,13 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Counter reconciliation never moves counters backward.
   - Non-destructive verification helpers are available.
   - Full A4-00 acceptance remains open until real record-creation workflows exercise the generator.
-- **A4-01 Project Processing: IMPLEMENTED in GitHub; live verification is the NEXT execution target.**
+- **A4-01 Project Processing: IMPLEMENTED in GitHub — LIVE-VERIFIED PASS (01-Oct-2026).**
   - FRM-01 → Projects + Project_Members normalization.
   - Submission_Index traceability.
   - Human-facing member resolution to canonical Employee_ID.
   - Concurrent idempotency reservation.
   - PRJ/MBR generation through A4-00 only.
-- **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub; live verification is the NEXT execution target alongside A4-01.**
+- **A4-02 Project Drive Folder Automation: IMPLEMENTED in GitHub — LIVE-VERIFIED PASS (01-Oct-2026).**
   - Creates/locates `PROJECT_<ProjectName>` and the seven approved Phase 1 subfolders.
   - Reuses existing unique folders; rejects ambiguous duplicates.
 - **Employee Creation Workflow (R48/R52/R56/R57): ONE-CLICK DIRECT SHEET IMPLEMENTATION — FROZEN & LIVE-VERIFIED.**
@@ -187,19 +187,20 @@ All R55 placement and response-destination acceptance checks are now verified un
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
 ## Phase 4 immediate focus
-1. **A4-04 + A4-05 live verification is COMPLETE/PASS.**
-2. **Next: live-verify A4-01/A4-02 and the controlled FRM-01 end-to-end test.**
-3. Continue R54 attachment routing and remaining Phase 4 workflows.
-4. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
+1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
+2. **Next: implement/live-verify R54 attachment routing (FRM-02, FRM-03, FRM-04) in the existing Phase 4 Apps Script project.**
+3. Continue Salary/Admin Generate-ID, Investment exception, MOM, reporting, notification, audit/error handling, and remaining Phase 4 workflows.
+4. Complete A4-00 universal 13-prefix/concurrency/recovery acceptance after the remaining record workflows exercise the generator.
+5. Use Budget_Given + Employee_Spending + OOP/Salary evidence to strengthen the R58 financial employee-identity acceptance gate; do not mark overall R58 PASS until all applicable money workflows are verified.
 
 
-## Next live-verification target — A4-01 + A4-02
-- **Target:** controlled FRM-01 end-to-end project creation in the existing Phase 4 Apps Script project.
-- Flow: FRM-01 → Projects_Responses → A4-01 → A4-02 → Projects + Project_Members + Submission_Index + Drive project folder structure.
-- Verify canonical PRJ/MBR generation through A4-00, Employee_ID resolution, Submission_ID traceability, idempotency/concurrent-event protection, and preservation of the raw response on failure.
-- Verify A4-02 creates/locates exactly one PROJECT_<ProjectName> under MASTER COMPANY/Projects with the seven frozen subfolders: 01_Admin, 02_Checklist, 03_Expenses, 04_MOM, 05_Notes, 06_Files, 07_Reports.
-- Verify existing unique project folders are reused, duplicate/ambiguous folders are rejected, and failed subfolder creation does not leave an unintended partial project folder.
-- **Do not mark P4-02 PASS until live evidence is returned.**
+## Next live-verification target — R54 attachment routing
+- **Target:** controlled attachment routing for FRM-02, FRM-03 and FRM-04 in the existing Phase 4 Apps Script project.
+- FRM-02 receipt → exact project's `03_Expenses` folder → final `Attachment_URL`.
+- FRM-03 proof → exact project's `03_Expenses` folder → final `Proof_URL`.
+- FRM-04 supporting document → `MASTER COMPANY/HR`, without public sharing.
+- Verify retry idempotency, invalid/unresolved project handling, destination/move failure safety, source preservation, and no duplicate business copies.
+- Do not mark P4-27 through P4-32 PASS until live evidence is returned.
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
@@ -226,7 +227,7 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - `Pending Review`/`Rejected`/unclassified claims contribute ₹0 to next-month OOP salary.
 - The frozen 11-column `OOP_Claims` schema is unchanged.
 - Top Manager is resolved dynamically as the single active `Director` in `MASTER_COMPANY_HR_ADMIN → Employees`; no manager email Script Property is used.
-- Live verification of the complete employee → manager → approval → salary chain is pending.
+- Live verification of the complete employee → manager → approval → salary chain = PASS on 01-Oct-2026.
 
 
 ### R62 authority correction — 2026-10-01
