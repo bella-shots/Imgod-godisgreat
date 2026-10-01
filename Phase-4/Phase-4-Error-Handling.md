@@ -14,6 +14,14 @@
 
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
+
+## R56 — One-click Employee creation transaction safety
+- The Employee creation action is one explicit Generate Employee ID transaction; there is no separate Save/Process recovery step.
+- If validation or duplicate-email checks fail, no Employee_ID is issued and the employee is not finalized.
+- If an Employee_ID has already been issued for the selected row, the action must not allocate another ID.
+- If the ID is issued but a later finalization write fails, the issued ID is never reused; the record remains visibly recoverable/manual-review and the failure is logged.
+- Generic onEdit/autosave events must never invoke Employee_ID generation.
+
 - R52 error-handling requirements: reject Generate-ID when required fields are incomplete/invalid; never issue an ID from generic onEdit/autosave; LockService serializes concurrent Generate-ID actions; if generation succeeds but commit/save fails, the issued ID is not reused; repeated Generate-ID on an already-ID'd/locked record must not allocate another sequence value.
 
 
