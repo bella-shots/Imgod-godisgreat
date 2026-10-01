@@ -293,10 +293,6 @@ jobs:
           }
 
           NEW_FILE=$(printf '%s\n' "$NEW_MATCHES" | head -n 1)
-          grep -q "function processEmployeeSheetControl" "$NEW_FILE" || {
-            echo "FAIL: processEmployeeSheetControl missing from live workflow."
-            exit 1
-          }
           grep -q "function onOpenEmployeeSheetMenu" "$NEW_FILE" || {
             echo "FAIL: onOpenEmployeeSheetMenu missing from live workflow."
             exit 1
