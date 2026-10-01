@@ -3,11 +3,11 @@
 **Phase:** 4 — Apps Script Automation  
 **Applies to:** All authoritative business records defined by Phase 3  
 **Status:** Frozen implementation contract  
-**Revision:** R49
+**Revision:** R57
 
 ## 1. Purpose
 
-Define one deterministic, collision-safe mechanism for generating stable IDs for all authoritative records.
+Define one deterministic, collision-safe mechanism for generating stable IDs for all authoritative records, and one standardized user-facing transaction for direct Sheet-originated business-ID creation.
 
 ## 2. Canonical formats
 
@@ -90,11 +90,9 @@ The generated business ID remains the canonical displayed record identifier. Pha
 
 This does not change the ID-generation algorithm or Phase 3 schema.
 
-
 ## R51 — Universal generated-ID visibility
 
 The stable ID contract applies to all 13 authoritative record types. After authoritative creation, the generated ID must be persisted with the record and displayed in the corresponding authorized website/module view. The canonical IDs are: PRJ, EMP, MBR, NOT, MOM, BDG, SPN, CLM, SAL, INV, HRR, RPT and SUB. Visibility is authorization-controlled and does not grant access to the underlying record.
-
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 The universal ID generator remains the authoritative generator, but its trigger differs by record origin. For direct Sheet-originated records, the generator is invoked only by an explicit controlled Generate-ID action—not by generic edit triggers or autosave.
@@ -108,3 +106,30 @@ The universal ID generator remains the authoritative generator, but its trigger 
 Workflow: enter required data → validate pending record → explicit Generate-ID action → acquire LockService → reconcile counter → generate unique ID → write ID → lock/read-only ID field → allow commit/save. A record must not be committed without its valid generated ID.
 
 This prevents simultaneous users from obtaining IDs through competing row-edit/autosave events. The central generator's existing PropertiesService counters, reconciliation, idempotency, collision and no-reuse rules remain unchanged. Employee_ID keeps its already-frozen dedicated workflow. Submission_ID remains system/index generated.
+
+## R57 — Universal explicit Generate-ID transaction for user-created Sheet records
+
+For every user-created authoritative Sheet record that requires a business ID, the record-specific Generate-ID action is the single controlled creation/finalization entry point.
+
+### Standard transaction
+1. User completes the pending record using the frozen Phase 3 schema.
+2. User selects the pending record.
+3. User invokes the record-specific Generate-ID action.
+4. The action validates required fields and applicable duplicate/identity constraints.
+5. A4-00 generates the canonical ID.
+6. The workflow persists and locks the ID field.
+7. The workflow performs the appropriate authoritative commit/finalization.
+8. The record is left in its approved post-creation state.
+
+### Applies to
+Direct Sheet-originated records requiring business IDs: Employee, Project Member, Project Note, Budget, Spending, OOP Claim, Salary and Investment.
+
+Salary may use a single explicit controlled Generate Salary ID(s) action for a validated batch.
+
+### Does not apply to
+Form/system-generated IDs remain automatic. Form-processing workflows may generate their business IDs during their controlled processing transaction. Submission_ID remains system/index-generated.
+
+### Prohibited behavior
+Generic onEdit/autosave, passive cell edits, spreadsheet-open events, row-position-based generation, manual business-ID typing, and a separate Save/Process action required solely to complete ID generation are not permitted under R57.
+
+R57 standardizes the user interaction and transaction boundary; it does not change the canonical ID formats, Phase 3 schemas, or record-specific business rules.
