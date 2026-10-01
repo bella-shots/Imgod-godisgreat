@@ -57,7 +57,7 @@ jobs:
         env:
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
         run: |
-          node <<'NODE'
+          node --input-type=commonjs <<'NODE'
           const fs = require('fs');
           const path = require('path');
           const {google} = require('googleapis');
