@@ -7,8 +7,8 @@
 | P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | PASS — live-verified 01-Oct-2026; FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims, CLM generation, Director routing and Pending Review behavior all passed. |
 | P4-06 | Test ₹5,000 rule. | Monthly company-essential OOP spend is applied to the next salary credit as actual approved spend: ₹1,000→+₹1,000; ₹5,000→+₹5,000; ₹7,000→+₹5,000+₹2,000 excess (=+₹7,000). No extra ₹5,000 line is added and claims are not auto-approved. | PASS — live-verified 01-Oct-2026; ₹1,000, ₹5,000 and ₹7,000 cases passed with no separate ₹5,000 line. |
 | P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | PASS — live-verified 01-Oct-2026; approved/pending/rejected/food cases and separate ₹1,000 allowance passed. |
-| P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | NOT STARTED |
-| P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | NOT STARTED |
+| P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | PASS — live-verified 01-Oct-2026; FRM-05 → MOM_Responses → A4-06 → Project_MOM_Index + 04_MOM Doc artifact creation, versioning (v1.0 → v1.1), update/publish, and canonical Project_ID resolution all passed. |
+| P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | PASS — live-verified 01-Oct-2026; A4-07 parsed/deduplicated attendee emails, generated correct MOM subject/body/link, prevented duplicate email dispatch via ScriptProperties, and logged send results. |
 | P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | NOT STARTED |
 | P4-11 | Test duplicate trigger protection. | Retrying the same event does not create duplicate folders, records or emails. | NOT STARTED |
 | P4-12 | Test failure handling. | Forced error creates a visible failure state and appropriate admin notification/log entry. | NOT STARTED |
@@ -118,6 +118,19 @@
 - Validation-before-ID issuance passed for missing Source_Person, invalid/negative amounts, invalid dates, and invalid status values.
 - Duplicate/idempotency protection passed; access control verified (non-public Finance workbook); temporary verification records removed and pre-existing records preserved.
 - Overall: `INVESTMENT_R58_LIVE_VERIFICATION = PASS`.
+
+### MOM Processing (A4-06) & Email Sender (A4-07) live verification evidence — 01-Oct-2026
+- Implementation: `Phase-4/Automation/Core/a4_06_mom_processing.gs` and `Phase-4/Automation/Core/a4_07_mom_email_sender.gs` in the existing MASTER COMPANY Phase 4 Automation project.
+- Architecture: `FRM-05 — MOM Input` → `MOM_Responses` (in `MASTER_COMPANY_OPERATIONS`) → `A4-06` → `Project_MOM_Index` + Google Doc in `04_MOM` folder → `A4-07` → approved recipients.
+- Schema: `Project_MOM_Index` preserved with exact 11 frozen columns (`MOM_ID`, `Project_ID`, `Meeting_Date`, `Title`, `Participants`, `Registered_Email_IDs`, `Version`, `Status`, `Drive_URL`, `Published_At`, `Published_By`).
+- Project resolution: Human-facing `Project Name` resolved to canonical `Project_ID` against `Projects` table.
+- ID generation: Universal A4-00 `MOM-000001`-style ID generation under LockService.
+- Drive placement: Verified artifact creation in `MASTER COMPANY/Projects/PROJECT_<ProjectName>/04_MOM/`.
+- Versioning & Update: New submissions start at `v1.0` with status `Published`; updates increment to `v1.1` with status `Revised`.
+- Idempotency & Failure safety: Duplicate trigger processing preserved existing MOM_ID and prevented duplicate artifacts; invalid projects/dates rejected before commit; raw `MOM_Responses` preserved.
+- Email distribution (A4-07): Parsed and deduplicated attendee emails; verified subject, meeting date, version, notes excerpt, and Drive doc link; duplicate email dispatch prevented via `ScriptProperties`; send status and timestamps logged; zero additional cost using native MailApp.
+- Cleanup: Temporary test index rows and Drive docs removed; pre-existing production data preserved.
+- Overall: `A4-06 MOM PROCESSING LIVE VERIFICATION = PASS` and `A4-07 MOM EMAIL SENDER LIVE VERIFICATION = PASS`.
 
 
 ### Budget_Given R57/R58 live evidence — 01-Oct-2026

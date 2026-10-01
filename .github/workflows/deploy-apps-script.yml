@@ -456,6 +456,36 @@ jobs:
             exit 1
           }
 
+          MOM_MATCHES=$(grep -RIl "function processMomFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$MOM_MATCHES" || {
+            echo "FAIL: processMomFormSubmit is missing from live Apps Script."
+            exit 1
+          }
+          MOM_FILE=$(printf '%s\n' "$MOM_MATCHES" | head -n 1)
+          grep -q "function verifyA406MomPrerequisites" "$MOM_FILE" || {
+            echo "FAIL: verifyA406MomPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA406MomProcessingLive" "$MOM_FILE" || {
+            echo "FAIL: testA406MomProcessingLive missing from live workflow."
+            exit 1
+          }
+
+          MOM_EMAIL_MATCHES=$(grep -RIl "function sendMomDistributionEmail" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$MOM_EMAIL_MATCHES" || {
+            echo "FAIL: sendMomDistributionEmail is missing from live Apps Script."
+            exit 1
+          }
+          MOM_EMAIL_FILE=$(printf '%s\n' "$MOM_EMAIL_MATCHES" | head -n 1)
+          grep -q "function verifyA407MomEmailPrerequisites" "$MOM_EMAIL_FILE" || {
+            echo "FAIL: verifyA407MomEmailPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA407MomEmailSenderLive" "$MOM_EMAIL_FILE" || {
+            echo "FAIL: testA407MomEmailSenderLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
