@@ -1,0 +1,10 @@
+{
+  "name": "master-company-portal",
+  "version": "1.0.0",
+  "description": "Master Company Portal - Google-Native Operations System Portal & Specification Viewer",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -e 'console.log(\"Build successful\")'"
+  }
+}

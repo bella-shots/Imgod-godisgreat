@@ -25,6 +25,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/deployment-runtime" @google/clasp googleapis
           rm -rf "$RUNNER_TEMP/googleapis-runtime"
           ln -s "$RUNNER_TEMP/deployment-runtime/node_modules" "$RUNNER_TEMP/googleapis-runtime"
+          echo "$RUNNER_TEMP/deployment-runtime/node_modules/.bin" >> "$GITHUB_PATH"
 
       - name: Configure Google credentials
         env:
@@ -152,7 +153,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/apps-script-live"
           cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/apps-script-live/.clasp.json"
           cd "$RUNNER_TEMP/apps-script-live"
-          clasp pull --force
+          "$RUNNER_TEMP/deployment-runtime/node_modules/.bin/clasp" pull --force
           echo "=== LIVE FILES AFTER FULL REPLACEMENT ==="
           find . -maxdepth 1 -type f -printf '%f\n' | sort
 
