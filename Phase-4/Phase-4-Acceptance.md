@@ -5,8 +5,8 @@
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
 | P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-06 | Test ₹5,000 rule. | The approved rule is calculated exactly as specified; no unapproved interpretation is introduced. | NOT STARTED |
-| P4-07 | Test salary carry-forward. | Monthly salary records produce the approved carry-forward while preserving historical records. | NOT STARTED |
+| P4-06 | Test ₹5,000 rule. | Monthly company-essential OOP spend is applied to the next salary credit as actual approved spend: ₹1,000→+₹1,000; ₹5,000→+₹5,000; ₹7,000→+₹5,000+₹2,000 excess (=+₹7,000). No extra ₹5,000 line is added and claims are not auto-approved. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | IMPLEMENTED — LIVE VERIFICATION PENDING |
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | NOT STARTED |
 | P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | NOT STARTED |
 | P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | NOT STARTED |
@@ -105,3 +105,13 @@
 - Claims enter `Pending Review`; no silent auto-approval is introduced.
 - The frozen Phase-4 source reviewed here does not contain the exact approved interpretation of the ₹5,000 rule. A4-04 therefore does **not** invent an allowance, excess, salary, or approval treatment; `Approved_Amount` remains unset and `OOP_Rule_Flag` is marked `PENDING_APPROVED_5000_RULE` until the approved interpretation is available.
 - Live verification is pending.
+
+
+### R60 — OOP-to-Salary rule implementation — 01-Oct-2026
+- A4-04 now classifies each OOP claim against the frozen ₹5,000 monthly company-essential baseline.
+- A4-05 now calculates the next monthly salary credit from base salary + aggregated approved OOP spend for the applicable month.
+- The calculation explicitly handles below ₹5,000, exactly ₹5,000, and above ₹5,000 cases.
+- No separate ₹5,000 reimbursement line is created.
+- Only claims with Status = Approved and a positive Approved_Amount contribute to the salary addition.
+- Salary history is preserved; prior Salary_Admin records are not overwritten.
+- Live verification of A4-04 and A4-05 remains pending.
