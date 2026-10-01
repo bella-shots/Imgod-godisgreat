@@ -13,9 +13,9 @@
  * - CLM IDs are generated automatically during controlled FRM-03 processing through A4-00.
  * - Canonical employee identity is Employee_ID resolved from Employee Email ID.
  * - Member_Record_ID is never an employee substitute.
- * - The exact approved ₹5,000 rule interpretation is NOT present in the frozen Phase-4 business-rule source available to this implementation.
- *   Therefore this module must not invent allowance, excess, salary or approval treatment.
- * - Claims are created in Pending Review; Approved_Amount remains unpopulated until the approved rule/authorized review determines it.
+ * - R60 freezes the ₹5,000 rule as a monthly company-essential spending baseline, not a reimbursement cap.
+ * - The next salary credit adds the actual approved company-essential OOP spend for the applicable month.
+ * - Claims remain Pending Review until authorized review; this module never auto-approves a claim.
  */
 
 var A404_CONFIG = Object.freeze({
@@ -99,7 +99,7 @@ function processOopClaimRecord_(input, target) {
   setOopByHeader_(row, headers, 'Status', A404_CONFIG.STATUS);
   setOopByHeader_(row, headers, 'Approved_Amount', '');
   setOopByHeader_(row, headers, 'Paid_Date', '');
-  setOopByHeader_(row, headers, 'OOP_Rule_Flag', 'PENDING_APPROVED_5000_RULE');
+  setOopByHeader_(row, headers, 'OOP_Rule_Flag', classifyOop5000Rule_(amount));
 
   target.appendRow(row);
   SpreadsheetApp.flush();
@@ -111,7 +111,7 @@ function processOopClaimRecord_(input, target) {
     projectId: project.projectId,
     source: 'FRM-03',
     processingStatus: A404_CONFIG.STATUS,
-    ruleEvaluation: 'PENDING_APPROVED_5000_RULE',
+    ruleEvaluation: classifyOop5000Rule_(amount),
     r57DirectSheetWorkflow: false,
     r58EmployeeIdentity: 'Employee_ID'
   };
@@ -183,7 +183,8 @@ function testA404FormOriginatedWorkflowLive() {
     projectResolved: project.projectId,
     proofRequired: true,
     ruleEvaluationNotInvented: true,
-    approvedAmountLeftUnsetUntilRule: true,
+    approvedAmountLeftUnsetUntilReview: true,
+    fiveThousandRule: classifyOop5000Rule_(syntheticInput.amount),
     productionRowsUnchanged: target.getLastRow() === initialLastRow,
     productionIdsUnchanged: JSON.stringify(afterIds) === JSON.stringify(beforeIds),
     allPassed: preview.status === 'PASS' &&
@@ -314,4 +315,13 @@ function recordA404Failure_(e, err) {
     error:String(err && err.message || err),
     timestamp:new Date().toISOString()
   }));
+}
+
+
+function classifyOop5000Rule_(amount) {
+  amount = Number(amount);
+  if (!(amount > 0)) throw new Error('A4_04_AMOUNT_INVALID');
+  if (amount < 5000) return 'UNDER_5000_ADD_ACTUAL_SPEND';
+  if (amount === 5000) return 'AT_5000_ADD_5000';
+  return 'OVER_5000_ADD_5000_PLUS_EXCESS_EQUALS_FULL_SPEND';
 }
