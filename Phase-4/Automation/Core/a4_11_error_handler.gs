@@ -53,7 +53,7 @@ function handleA411Error(options) {
   var existing = readA411Marker_(props, dedupeKey);
 
   // If a prior attempt fully completed, replay is already handled.
-  if (existing && existing.notificationStatus === 'SENT') {
+  if (existing && (existing.notificationStatus === 'SENT' || existing.notificationStatus === 'NOT_REQUESTED')) {
     return {
       status: 'SKIPPED',
       reason: 'ALREADY_HANDLED',
