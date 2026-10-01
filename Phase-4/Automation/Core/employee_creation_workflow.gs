@@ -135,5 +135,16 @@ function readEmployeeColumn_(sheet,header){const lastRow=sheet.getLastRow(); if(
 function readEmployeeRow_(sheet,rowNumber){if(rowNumber<2)throw new Error('EMPLOYEE_ROW_INVALID: controls are only valid on employee data rows.'); const values=sheet.getRange(rowNumber,1,1,15).getValues()[0], headers=getEmployeeHeaders_(sheet), row={}; headers.forEach(function(header,index){row[header]=values[index];}); return row;}
 function validateEmployeeRow_(row){
   const name=String(row.Name||'').trim(), email=String(row.Email||'').trim(), role=String(row.Role||'').trim(), designation=String(row.Designation||'').trim(), joiningDate=row.Joining_Date, paymentFrequency=String(row.Payment_Frequency||'').trim(), employmentStatus=String(row.Employment_Status||'').trim(), reimbursementSettings=String(row.Reimbursement_Settings||'').trim();
-  if(!name)throw new Error('Name is required.'); if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))throw new Error('A valid Email is required.'); if(!role)throw new Error('Role is required.'); if(!designation)throw new Error('Designation is required.'); if(!joiningDate||Object.prototype.toString.call(joiningDate)!=='[object Date]'||isNaN(joiningDate.getTime()))throw new Error('Joining_Date is required and must be a valid date.'); if(EMPLOYEE_CREATION_CONFIG.paymentFrequencies.indexOf(paymentFrequency)<0)throw new Error('Invalid Payment_Frequency.'); if(EMPLOYEE_CREATION_CONFIG.employmentStatuses.indexOf(employmentStatus)<0)throw new Error('Invalid Employment_Status.'); if(EMPLOYEE_CREATION_CONFIG.reimbursementSettings.indexOf(reimbursementSettings)<0)throw new Error('Invalid Reimbursement_Settings.'); if(row.Salary_Basis!==''&&row.Salary_Basis!==null&&row.Salary_Basis!==undefined&&(isNaN(Number(row.Salary_Basis))||Number(row.Salary_Basis)<0))throw new Error('Salary_Basis must be a non-negative number.'); if(row.Active!==true&&row.Active!==false)throw new Error('Active must be TRUE or FALSE.'); if(row.Reimbursement_Eligible!==true&&row.Reimbursement_Eligible!==false)throw new Error('Reimbursement_Eligible must be TRUE or FALSE.');
+  if(!name)throw new Error('Name is required.');
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('A valid Email is required.');
+  if(!role)throw new Error('Role is required.');
+  if(!designation)throw new Error('Designation is required.');
+  if(!joiningDate||Object.prototype.toString.call(joiningDate)!=='[object Date]'||isNaN(joiningDate.getTime()))throw new Error('Joining_Date is required and must be a valid date.');
+  if(EMPLOYEE_CREATION_CONFIG.paymentFrequencies.indexOf(paymentFrequency)<0)throw new Error('Invalid Payment_Frequency.');
+  if(EMPLOYEE_CREATION_CONFIG.employmentStatuses.indexOf(employmentStatus)<0)throw new Error('Invalid Employment_Status.');
+  if(EMPLOYEE_CREATION_CONFIG.reimbursementSettings.indexOf(reimbursementSettings)<0)throw new Error('Invalid Reimbursement_Settings.');
+  if(row.Salary_Basis!==''&&row.Salary_Basis!==null&&row.Salary_Basis!==undefined&&(isNaN(Number(row.Salary_Basis))||Number(row.Salary_Basis)<0))throw new Error('Salary_Basis must be a non-negative number.');
+  if(row.Active!==true&&row.Active!==false)throw new Error('Active must be TRUE or FALSE.');
+  if(row.Reimbursement_Eligible!==true&&row.Reimbursement_Eligible!==false)throw new Error('Reimbursement_Eligible must be TRUE or FALSE.');
 }
+
