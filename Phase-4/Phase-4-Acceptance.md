@@ -10,7 +10,7 @@
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | PASS — live-verified 01-Oct-2026; FRM-05 → MOM_Responses → A4-06 → Project_MOM_Index + 04_MOM Doc artifact creation, versioning (v1.0 → v1.1), update/publish, and canonical Project_ID resolution all passed. |
 | P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | PASS — live-verified 01-Oct-2026; A4-07 parsed/deduplicated attendee emails, generated correct MOM subject/body/link, prevented duplicate email dispatch via ScriptProperties, and logged send results. |
 | P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | PASS — live-verified 01-Oct-2026; all 10 A4-08 P4-10 live sub-tests passed. |
-| P4-11 | Test duplicate trigger protection. | Retrying the same event does not create duplicate folders, records or emails. | NOT STARTED |
+| P4-11 | Test duplicate trigger protection. | Retrying the same event does not create duplicate folders, records or emails. | PASS — live-verified 01-Oct-2026; A4-09 `testA409NotificationEngineLive()` completed 12/12 PASS, including duplicate prevention, retry safety, dynamic Top Manager integration, sensitive-data protection, zero-cost boundary and persistent idempotency. |
 | P4-12 | Test failure handling. | Forced error creates a visible failure state and appropriate admin notification/log entry. | NOT STARTED |
 | P4-13 | Test sensitive access. | Automation does not broaden employee access to restricted Finance, Salary, Investment or HR source data. | NOT STARTED |
 | P4-14 | Test quota-safe behavior. | Expected internal workload does not require unlimited email/trigger/runtime assumptions; deferred/failure behavior is controlled. | NOT STARTED |
@@ -35,6 +35,15 @@
 - Cleanup/data integrity: PASS; temporary records and Drive artifacts were removed and pre-existing records were preserved.
 - Overall: `A4_01_A4_02_LIVE_VERIFICATION = PASS`.
 
+
+### A4-09 / P4-11 live verification evidence — 01-Oct-2026
+- Implementation: `Phase-4/Automation/Core/a4_09_notification_engine.gs`; OOP integration remains in `Phase-4/Automation/Core/a4_04_oop_claim_processing.gs`.
+- Live execution: `testA409NotificationEngineLive()` completed successfully in the approved MASTER COMPANY Phase 4 Automation Apps Script project.
+- All 12 required live checks passed: valid dispatch, recipient resolution, unauthorized-recipient protection, duplicate prevention, retry-after-failure, successful replay protection, invalid recipient handling, parent transaction preservation, sensitive-field protection, OOP Top Manager integration, zero-cost boundary, and persistent idempotency.
+- R62 integration: PASS — OOP approval notification dynamically resolved the active Director as Top Manager; no hard-coded recipient or Script Property bypass was used.
+- Controlled test Director fixture was provisioned only when required and removed in the test harness `finally` cleanup path; no test Director remained after verification.
+- Expected `A4_09_SIMULATED_FAILURE` warnings occurred only in controlled retry/failure tests and were handled as designed.
+- Overall: `A4_09_P4_11_LIVE_VERIFICATION = PASS`.
 
 ### A4-08 / P4-10 live verification evidence — 01-Oct-2026
 - Implementation: `Phase-4/Automation/Core/a4_08_report_generator.gs`.
