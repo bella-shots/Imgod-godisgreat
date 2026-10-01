@@ -36,3 +36,14 @@
 ## R58 — Financial employee-linkage validation
 
 Financial employee-related workflows must reject or flag any attempt to resolve an employee through `Member_Record_ID`. The canonical employee reference is `Employee_ID` for `Budget_Given`, `Employee_Spending`, `OOP_Claims` and `Salary_Admin`. `Investments` is excluded from this rule because its frozen schema uses `Source_Person`.
+
+## R62 — OOP approval and salary-gate failures
+- If `TOP_MANAGER_EMAIL` is missing or invalid, FRM-03 processing must not silently create an un-routable claim; surface `A4_04_TOP_MANAGER_NOT_CONFIGURED` for administrator action.
+- If manager notification fails after claim creation, leave the claim in `Pending Review`, log the failure, and allow controlled retry. Never mark it Approved because an email failed.
+- If a non-manager attempts an approval action, reject with `A4_04_MANAGER_AUTHORIZATION_REQUIRED` and make no claim changes.
+- If a claim is not `Pending Review`, reject repeated approval/rejection attempts; do not alter an already-decided claim.
+- A food-related claim cannot use the normal company-essential approval action; it must use the explicit food-business-exception action.
+- A claim that is `Pending Review` or `Rejected`, or has no positive `Approved_Amount`, must contribute zero to the salary OOP component.
+- A food-related claim with `FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY` remains excluded from salary even if its status is manually changed incorrectly; salary eligibility is based on the controlled approval flags.
+- Only `APPROVED_COMPANY_ESSENTIAL` and `APPROVED_FOOD_BUSINESS_EXCEPTION` are salary-eligible OOP classifications.
+- Never bypass the Top Manager approval gate to make a payroll calculation succeed.
