@@ -21,6 +21,14 @@
 
 
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
+
+## R56 — Frozen one-click Employee creation
+- The Employee creation workflow is a single explicit user action: the user completes the pending employee row, selects the employee row/Employee_ID cell, and invokes **Employee Actions → Generate Employee ID**.
+- That single action performs complete validation, duplicate-email validation, A4-00 EMP-XXXXXX generation, Employee_ID persistence and locking, Created_At timestamping, and finalization of the employee record.
+- There is **no separate Save Employee action**, **no Process action**, **no Process column**, and no employee-creation sidebar/form.
+- Employee_ID generation remains explicitly user initiated; generic onEdit/autosave events must never generate Employee_ID.
+- The authoritative Employees schema remains exactly the frozen 15-column Phase 3 schema.
+
 - A4-14 — Explicit Generate-ID controls for Sheet-originated records: implement controlled Generate-ID actions for Project Member, Project Note, Budget and Salary records. The action validates the pending record, invokes A4-00, writes the generated ID, locks the ID field, and enables/permits commit only after successful generation. Salary must support controlled bulk generation for validated payroll imports/entries. Do not use generic row-edit/autosave triggers to generate these IDs. Employee_ID remains on its dedicated Generate Employee ID workflow. Submission_ID remains system/index-generated.
 
 
