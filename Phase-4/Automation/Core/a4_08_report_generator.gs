@@ -263,8 +263,8 @@ function resolveA408Requester_(hrWb, email) {
   for (var i = 0; i < rows.length; i++) {
     var row = rows[i];
     if (String(row[emailIdx] || '').trim().toLowerCase() === email) {
-      var activeVal = String(row[activeIdx] || '').trim();
-      if (activeVal !== 'Active') {
+      var isActive = isA408BooleanTrue_(row[activeIdx]);
+      if (!isActive) {
         throw new Error('A4_08_REQUESTER_INACTIVE: ' + email);
       }
 
@@ -286,8 +286,8 @@ function resolveA408Requester_(hrWb, email) {
         email: email,
         role: roleVal,
         designation: desigVal,
-        active: activeVal,
-        reimbursementEligible: String(row[headers.indexOf('Reimbursement_Eligible')] || '').trim(),
+        active: isActive ? 'Active' : 'Inactive',
+        reimbursementEligible: isA408BooleanTrue_(row[headers.indexOf('Reimbursement_Eligible')]) ? 'Yes' : 'No',
         projectAccess: String(row[headers.indexOf('Project_Access')] || '').trim(),
         joiningDate: formatA408DateCell_(row[headers.indexOf('Joining_Date')]),
         employmentStatus: String(row[headers.indexOf('Employment_Status')] || '').trim(),
@@ -369,7 +369,7 @@ function verifyA408ProjectAccess_(opsWb, project, requester) {
     for (var i = 0; i < rows.length; i++) {
       if (String(rows[i][pIdIdx] || '').trim() === project.projectId &&
           String(rows[i][empIdIdx] || '').trim() === requester.employeeId &&
-          String(rows[i][activeIdx] || '').trim() === 'Active') {
+          isA408BooleanTrue_(rows[i][activeIdx])) {
         return true;
       }
     }
@@ -469,8 +469,7 @@ function buildA408CompanySummaryModel_(workbooks, requester, period, periodStr) 
   var reimbursementEligibleCount = 0;
 
   empRows.forEach(function(row) {
-    var act = String(row[empHeaders.indexOf('Active')] || '').trim();
-    if (act === 'Active') activeEmpCount++;
+    if (isA408BooleanTrue_(row[empHeaders.indexOf('Active')])) activeEmpCount++;
 
     var empSt = String(row[empHeaders.indexOf('Employment_Status')] || 'Unknown').trim();
     employmentStatusCounts[empSt] = (employmentStatusCounts[empSt] || 0) + 1;
@@ -481,8 +480,7 @@ function buildA408CompanySummaryModel_(workbooks, requester, period, periodStr) 
     var joinDate = formatA408DateCell_(row[empHeaders.indexOf('Joining_Date')]);
     if (isDateInA408Range_(joinDate, period.startStr, period.endStr)) joinersInPeriod++;
 
-    var reElig = String(row[empHeaders.indexOf('Reimbursement_Eligible')] || '').trim();
-    if (reElig === 'Yes') reimbursementEligibleCount++;
+    if (isA408BooleanTrue_(row[empHeaders.indexOf('Reimbursement_Eligible')])) reimbursementEligibleCount++;
   });
 
   // HR Requests in period
@@ -572,10 +570,10 @@ function buildA408ProjectReportModel_(workbooks, requester, project, period, per
   var teamMembers = [];
   mRows.forEach(function(row) {
     if (String(row[mHeaders.indexOf('Project_ID')] || '').trim() === project.projectId &&
-        String(row[mHeaders.indexOf('Active')] || '').trim() === 'Active') {
+        isA408BooleanTrue_(row[mHeaders.indexOf('Active')])) {
       teamMembers.push({
         employeeId: String(row[mHeaders.indexOf('Employee_ID')] || '').trim(),
-        role: String(row[mHeaders.indexOf('Role')] || '').trim(),
+        role: String(row[mHeaders.indexOf('Project_Role')] || row[mHeaders.indexOf('Role')] || '').trim(),
         active: 'Active',
         assignedDate: formatA408DateCell_(row[mHeaders.indexOf('Assigned_Date')])
       });
@@ -828,8 +826,8 @@ function buildA408HrReportModel_(workbooks, requester, period, periodStr) {
         email: String(row[empHeaders.indexOf('Email')] || '').trim(),
         role: String(row[empHeaders.indexOf('Role')] || '').trim(),
         designation: String(row[empHeaders.indexOf('Designation')] || '').trim(),
-        active: String(row[empHeaders.indexOf('Active')] || '').trim(),
-        reimbursementEligible: String(row[empHeaders.indexOf('Reimbursement_Eligible')] || '').trim(),
+        active: isA408BooleanTrue_(row[empHeaders.indexOf('Active')]) ? 'Active' : 'Inactive',
+        reimbursementEligible: isA408BooleanTrue_(row[empHeaders.indexOf('Reimbursement_Eligible')]) ? 'Yes' : 'No',
         projectAccess: (requester.isHRAdmin || requester.isAdmin) ? String(row[empHeaders.indexOf('Project_Access')] || '').trim() : '',
         joiningDate: formatA408DateCell_(row[empHeaders.indexOf('Joining_Date')]),
         employmentStatus: String(row[empHeaders.indexOf('Employment_Status')] || '').trim(),
@@ -1420,6 +1418,13 @@ function findA408Spreadsheet_(name) {
   return SpreadsheetApp.openById(matches[0].getId());
 }
 
+function isA408BooleanTrue_(val) {
+  if (val === true) return true;
+  if (val === false || val === null || val === undefined) return false;
+  var s = String(val).trim().toLowerCase();
+  return s === 'true' || s === 'active' || s === 'yes' || s === '1';
+}
+
 /* =========================================================================
  * 6. FORM TRIGGER HANDLERS & INSTALLATION
  * ========================================================================= */
@@ -1587,13 +1592,20 @@ function testA408ReportGeneratorLive() {
     var empRows = empSheet.getRange(2, 1, empSheet.getLastRow() - 1, empHeaders.length).getValues();
     var activeEmp = null;
     for (var i = 0; i < empRows.length; i++) {
-      if (String(empRows[i][empHeaders.indexOf('Active')] || '').trim() === 'Active') {
-        activeEmp = {
+      if (isA408BooleanTrue_(empRows[i][empHeaders.indexOf('Active')])) {
+        var rVal = String(empRows[i][empHeaders.indexOf('Role')] || '').trim();
+        var dVal = String(empRows[i][empHeaders.indexOf('Designation')] || '').trim();
+        var candidate = {
           email: String(empRows[i][empHeaders.indexOf('Email')] || '').trim(),
           empId: String(empRows[i][empHeaders.indexOf('Employee_ID')] || '').trim(),
-          role: String(empRows[i][empHeaders.indexOf('Role')] || '').trim()
+          role: rVal,
+          designation: dVal
         };
-        break;
+        if (!activeEmp) activeEmp = candidate;
+        if (/^(Administrator|Site Admin)$/i.test(rVal) || /^(Administrator|Site Admin)$/i.test(dVal)) {
+          activeEmp = candidate;
+          break;
+        }
       }
     }
     if (!activeEmp) throw new Error('A4_08_TEST_NO_ACTIVE_EMPLOYEE');
