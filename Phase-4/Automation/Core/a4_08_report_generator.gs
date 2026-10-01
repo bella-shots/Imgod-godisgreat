@@ -1939,11 +1939,11 @@ function testA408ReportGeneratorLive() {
                   lastRowVals[1] === 'HR Report' &&
                   lastRowVals[2] === testPeriod &&
                   lastRowVals[5] === 'Published' &&
-                  lastRowVals[6].length === 10;
+                  /^\d{4}-\d{2}-\d{2}$/.test(formatA408DateCell_(lastRowVals[6]));
       results.push({
         test: 'Report_Index',
         status: pass8 ? 'PASS' : 'FAIL',
-        evidence: 'Exact 7 columns verified in Report_Index (ID=' + lastRowVals[0] + ', Status=' + lastRowVals[5] + ', Period=' + lastRowVals[2] + ')',
+        evidence: 'Exact 7 columns verified in Report_Index (ID=' + lastRowVals[0] + ', Status=' + lastRowVals[5] + ', Period=' + lastRowVals[2] + ', Generated_Date=' + formatA408DateCell_(lastRowVals[6]) + ')',
         error: pass8 ? null : 'Report_Index contract mismatch'
       });
     } catch (e8) {
