@@ -102,14 +102,7 @@ function createA410SubmissionEntry(options) {
       }
     }
 
-    var submittedAt = options.submittedAt;
-    if (!submittedAt) {
-      submittedAt = formatA410Timestamp_(new Date());
-    } else if (submittedAt instanceof Date) {
-      submittedAt = formatA410Timestamp_(submittedAt);
-    } else {
-      submittedAt = String(submittedAt).trim();
-    }
+    var submittedAtDate = normalizeA410Timestamp_(options.submittedAt);
 
     // Sensitive data protection guard
     assertA410NoSensitiveDataLeaks_([sourceForm, recordId, submittedBy, status]);
@@ -134,7 +127,7 @@ function createA410SubmissionEntry(options) {
           sourceForm: sourceForm,
           recordId: recordId,
           submittedBy: submittedBy,
-          submittedAt: submittedAt,
+          submittedAt: submittedAtDate,
           processingStatus: status
         };
       }
@@ -168,7 +161,7 @@ function createA410SubmissionEntry(options) {
     row[headers.indexOf('Source_Form')] = sourceForm;
     row[headers.indexOf('Record_ID')] = recordId;
     row[headers.indexOf('Submitted_By')] = submittedBy;
-    row[headers.indexOf('Submitted_At')] = submittedAt;
+    row[headers.indexOf('Submitted_At')] = submittedAtDate;
     row[headers.indexOf('Processing_Status')] = status;
 
     sheet.getRange(lastRow + 1, 1, 1, row.length).setValues([row]);
@@ -189,7 +182,7 @@ function createA410SubmissionEntry(options) {
       sourceForm: sourceForm,
       recordId: recordId,
       submittedBy: submittedBy,
-      submittedAt: submittedAt,
+      submittedAt: submittedAtDate,
       processingStatus: status
     };
   } catch (err) {
@@ -446,10 +439,50 @@ function assertExactA410Headers_(headers) {
   }
 }
 
-function formatA410Timestamp_(date) {
-  var d = date ? (date instanceof Date ? date : new Date(date)) : new Date();
-  var tz = Session.getScriptTimeZone() || 'GMT';
-  return Utilities.formatDate(d, tz, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+function normalizeA410Timestamp_(value) {
+  if (!value) {
+    return new Date();
+  }
+  if (value instanceof Date) {
+    return value;
+  }
+  var parsed = new Date(value);
+  if (isNaN(parsed.getTime())) {
+    throw new Error('A4_10_INVALID_TIMESTAMP: ' + value);
+  }
+  return parsed;
+}
+
+function cleanupA410TestArtifacts_(sheet, trackedIds, trackedKeys) {
+  if (sheet && trackedIds && trackedIds.length > 0) {
+    try {
+      var lastRow = sheet.getLastRow();
+      if (lastRow > 1) {
+        var currentValues = sheet.getDataRange().getValues();
+        var idCol = currentValues[0].map(String).indexOf('Submission_ID');
+        if (idCol >= 0) {
+          for (var r = currentValues.length - 1; r >= 1; r--) {
+            var rowId = String(currentValues[r][idCol] || '').trim();
+            if (trackedIds.indexOf(rowId) >= 0) {
+              sheet.deleteRow(r + 1);
+            }
+          }
+        }
+        SpreadsheetApp.flush();
+      }
+    } catch (cleanErr) {
+      console.error('Failed to cleanup temporary test submission rows: ' + cleanErr.message);
+    }
+  }
+
+  if (trackedKeys && trackedKeys.length > 0) {
+    var props = PropertiesService.getScriptProperties();
+    for (var k = 0; k < trackedKeys.length; k++) {
+      try {
+        props.deleteProperty(trackedKeys[k]);
+      } catch (e) {}
+    }
+  }
 }
 
 function findA410Spreadsheet_(name) {
@@ -482,6 +515,18 @@ function testA410AuditLoggerLive() {
   try {
     adminWb = findA410Spreadsheet_(A410_CONFIG.ADMIN_WORKBOOK);
     sheet = adminWb.getSheetByName(A410_CONFIG.SUBMISSION_SHEET);
+
+    // Record baseline production state before any test runs
+    var baselineRowCount = sheet.getLastRow();
+    var baselineSubIds = [];
+    if (baselineRowCount > 1) {
+      var baseVals = sheet.getDataRange().getValues();
+      var idColIdx = baseVals[0].map(String).indexOf('Submission_ID');
+      for (var b = 1; b < baseVals.length; b++) {
+        var bId = String(baseVals[b][idColIdx] || '').trim();
+        if (bId) baselineSubIds.push(bId);
+      }
+    }
 
     var testTimestamp = Date.now();
 
@@ -524,16 +569,26 @@ function testA410AuditLoggerLive() {
 
       var newRowCount = sheet.getLastRow();
       var idPattern = /^SUB-\d{6}$/;
+
+      // Verify the actual stored cell value in Google Sheets is a genuine Date object
+      var headerRow = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0].map(String);
+      var subAtColIdx = headerRow.indexOf('Submitted_At');
+      var storedCellValue = sheet.getRange(newRowCount, subAtColIdx + 1).getValue();
+      var isDateValid = (storedCellValue instanceof Date) && !isNaN(storedCellValue.getTime());
+
       var pass2 = (res2.status === 'SUCCESS' &&
                    idPattern.test(subId2) &&
                    res2.processingStatus === A410_CONFIG.STATUSES.RECEIVED &&
-                   newRowCount === initialRowCount + 1);
+                   newRowCount === initialRowCount + 1 &&
+                   isDateValid);
 
       results.push({
         test: 'Create Submission',
         status: pass2 ? 'PASS' : 'FAIL',
-        evidence: 'Generated ' + subId2 + ' with status=' + res2.processingStatus + ', rows: ' + initialRowCount + ' -> ' + newRowCount,
-        error: pass2 ? null : 'Failed to create initial submission record'
+        evidence: 'Generated ' + subId2 + ' with status=' + res2.processingStatus +
+                  ', stored cell Date=' + (isDateValid ? storedCellValue.toISOString() : typeof storedCellValue) +
+                  ', rows: ' + initialRowCount + ' -> ' + newRowCount,
+        error: pass2 ? null : 'Failed to create initial submission record or Submitted_At is not a valid Date'
       });
     } catch (e2) {
       results.push({
@@ -838,14 +893,72 @@ function testA410AuditLoggerLive() {
     // TEST 12: Non-Destructive Cleanup
     // -------------------------------------------------------------------------
     try {
-      // Test 12 checks that our cleanup mechanism works properly without touching pre-existing rows
-      var pass12 = (trackedSubmissionIds.length > 0);
+      // 1. Confirm test records were created and tracked
+      var createdCount = trackedSubmissionIds.length;
+      if (createdCount === 0) throw new Error('No test records tracked for cleanup');
+
+      // 2. Add an explicit probe record and property to thoroughly verify cleanup
+      var probeRecord = createA410SubmissionEntry({
+        sourceForm: 'TEST-CLEANUP-PROBE',
+        recordId: 'PRJ-PROBE-99',
+        status: A410_CONFIG.STATUSES.RECEIVED
+      });
+      trackedSubmissionIds.push(probeRecord.submissionId);
+
+      var probeKey = A410_CONFIG.PROPERTY_PREFIX + 'PROBE_' + Date.now();
+      trackedPropertyKeys.push(probeKey);
+      PropertiesService.getScriptProperties().setProperty(probeKey, 'probe_val');
+
+      // Snapshot arrays to verify cleanup
+      var idsToVerifyCleaned = trackedSubmissionIds.slice();
+      var keysToVerifyCleaned = trackedPropertyKeys.slice();
+
+      // 3. Execute authoritative cleanup
+      cleanupA410TestArtifacts_(sheet, idsToVerifyCleaned, keysToVerifyCleaned);
+
+      // Clear the tracked arrays so finally block knows they are already cleaned up
+      trackedSubmissionIds.length = 0;
+      trackedPropertyKeys.length = 0;
+
+      // 4. Verify that none of the temporary test rows exist in the sheet
+      var postCleanValues = sheet.getDataRange().getValues();
+      var idCol = postCleanValues[0].map(String).indexOf('Submission_ID');
+      var remainingIds = [];
+      for (var pr = 1; pr < postCleanValues.length; pr++) {
+        var rId = String(postCleanValues[pr][idCol] || '').trim();
+        if (rId) remainingIds.push(rId);
+      }
+
+      var anyTestRowFound = idsToVerifyCleaned.some(function(tid) {
+        return remainingIds.indexOf(tid) >= 0;
+      });
+
+      // 5. Verify that all pre-existing production Submission_Index rows remain untouched
+      var allProductionRowsPreserved = baselineSubIds.every(function(pid) {
+        return remainingIds.indexOf(pid) >= 0;
+      });
+
+      // 6. Verify row count matches baseline
+      var rowCountRestored = (sheet.getLastRow() === baselineRowCount);
+
+      // 7. Verify test properties were removed from ScriptProperties
+      var probeKeyRemoved = (PropertiesService.getScriptProperties().getProperty(probeKey) === null);
+
+      var pass12 = (!anyTestRowFound &&
+                    allProductionRowsPreserved &&
+                    rowCountRestored &&
+                    probeKeyRemoved);
 
       results.push({
         test: 'Non-Destructive Cleanup',
         status: pass12 ? 'PASS' : 'FAIL',
-        evidence: 'Identified ' + trackedSubmissionIds.length + ' temporary test rows for authoritative cleanup in finally block',
-        error: pass12 ? null : 'No test records tracked for cleanup'
+        evidence: 'Cleaned ' + idsToVerifyCleaned.length + ' test rows; verified 0 remaining test rows; ' +
+                  'all ' + baselineSubIds.length + ' production rows preserved; row count restored to ' + baselineRowCount +
+                  '; probe property deleted',
+        error: pass12 ? null : 'Cleanup verification failed: anyTestRowFound=' + anyTestRowFound +
+                               ', allProductionRowsPreserved=' + allProductionRowsPreserved +
+                               ', rowCountRestored=' + rowCountRestored +
+                               ', probeKeyRemoved=' + probeKeyRemoved
       });
     } catch (e12) {
       results.push({
@@ -857,32 +970,13 @@ function testA410AuditLoggerLive() {
     }
 
   } finally {
-    // Authoritative non-destructive cleanup:
-    // 1. Delete ONLY the tracked test rows in reverse order to preserve row indexing
-    if (sheet && trackedSubmissionIds.length > 0) {
+    // Authoritative non-destructive cleanup fallback in case an error occurred prior to Test 12
+    if (trackedSubmissionIds.length > 0 || trackedPropertyKeys.length > 0) {
       try {
-        var currentValues = sheet.getDataRange().getValues();
-        var idCol = currentValues[0].map(String).indexOf('Submission_ID');
-        if (idCol >= 0) {
-          for (var r = currentValues.length - 1; r >= 1; r--) {
-            var rowId = String(currentValues[r][idCol] || '').trim();
-            if (trackedSubmissionIds.indexOf(rowId) >= 0) {
-              sheet.deleteRow(r + 1);
-            }
-          }
-        }
-        SpreadsheetApp.flush();
+        cleanupA410TestArtifacts_(sheet, trackedSubmissionIds, trackedPropertyKeys);
       } catch (cleanErr) {
-        console.error('Failed to cleanup temporary test submission rows: ' + cleanErr.message);
+        console.error('Failed to cleanup temporary test artifacts in finally: ' + cleanErr.message);
       }
-    }
-
-    // 2. Delete tracked test keys from ScriptProperties
-    var propsToClean = PropertiesService.getScriptProperties();
-    for (var k = 0; k < trackedPropertyKeys.length; k++) {
-      try {
-        propsToClean.deleteProperty(trackedPropertyKeys[k]);
-      } catch (delKeyErr) {}
     }
   }
 
