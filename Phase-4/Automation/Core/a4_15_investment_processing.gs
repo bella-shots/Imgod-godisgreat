@@ -48,7 +48,7 @@ var A415_CONFIG = Object.freeze({
 
 function processInvestmentFormSubmit(e) {
   if (!e || !e.range) {
-    throw new Error('A4_07_INVALID_EVENT: Form-submit event with range is required.');
+    throw new Error('A4_15_INVALID_EVENT: Form-submit event with range is required.');
   }
 
   var responseSheet = e.range.getSheet();
@@ -60,9 +60,9 @@ function processInvestmentFormSubmit(e) {
   lock.waitLock(30000);
 
   try {
-    var finance = findUniqueA407Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
+    var finance = findUniqueA415Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
     var target = finance.getSheetByName(A415_CONFIG.TARGET_SHEET);
-    if (!target) throw new Error('A4_07_TARGET_SHEET_MISSING: ' + A415_CONFIG.TARGET_SHEET);
+    if (!target) throw new Error('A4_15_TARGET_SHEET_MISSING: ' + A415_CONFIG.TARGET_SHEET);
 
     var headers = responseSheet.getRange(1, 1, 1, responseSheet.getLastColumn()).getValues()[0];
     var values = responseSheet.getRange(e.range.getRow(), 1, 1, responseSheet.getLastColumn()).getValues()[0];
@@ -70,7 +70,7 @@ function processInvestmentFormSubmit(e) {
 
     return processInvestmentRecord_(input, target);
   } catch (err) {
-    recordA407Failure_(e, err);
+    recordA415Failure_(e, err);
     throw err;
   } finally {
     lock.releaseLock();
@@ -80,7 +80,7 @@ function processInvestmentFormSubmit(e) {
 function processInvestmentRecord_(input, target) {
   var validation = validateInvestmentInput_(input);
   if (!validation.valid) {
-    throw new Error('A4_07_VALIDATION_FAILED: ' + validation.error);
+    throw new Error('A4_15_VALIDATION_FAILED: ' + validation.error);
   }
 
   var headers = target.getRange(1, 1, 1, target.getLastColumn()).getValues()[0];
@@ -90,14 +90,14 @@ function processInvestmentRecord_(input, target) {
   var invId = generateA4Id(A415_CONFIG.PREFIX, existingIds);
 
   var row = new Array(headers.length).fill('');
-  setA407ByHeader_(row, headers, 'Investment_ID', invId);
-  setA407ByHeader_(row, headers, 'Source_Person', validation.parsed.sourcePerson);
-  setA407ByHeader_(row, headers, 'Amount', validation.parsed.amount);
-  setA407ByHeader_(row, headers, 'Taken_Date', validation.parsed.takenDate);
-  setA407ByHeader_(row, headers, 'Expected_Return_Date', validation.parsed.expectedReturnDate || '');
-  setA407ByHeader_(row, headers, 'Actual_Return_Date', validation.parsed.actualReturnDate || '');
-  setA407ByHeader_(row, headers, 'Status', validation.parsed.status);
-  setA407ByHeader_(row, headers, 'Notes', validation.parsed.notes || '');
+  setA415ByHeader_(row, headers, 'Investment_ID', invId);
+  setA415ByHeader_(row, headers, 'Source_Person', validation.parsed.sourcePerson);
+  setA415ByHeader_(row, headers, 'Amount', validation.parsed.amount);
+  setA415ByHeader_(row, headers, 'Taken_Date', validation.parsed.takenDate);
+  setA415ByHeader_(row, headers, 'Expected_Return_Date', validation.parsed.expectedReturnDate || '');
+  setA415ByHeader_(row, headers, 'Actual_Return_Date', validation.parsed.actualReturnDate || '');
+  setA415ByHeader_(row, headers, 'Status', validation.parsed.status);
+  setA415ByHeader_(row, headers, 'Notes', validation.parsed.notes || '');
 
   target.appendRow(row);
   SpreadsheetApp.flush();
@@ -116,7 +116,7 @@ function processInvestmentRecord_(input, target) {
 function validateInvestmentInput_(input) {
   var sourcePerson = String(input.sourcePerson || '').trim();
   if (!sourcePerson) {
-    return { valid: false, error: 'A4_07_SOURCE_PERSON_REQUIRED: Source_Person is required.' };
+    return { valid: false, error: 'A4_15_SOURCE_PERSON_REQUIRED: Source_Person is required.' };
   }
 
   // R58 invariant guard: ensure Member_Record_ID is not misused
@@ -126,23 +126,23 @@ function validateInvestmentInput_(input) {
 
   var amountVal = input.amount;
   if (amountVal === '' || amountVal === null || isNaN(Number(amountVal)) || Number(amountVal) <= 0) {
-    return { valid: false, error: 'A4_07_AMOUNT_INVALID: Amount must be greater than 0.' };
+    return { valid: false, error: 'A4_15_AMOUNT_INVALID: Amount must be greater than 0.' };
   }
   var amount = Number(amountVal);
 
   var takenDate = input.takenDate;
-  if (!isValidA407Date_(takenDate)) {
-    return { valid: false, error: 'A4_07_TAKEN_DATE_INVALID: Taken_Date is required and must be a valid date.' };
+  if (!isValidA415Date_(takenDate)) {
+    return { valid: false, error: 'A4_15_TAKEN_DATE_INVALID: Taken_Date is required and must be a valid date.' };
   }
 
   var expectedReturnDate = input.expectedReturnDate;
-  if (expectedReturnDate && !isValidA407Date_(expectedReturnDate)) {
-    return { valid: false, error: 'A4_07_EXPECTED_RETURN_DATE_INVALID: Must be a valid date if provided.' };
+  if (expectedReturnDate && !isValidA415Date_(expectedReturnDate)) {
+    return { valid: false, error: 'A4_15_EXPECTED_RETURN_DATE_INVALID: Must be a valid date if provided.' };
   }
 
   var actualReturnDate = input.actualReturnDate;
-  if (actualReturnDate && !isValidA407Date_(actualReturnDate)) {
-    return { valid: false, error: 'A4_07_ACTUAL_RETURN_DATE_INVALID: Must be a valid date if provided.' };
+  if (actualReturnDate && !isValidA415Date_(actualReturnDate)) {
+    return { valid: false, error: 'A4_15_ACTUAL_RETURN_DATE_INVALID: Must be a valid date if provided.' };
   }
 
   var status = String(input.status || '').trim();
@@ -150,7 +150,7 @@ function validateInvestmentInput_(input) {
     status = A415_CONFIG.DEFAULT_STATUS;
   }
   if (A415_CONFIG.ALLOWED_STATUSES.indexOf(status) < 0) {
-    return { valid: false, error: 'A4_07_STATUS_INVALID: Status must be one of ' + A415_CONFIG.ALLOWED_STATUSES.join(', ') };
+    return { valid: false, error: 'A4_15_STATUS_INVALID: Status must be one of ' + A415_CONFIG.ALLOWED_STATUSES.join(', ') };
   }
 
   return {
@@ -191,7 +191,7 @@ function mapInvestmentResponseRow_(headers, values) {
 function assertExactInvestmentHeaders_(headers) {
   var expected = A415_CONFIG.HEADERS;
   if (JSON.stringify(headers) !== JSON.stringify(expected)) {
-    throw new Error('A4_07_TARGET_SCHEMA_MISMATCH: Investments must retain the frozen 8-column schema.');
+    throw new Error('A4_15_TARGET_SCHEMA_MISMATCH: Investments must retain the frozen 8-column schema.');
   }
 }
 
@@ -203,13 +203,13 @@ function getInvestmentExistingIds_(sheet, headers) {
     .filter(function(v) { return /^INV-[0-9]{6}$/.test(v); });
 }
 
-function setA407ByHeader_(row, headers, header, value) {
+function setA415ByHeader_(row, headers, header, value) {
   var idx = headers.indexOf(header);
-  if (idx < 0) throw new Error('A4_07_HEADER_MISSING: ' + header);
+  if (idx < 0) throw new Error('A4_15_HEADER_MISSING: ' + header);
   row[idx] = value;
 }
 
-function findUniqueA407Spreadsheet_(name) {
+function findUniqueA415Spreadsheet_(name) {
   var files = DriveApp.getFilesByName(name);
   var matches = [];
   while (files.hasNext()) {
@@ -217,19 +217,19 @@ function findUniqueA407Spreadsheet_(name) {
     if (!f.isTrashed()) matches.push(f);
   }
   if (matches.length !== 1) {
-    throw new Error('A4_07_WORKBOOK_AMBIGUOUS_OR_MISSING: ' + name + ' count=' + matches.length);
+    throw new Error('A4_15_WORKBOOK_AMBIGUOUS_OR_MISSING: ' + name + ' count=' + matches.length);
   }
   return SpreadsheetApp.openById(matches[0].getId());
 }
 
-function isValidA407Date_(value) {
+function isValidA415Date_(value) {
   if (!value) return false;
   if (value instanceof Date && !isNaN(value.getTime())) return true;
   var d = new Date(value);
   return !isNaN(d.getTime());
 }
 
-function recordA407Failure_(e, err) {
+function recordA415Failure_(e, err) {
   console.error(JSON.stringify({
     module: 'A4-15',
     source: 'FRM-07',
@@ -249,7 +249,7 @@ function hasOnEditTriggerForA415_() {
 /**
  * Read-only prerequisite check.
  */
-function verifyA407InvestmentPrerequisites() {
+function verifyA415InvestmentPrerequisites() {
   var result = {
     financeWorkbook: false,
     responseSheet: false,
@@ -263,7 +263,7 @@ function verifyA407InvestmentPrerequisites() {
   };
 
   try {
-    var finance = findUniqueA407Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
+    var finance = findUniqueA415Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
     result.financeWorkbook = !!finance;
 
     var resp = finance.getSheetByName(A415_CONFIG.RESPONSE_SHEET);
@@ -298,7 +298,7 @@ function verifyA407InvestmentPrerequisites() {
 /**
  * Complete Live Test Suite for Investment Workflow (R58 Source_Person Exception).
  */
-function testA407InvestmentWorkflowLive() {
+function testA415InvestmentWorkflowLive() {
   var report = {
     test1Prerequisites: null,
     test2Architecture: null,
@@ -320,12 +320,12 @@ function testA407InvestmentWorkflowLive() {
   };
 
   // TEST 1: Prerequisites
-  report.test1Prerequisites = verifyA407InvestmentPrerequisites();
+  report.test1Prerequisites = verifyA415InvestmentPrerequisites();
   if (report.test1Prerequisites.status !== 'PASS') {
     return report;
   }
 
-  var finance = findUniqueA407Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
+  var finance = findUniqueA415Spreadsheet_(A415_CONFIG.WORKBOOK_NAME);
   var target = finance.getSheetByName(A415_CONFIG.TARGET_SHEET);
   var initialLastRow = target.getLastRow();
   var headers = target.getRange(1, 1, 1, target.getLastColumn()).getValues()[0];
