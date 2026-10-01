@@ -337,6 +337,21 @@ jobs:
             exit 1
           }
 
+          SPN_MATCHES=$(grep -RIl "function processEmployeeSpendingFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$SPN_MATCHES" || {
+            echo "FAIL: processEmployeeSpendingFormSubmit is missing from live Apps Script."
+            exit 1
+          }
+          SPN_FILE=$(printf '%s\n' "$SPN_MATCHES" | head -n 1)
+          grep -q "function verifyA403Architecture" "$SPN_FILE" || {
+            echo "FAIL: verifyA403Architecture missing from live workflow."
+            exit 1
+          }
+          grep -q "function testA403FormOriginatedWorkflowLive" "$SPN_FILE" || {
+            echo "FAIL: testA403FormOriginatedWorkflowLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
