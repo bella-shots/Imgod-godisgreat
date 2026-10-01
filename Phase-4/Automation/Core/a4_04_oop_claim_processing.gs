@@ -27,7 +27,8 @@ var A404_CONFIG = Object.freeze({
   OPERATIONS_WORKBOOK: 'MASTER_COMPANY_OPERATIONS',
   PROJECT_SHEET: 'Projects',
   PREFIX: 'CLM',
-  STATUS: 'Pending Review'
+  STATUS: 'Pending Review',
+  TOP_MANAGER_EMAIL_PROPERTY: 'TOP_MANAGER_EMAIL'
 });
 
 function processOopClaimFormSubmit(e) {
@@ -103,6 +104,7 @@ function processOopClaimRecord_(input, target) {
 
   target.appendRow(row);
   SpreadsheetApp.flush();
+  notifyTopManagerOfOopClaim_(claimId, employee.employeeId, project.projectId, dateValue, purpose, amount, proofUrl);
 
   return {
     status: 'PASS',
@@ -334,4 +336,133 @@ function classifyOopEligibility_(purpose, amount) {
   var looksFood = foodTerms.some(function(term) { return text.indexOf(term) !== -1; });
   if (looksFood) return 'FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY';
   return classifyOop5000Rule_(amount);
+}
+
+
+/**
+ * R61/R60 approval gate.
+ * Every FRM-03 claim is routed to the configured Top Manager.
+ * Salary eligibility begins only after the Top Manager explicitly approves.
+ */
+function getTopManagerEmail_() {
+  var email = String(PropertiesService.getScriptProperties().getProperty(A404_CONFIG.TOP_MANAGER_EMAIL_PROPERTY) || '').trim().toLowerCase();
+  if (!email || !isValidEmail_(email)) {
+    throw new Error('A4_04_TOP_MANAGER_NOT_CONFIGURED: Set Script Property TOP_MANAGER_EMAIL before processing OOP claims.');
+  }
+  return email;
+}
+
+function notifyTopManagerOfOopClaim_(claimId, employeeId, projectId, dateValue, purpose, amount, proofUrl) {
+  var managerEmail = getTopManagerEmail_();
+  var finance = findUniqueSpreadsheetByName_(A404_CONFIG.FINANCE_WORKBOOK);
+  var url = finance.getUrl();
+  var subject = 'OOP Claim Approval Required — ' + claimId;
+  var body =
+    'An OOP claim requires your approval.\n\n' +
+    'Claim ID: ' + claimId + '\n' +
+    'Employee ID: ' + employeeId + '\n' +
+    'Project ID: ' + projectId + '\n' +
+    'Claim Date: ' + Utilities.formatDate(new Date(dateValue), Session.getScriptTimeZone(), 'yyyy-MM-dd') + '\n' +
+    'Purpose: ' + purpose + '\n' +
+    'Amount: INR ' + amount + '\n' +
+    'Proof: ' + proofUrl + '\n\n' +
+    'Open MASTER_COMPANY_FINANCE → OOP_Claims and use the Top Manager Actions menu to approve or reject the selected claim.\n' +
+    'Only an approved claim is eligible for the next monthly salary calculation.\n\n' +
+    'Workbook: ' + url;
+  GmailApp.sendEmail(managerEmail, subject, body);
+}
+
+function setupA404ManagerApprovalWorkflow() {
+  var finance = findUniqueSpreadsheetByName_(A404_CONFIG.FINANCE_WORKBOOK);
+  var target = finance.getSheetByName(A404_CONFIG.TARGET_SHEET);
+  if (!target) throw new Error('A4_04_TARGET_SHEET_MISSING');
+  getTopManagerEmail_();
+
+  var existing = ScriptApp.getProjectTriggers().filter(function(t) {
+    return t.getHandlerFunction() === 'onOpenOopManagerMenu';
+  });
+  existing.slice(1).forEach(function(t) { ScriptApp.deleteTrigger(t); });
+  if (!existing.length) {
+    ScriptApp.newTrigger('onOpenOopManagerMenu').forSpreadsheet(finance).onOpen().create();
+  }
+  return {status:'PASS', topManagerEmailConfigured:true, triggerInstalled:true};
+}
+
+function onOpenOopManagerMenu(e) {
+  var ss = e && e.source ? e.source : SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(A404_CONFIG.TARGET_SHEET);
+  if (!sheet) return;
+  SpreadsheetApp.getUi()
+    .createMenu('Top Manager Actions')
+    .addItem('Approve Company-Essential Claim', 'approveSelectedOopClaim')
+    .addItem('Approve Food Business Exception', 'approveSelectedFoodOopClaimException')
+    .addItem('Reject OOP Claim', 'rejectSelectedOopClaim')
+    .addToUi();
+}
+
+function approveSelectedOopClaim() {
+  return finalizeOopManagerDecision_('APPROVED_COMPANY_ESSENTIAL');
+}
+
+function approveSelectedFoodOopClaimException() {
+  return finalizeOopManagerDecision_('APPROVED_FOOD_BUSINESS_EXCEPTION');
+}
+
+function rejectSelectedOopClaim() {
+  return finalizeOopManagerDecision_('REJECTED');
+}
+
+function finalizeOopManagerDecision_(decision) {
+  var manager = String(Session.getActiveUser().getEmail() || '').trim().toLowerCase();
+  var configured = getTopManagerEmail_();
+  if (!manager || manager !== configured) {
+    throw new Error('A4_04_MANAGER_AUTHORIZATION_REQUIRED: Only the configured Top Manager may approve or reject OOP claims.');
+  }
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  if (sheet.getName() !== A404_CONFIG.TARGET_SHEET) {
+    throw new Error('A4_04_WRONG_SHEET: Select a row in OOP_Claims.');
+  }
+  var rowNumber = sheet.getActiveRange().getRow();
+  if (rowNumber < 2) throw new Error('A4_04_NO_CLAIM_SELECTED');
+
+  var headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];
+  assertExactOopHeaders_(headers);
+  var row = sheet.getRange(rowNumber,1,1,headers.length).getValues()[0];
+  var statusIdx = headers.indexOf('Status');
+  var amountIdx = headers.indexOf('Amount');
+  var approvedIdx = headers.indexOf('Approved_Amount');
+  var flagIdx = headers.indexOf('OOP_Rule_Flag');
+  var claimIdx = headers.indexOf('Claim_ID');
+
+  if (String(row[claimIdx] || '').trim() === '') throw new Error('A4_04_CLAIM_ID_REQUIRED');
+  if (String(row[statusIdx] || '').trim() !== A404_CONFIG.STATUS) {
+    throw new Error('A4_04_CLAIM_NOT_PENDING_REVIEW: ' + row[claimIdx]);
+  }
+
+  var amount = Number(row[amountIdx]);
+  if (!(amount > 0)) throw new Error('A4_04_AMOUNT_INVALID');
+
+  if (decision === 'REJECTED') {
+    sheet.getRange(rowNumber, statusIdx + 1).setValue('Rejected');
+    sheet.getRange(rowNumber, approvedIdx + 1).clearContent();
+    sheet.getRange(rowNumber, flagIdx + 1).setValue('REJECTED_BY_TOP_MANAGER');
+  } else if (decision === 'APPROVED_FOOD_BUSINESS_EXCEPTION') {
+    if (!/^FOOD_/.test(String(row[flagIdx] || '').trim())) {
+      throw new Error('A4_04_NOT_FOOD_REVIEW: Use normal company-essential approval for non-food claims.');
+    }
+    sheet.getRange(rowNumber, statusIdx + 1).setValue('Approved');
+    sheet.getRange(rowNumber, approvedIdx + 1).setValue(amount);
+    sheet.getRange(rowNumber, flagIdx + 1).setValue('APPROVED_FOOD_BUSINESS_EXCEPTION');
+  } else {
+    if (/^FOOD_/.test(String(row[flagIdx] || '').trim())) {
+      throw new Error('A4_04_FOOD_REQUIRES_EXCEPTION_APPROVAL: Use Approve Food Business Exception for food-related claims.');
+    }
+    sheet.getRange(rowNumber, statusIdx + 1).setValue('Approved');
+    sheet.getRange(rowNumber, approvedIdx + 1).setValue(amount);
+    sheet.getRange(rowNumber, flagIdx + 1).setValue('APPROVED_COMPANY_ESSENTIAL');
+  }
+  SpreadsheetApp.flush();
+  return {status:'PASS', claimId:row[claimIdx], decision:decision, approvedAmount:decision === 'REJECTED' ? 0 : amount, manager:manager};
 }
