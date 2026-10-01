@@ -12,7 +12,6 @@
 | ID generation collision | Reject the collision, log the failure, and retry only within the controlled ID-generation transaction. | Do not reuse an already-issued ID. |
 | Concurrent ID requests | Serialize generation with Apps Script LockService. | Do not read/increment/write a shared counter without a lock. |
 
-
 ## R52 — Explicit Generate-ID controls for Sheet-originated records
 
 ## R56 — One-click Employee creation transaction safety
@@ -24,9 +23,11 @@
 
 - R52 error-handling requirements: reject Generate-ID when required fields are incomplete/invalid; never issue an ID from generic onEdit/autosave; LockService serializes concurrent Generate-ID actions; if generation succeeds but commit/save fails, the issued ID is not reused; repeated Generate-ID on an already-ID'd/locked record must not allocate another sequence value.
 
-
-## R54 — Attachment routing failures
-- If a project name cannot be resolved exactly, stop routing and mark the submission for validation failure/manual review; do not guess a folder.
-- If the required project folder or subfolder is missing, mark processing pending/error and notify the administrator; do not silently create an unapproved alternate destination.
-- If Drive move/copy permission fails, preserve the source record and original uploaded-file reference, mark processing failure/pending, and do not mark the business record fully processed.
-- If a retry encounters a file already routed to the authoritative destination, treat the routing step as already complete rather than creating another copy.
+## R57 — Universal Generate-ID error-handling contract for user-created Sheet records
+- If required fields or record-specific validation fail, the explicit Generate-ID action must stop before ID issuance and before authoritative finalization.
+- If applicable duplicate/identity validation fails, no new business ID may be issued.
+- If the record already has a valid generated ID, repeating the action must not allocate another sequence value.
+- If A4-00 successfully issues an ID but the subsequent authoritative commit/finalization fails, the issued ID is never reused. Preserve the pending/source state, log the failure and surface a controlled recovery/manual-review state.
+- Concurrent Generate-ID actions must remain serialized by LockService.
+- Generic edit/autosave triggers must never be used as a fallback path for ID issuance after an explicit action fails.
+- Form/system-generated IDs continue to use their controlled processing/error-handling path and are not converted into R57 manual actions.
