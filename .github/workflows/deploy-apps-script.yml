@@ -18,10 +18,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install clasp
-        run: npm install --global @google/clasp
+      - name: Install clasp and API client
+        run: npm install --global @google/clasp googleapis
 
-      - name: Configure clasp
+      - name: Configure Google credentials
         env:
           CLASPRC: ${{ secrets.CLASP_CREDENTIALS }}
           APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
@@ -30,7 +30,7 @@ jobs:
           test "$APPS_SCRIPT_ID" = "1GGhlK-ZbXtNlG8WtSAMewIoymQ6hYeuwcf4YpvNwneYK8xUiv7LIz05W"
           printf '%s' "$CLASPRC" > "$HOME/.clasprc.json"
 
-      - name: Prepare exact Apps Script source
+      - name: Prepare desired Apps Script source
         run: |
           rm -rf "$RUNNER_TEMP/apps-script"
           mkdir -p "$RUNNER_TEMP/apps-script"
@@ -40,46 +40,132 @@ jobs:
           test -f "$RUNNER_TEMP/apps-script/employee_creation_workflow.gs"
           grep -q "function setupEmployeeDirectSheetWorkflow" "$RUNNER_TEMP/apps-script/employee_creation_workflow.gs"
 
-      - name: Push to existing MASTER COMPANY Apps Script
+      - name: Pull current live manifest before replacement
         run: |
-          cd "$RUNNER_TEMP/apps-script"
-          clasp push --force --non-interactive
-          echo "=== CLASP STATUS ==="
-          clasp status --json
+          rm -rf "$RUNNER_TEMP/live-before"
+          mkdir -p "$RUNNER_TEMP/live-before"
+          cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/live-before/.clasp.json"
+          cd "$RUNNER_TEMP/live-before"
+          clasp pull --force
+          test -f appsscript.json || { echo "FAIL: live project manifest was not returned"; exit 1; }
+          cp appsscript.json "$RUNNER_TEMP/apps-script/appsscript.json"
+          echo "=== LIVE MANIFEST PRESERVED ==="
+          cat "$RUNNER_TEMP/apps-script/appsscript.json"
 
-      - name: Pull live Apps Script source
+      - name: Replace entire Apps Script project content
+        env:
+          APPS_SCRIPT_ID: ${{ secrets.APPS_SCRIPT_ID }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const {google} = require('googleapis');
+
+          const scriptId = process.env.APPS_SCRIPT_ID;
+          const root = process.env.RUNNER_TEMP + '/apps-script';
+          const credPath = process.env.HOME + '/.clasprc.json';
+          const raw = JSON.parse(fs.readFileSync(credPath, 'utf8'));
+
+          function findValue(obj, keys) {
+            if (!obj || typeof obj !== 'object') return undefined;
+            for (const key of keys) {
+              if (typeof obj[key] === 'string' && obj[key]) return obj[key];
+            }
+            for (const value of Object.values(obj)) {
+              if (value && typeof value === 'object') {
+                const found = findValue(value, keys);
+                if (found) return found;
+              }
+            }
+            return undefined;
+          }
+
+          const refreshToken = findValue(raw, ['refresh_token']);
+          const clientId = findValue(raw, ['clientId', 'client_id']);
+          const clientSecret = findValue(raw, ['clientSecret', 'client_secret']);
+
+          if (!refreshToken || !clientId || !clientSecret) {
+            throw new Error('CLASPRC does not contain the OAuth refresh token/client credentials required for direct Apps Script API update.');
+          }
+
+          const auth = new google.auth.OAuth2(clientId, clientSecret);
+          auth.setCredentials({refresh_token: refreshToken});
+
+          const script = google.script({version: 'v1', auth});
+          const files = [];
+
+          for (const fileName of fs.readdirSync(root).sort()) {
+            const full = path.join(root, fileName);
+            if (!fs.statSync(full).isFile()) continue;
+            if (fileName === '.clasp.json') continue;
+
+            if (fileName === 'appsscript.json') {
+              files.push({
+                name: 'appsscript',
+                type: 'JSON',
+                source: fs.readFileSync(full, 'utf8')
+              });
+            } else if (fileName.endsWith('.html')) {
+              files.push({
+                name: fileName.slice(0, -5),
+                type: 'HTML',
+                source: fs.readFileSync(full, 'utf8')
+              });
+            } else if (fileName.endsWith('.gs')) {
+              files.push({
+                name: fileName.slice(0, -3),
+                type: 'SERVER_JS',
+                source: fs.readFileSync(full, 'utf8')
+              });
+            }
+          }
+
+          if (!files.some(f => f.name === 'employee_creation_workflow')) {
+            throw new Error('Desired employee_creation_workflow source was not assembled.');
+          }
+
+          console.log('Replacing Apps Script content with files:');
+          for (const f of files) console.log(' - ' + f.type + ': ' + f.name);
+
+          const response = await script.projects.updateContent({
+            scriptId,
+            requestBody: {files}
+          });
+
+          if (!response.data || response.data.scriptId !== scriptId) {
+            throw new Error('Apps Script updateContent did not return the expected script ID.');
+          }
+
+          console.log('PASS: Google Apps Script projects.updateContent completed for the approved MASTER COMPANY project.');
+          NODE
+
+      - name: Verify exact live Apps Script content
         run: |
           rm -rf "$RUNNER_TEMP/apps-script-live"
           mkdir -p "$RUNNER_TEMP/apps-script-live"
           cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/apps-script-live/.clasp.json"
           cd "$RUNNER_TEMP/apps-script-live"
           clasp pull --force
-          echo "=== LIVE FILES RETURNED BY GOOGLE ==="
+          echo "=== LIVE FILES AFTER FULL REPLACEMENT ==="
           find . -maxdepth 1 -type f -printf '%f\n' | sort
 
-      - name: Verify live Apps Script by content, not filename
-        run: |
           LIVE="$RUNNER_TEMP/apps-script-live"
-          echo "=== SEARCHING LIVE SOURCE FOR DIRECT WORKFLOW ==="
-          NEW_MATCHES=$(grep -RIl "function setupEmployeeDirectSheetWorkflow" "$LIVE" --include='*.gs' || true)
-          echo "$NEW_MATCHES"
+          NEW_MATCHES=$(grep -RIl "function setupEmployeeDirectSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
           test -n "$NEW_MATCHES" || {
-            echo "FAIL: Google Apps Script live source does not contain setupEmployeeDirectSheetWorkflow."
-            echo "=== ALL LIVE SOURCE FILES ==="
-            find "$LIVE" -type f -print | sort
+            echo "FAIL: direct employee workflow is not present after full Apps Script replacement."
             exit 1
           }
 
           NEW_FILE=$(printf '%s\n' "$NEW_MATCHES" | head -n 1)
-          grep -q "function processEmployeeSheetControl" "$NEW_FILE" || { echo "FAIL: processEmployeeSheetControl missing"; exit 1; }
+          grep -q "function processEmployeeSheetControl" "$NEW_FILE" || {
+            echo "FAIL: processEmployeeSheetControl missing from live workflow."
+            exit 1
+          }
 
-          echo "=== SEARCHING FOR OBSOLETE WORKFLOW ==="
-          OBSOLETE=$(grep -RIlE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.gs' --include='*.html' || true)
+          OBSOLETE=$(grep -RIlE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
-            echo "FAIL: obsolete employee workflow still exists in live Apps Script:"
+            echo "FAIL: obsolete employee workflow still exists after full replacement:"
             echo "$OBSOLETE"
-            echo "=== OBSOLETE MATCHES ==="
-            grep -RInE "function (onOpen|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.gs' --include='*.html' || true
             exit 1
           fi
 
