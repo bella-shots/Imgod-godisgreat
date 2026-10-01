@@ -426,6 +426,21 @@ jobs:
             exit 1
           }
 
+          SAL_R57_MATCHES=$(grep -RIl "function generateSelectedSalaryIds" "$LIVE" --include='*.js' --include='*.gs' || true)
+          test -n "$SAL_R57_MATCHES" || {
+            echo "FAIL: generateSelectedSalaryIds is missing from live Apps Script."
+            exit 1
+          }
+          SAL_R57_FILE=$(printf '%s\n' "$SAL_R57_MATCHES" | head -n 1)
+          grep -q "function verifySalaryAdminPrerequisites" "$SAL_R57_FILE" || {
+            echo "FAIL: verifySalaryAdminPrerequisites missing from live workflow."
+            exit 1
+          }
+          grep -q "function testSalaryAdminR57WorkflowLive" "$SAL_R57_FILE" || {
+            echo "FAIL: testSalaryAdminR57WorkflowLive missing from live workflow."
+            exit 1
+          }
+
           OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
           if [ -n "$OBSOLETE" ]; then
             echo "FAIL: obsolete employee workflow still exists after full replacement:"
