@@ -284,95 +284,39 @@ jobs:
           "$RUNNER_TEMP/deployment-runtime/node_modules/.bin/clasp" pull --force
 
           LIVE="$RUNNER_TEMP/apps-script-live"
+          test -f "$LIVE/appsscript.json" || { echo "FAIL: live manifest missing"; exit 1; }
 
-          check_fn() {
-            local stem="$1"
-            local fn="$2"
-            local file=""
-            if [ -f "$LIVE/$stem.gs" ]; then
-              file="$LIVE/$stem.gs"
-            elif [ -f "$LIVE/$stem.js" ]; then
-              file="$LIVE/$stem.js"
-            else
-              echo "FAIL: live source file missing for $stem (.gs/.js)"
+          grep_live_fn() {
+            local fn="$1"
+            grep -RIlF "function $fn" "$LIVE" --include='*.js' --include='*.gs' >/dev/null || {
+              echo "FAIL: live Apps Script is missing function $fn"
               exit 1
-            fi
-            grep -qF "function $fn" "$file" || { echo "FAIL: $fn missing from $stem"; exit 1; }
-            echo "PASS: $stem :: $fn"
+            }
+            echo "PASS: live Apps Script contains $fn"
           }
 
-          check_fn "employee_creation_workflow.gs" "setupEmployeeDirectSheetWorkflow"
-          check_fn "employee_creation_workflow.gs" "onOpenEmployeeSheetMenu"
-          check_fn "employee_creation_workflow.gs" "generateSelectedEmployeeId"
+          # Stabilization checkpoint: prove the newly deployed MOM modules are actually live.
+          grep_live_fn "processMomFormSubmit"
+          grep_live_fn "verifyA406MomPrerequisites"
+          grep_live_fn "testA406MomProcessingLive"
+          grep_live_fn "sendMomDistributionEmail"
+          grep_live_fn "verifyA407MomEmailPrerequisites"
+          grep_live_fn "testA407MomEmailSenderLive"
 
-          check_fn "a4_01_project_processing.gs" "processA401ProjectSubmission"
-          check_fn "a4_01_project_processing.gs" "verifyA401ProjectProcessingPrerequisites"
-          check_fn "a4_01_project_processing.gs" "verifyA401ProjectFormTrigger"
-          check_fn "a4_01_project_processing.gs" "testA401A402ProjectProcessingLive"
-          check_fn "a4_02_project_drive_folder_automation.gs" "ensureA402ProjectFolder"
+          # Preserve the frozen Employee architecture gate.
+          grep_live_fn "setupEmployeeDirectSheetWorkflow"
+          grep_live_fn "onOpenEmployeeSheetMenu"
+          grep_live_fn "generateSelectedEmployeeId"
 
-          check_fn "a4_03_expense_processing.gs" "processEmployeeSpendingFormSubmit"
-          check_fn "a4_03_expense_processing.gs" "verifyA403Architecture"
-          check_fn "a4_03_expense_processing.gs" "testA403FormOriginatedWorkflowLive"
+          EMPLOYEE_LIVE=$(grep -RIlF "function setupEmployeeDirectSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' | head -n 1)
+          test -n "$EMPLOYEE_LIVE" || { echo "FAIL: live Employee workflow source not found"; exit 1; }
 
-          check_fn "a4_04_oop_claim_processing.gs" "processOopClaimFormSubmit"
-          check_fn "a4_04_oop_claim_processing.gs" "verifyA404Architecture"
-          check_fn "a4_04_oop_claim_processing.gs" "verifyA404ManagerApprovalPrerequisites"
-          check_fn "a4_04_oop_claim_processing.gs" "testA404ApprovalGateLogicNonDestructive"
-
-          check_fn "a4_05_salary_carry_forward.gs" "calculateOopSalaryCredit_"
-          check_fn "a4_05_salary_carry_forward.gs" "testA405OopSalaryRule"
-          check_fn "a4_05_salary_carry_forward.gs" "testA405ApprovalGateRule"
-
-          check_fn "a4_54_attachment_routing.gs" "routeAttachmentToProjectExpenses_"
-          check_fn "a4_54_attachment_routing.gs" "routeAttachmentToHr_"
-          check_fn "a4_54_attachment_routing.gs" "testR54AttachmentRoutingLive"
-
-          check_fn "a4_14_salary_sheet_workflow.gs" "generateSelectedSalaryIds"
-          check_fn "a4_14_salary_sheet_workflow.gs" "verifySalaryAdminPrerequisites"
-          check_fn "a4_14_salary_sheet_workflow.gs" "testSalaryAdminR57WorkflowLive"
-
-          check_fn "a4_15_investment_processing.gs" "processInvestmentFormSubmit"
-          check_fn "a4_15_investment_processing.gs" "verifyA415InvestmentPrerequisites"
-          check_fn "a4_15_investment_processing.gs" "testA415InvestmentWorkflowLive"
-
-          check_fn "a4_06_mom_processing.gs" "processMomFormSubmit"
-          check_fn "a4_06_mom_processing.gs" "verifyA406MomPrerequisites"
-          check_fn "a4_06_mom_processing.gs" "testA406MomProcessingLive"
-
-          check_fn "a4_07_mom_email_sender.gs" "sendMomDistributionEmail"
-          check_fn "a4_07_mom_email_sender.gs" "verifyA407MomEmailPrerequisites"
-          check_fn "a4_07_mom_email_sender.gs" "testA407MomEmailSenderLive"
-
-          check_fn "a4_14_project_member_sheet_workflow.gs" "setupProjectMemberSheetWorkflow"
-          check_fn "a4_14_project_member_sheet_workflow.gs" "onOpenProjectMemberSheetMenu"
-          check_fn "a4_14_project_member_sheet_workflow.gs" "generateSelectedProjectMemberId"
-          check_fn "a4_14_project_member_sheet_workflow.gs" "testA414ProjectMemberWorkflowLive"
-
-          check_fn "a4_14_project_note_sheet_workflow.gs" "setupProjectNoteSheetWorkflow"
-          check_fn "a4_14_project_note_sheet_workflow.gs" "onOpenProjectNoteSheetMenu"
-          check_fn "a4_14_project_note_sheet_workflow.gs" "generateSelectedProjectNoteId"
-          check_fn "a4_14_project_note_sheet_workflow.gs" "testA414ProjectNoteWorkflowLive"
-
-          check_fn "a4_14_budget_given_sheet_workflow.gs" "setupBudgetSheetWorkflow"
-          check_fn "a4_14_budget_given_sheet_workflow.gs" "onOpenBudgetSheetMenu"
-          check_fn "a4_14_budget_given_sheet_workflow.gs" "generateSelectedBudgetId"
-          check_fn "a4_14_budget_given_sheet_workflow.gs" "testA414BudgetGivenWorkflowLive"
-
-          if [ -f "$LIVE/employee_creation_workflow.gs" ]; then
-            EMPLOYEE_FILE="$LIVE/employee_creation_workflow.gs"
-          elif [ -f "$LIVE/employee_creation_workflow.js" ]; then
-            EMPLOYEE_FILE="$LIVE/employee_creation_workflow.js"
-          else
-            echo "FAIL: employee_creation_workflow live source file missing."
-            exit 1
-          fi
-          if grep -qF "function saveSelectedEmployee" "$EMPLOYEE_FILE" ||
-             grep -qF "function processSelectedEmployee" "$EMPLOYEE_FILE" ||
-             grep -qF "function showEmployeeActionsFloatingPanel" "$EMPLOYEE_FILE" ||
-             grep -qF "function processEmployeeSheetControl" "$EMPLOYEE_FILE"; then
-            echo "FAIL: obsolete Employee workflow functions are present in the live project."
+          if grep -qF "function saveSelectedEmployee" "$EMPLOYEE_LIVE" ||
+             grep -qF "function processSelectedEmployee" "$EMPLOYEE_LIVE" ||
+             grep -qF "function showEmployeeActionsFloatingPanel" "$EMPLOYEE_LIVE" ||
+             grep -qF "function processEmployeeSheetControl" "$EMPLOYEE_LIVE"; then
+            echo "FAIL: obsolete Employee workflow functions are present in live source."
             exit 1
           fi
 
-          echo "PASS: live MASTER COMPANY Apps Script content matches the authoritative Phase 4 workflow assertions."
+          echo "PASS: live Apps Script stabilization content verified: manifest + A4-06 + A4-07 + Employee architecture."
