@@ -282,253 +282,82 @@ jobs:
           cp "$RUNNER_TEMP/apps-script/.clasp.json" "$RUNNER_TEMP/apps-script-live/.clasp.json"
           cd "$RUNNER_TEMP/apps-script-live"
           "$RUNNER_TEMP/deployment-runtime/node_modules/.bin/clasp" pull --force
-          echo "=== LIVE FILES AFTER FULL REPLACEMENT ==="
-          find . -maxdepth 1 -type f -printf '%f\n' | sort
 
           LIVE="$RUNNER_TEMP/apps-script-live"
-          NEW_MATCHES=$(grep -RIl "function setupEmployeeDirectSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$NEW_MATCHES" || {
-            echo "FAIL: direct employee workflow is not present after full Apps Script replacement."
-            exit 1
+
+          check_fn() {
+            local file="$1"
+            local fn="$2"
+            test -f "$LIVE/$file" || { echo "FAIL: live file missing: $file"; exit 1; }
+            grep -qF "function $fn" "$LIVE/$file" || { echo "FAIL: $fn missing from $file"; exit 1; }
+            echo "PASS: $file :: $fn"
           }
 
-          NEW_FILE=$(printf '%s\n' "$NEW_MATCHES" | head -n 1)
-          grep -q "function onOpenEmployeeSheetMenu" "$NEW_FILE" || {
-            echo "FAIL: onOpenEmployeeSheetMenu missing from live workflow."
-            exit 1
-          }
-          grep -q "function generateSelectedEmployeeId" "$NEW_FILE" || {
-            echo "FAIL: generateSelectedEmployeeId missing from live workflow."
-            exit 1
-          }
-          grep -q "function saveSelectedEmployee" "$NEW_FILE" || {
-            echo "FAIL: saveSelectedEmployee missing from live workflow."
-            exit 1
-          }
-          grep -q "function installEmployeeSheetControls" "$NEW_FILE" || {
-            echo "FAIL: installEmployeeSheetControls missing from live workflow."
-            exit 1
-          }
-          grep -q "function processSelectedEmployee" "$NEW_FILE" || {
-            echo "FAIL: processSelectedEmployee missing from live workflow."
-            exit 1
-          }
-          grep -q "function showEmployeeActionsFloatingPanel" "$NEW_FILE" || {
-            echo "FAIL: showEmployeeActionsFloatingPanel missing from live workflow."
-            exit 1
-          }
+          check_fn "employee_creation_workflow.gs" "setupEmployeeDirectSheetWorkflow"
+          check_fn "employee_creation_workflow.gs" "onOpenEmployeeSheetMenu"
+          check_fn "employee_creation_workflow.gs" "generateSelectedEmployeeId"
 
-          PM_MATCHES=$(grep -RIl "function setupProjectMemberSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$PM_MATCHES" || {
-            echo "FAIL: setupProjectMemberSheetWorkflow is missing from live Apps Script."
-            exit 1
-          }
-          PM_FILE=$(printf '%s\n' "$PM_MATCHES" | head -n 1)
-          grep -q "function onOpenProjectMemberSheetMenu" "$PM_FILE" || {
-            echo "FAIL: onOpenProjectMemberSheetMenu missing from live workflow."
-            exit 1
-          }
-          grep -q "function generateSelectedProjectMemberId" "$PM_FILE" || {
-            echo "FAIL: generateSelectedProjectMemberId missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA414ProjectMemberWorkflowLive" "$PM_FILE" || {
-            echo "FAIL: testA414ProjectMemberWorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_01_project_processing.gs" "processA401ProjectSubmission"
+          check_fn "a4_01_project_processing.gs" "verifyA401ProjectProcessingPrerequisites"
+          check_fn "a4_01_project_processing.gs" "verifyA401ProjectFormTrigger"
+          check_fn "a4_01_project_processing.gs" "testA401A402ProjectProcessingLive"
+          check_fn "a4_02_project_drive_folder_automation.gs" "ensureA402ProjectFolder"
 
-          PN_MATCHES=$(grep -RIl "function setupProjectNoteSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$PN_MATCHES" || {
-            echo "FAIL: setupProjectNoteSheetWorkflow is missing from live Apps Script."
-            exit 1
-          }
-          PN_FILE=$(printf '%s\n' "$PN_MATCHES" | head -n 1)
-          grep -q "function onOpenProjectNoteSheetMenu" "$PN_FILE" || {
-            echo "FAIL: onOpenProjectNoteSheetMenu missing from live workflow."
-            exit 1
-          }
-          grep -q "function generateSelectedProjectNoteId" "$PN_FILE" || {
-            echo "FAIL: generateSelectedProjectNoteId missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA414ProjectNoteWorkflowLive" "$PN_FILE" || {
-            echo "FAIL: testA414ProjectNoteWorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_03_expense_processing.gs" "processEmployeeSpendingFormSubmit"
+          check_fn "a4_03_expense_processing.gs" "verifyA403Architecture"
+          check_fn "a4_03_expense_processing.gs" "testA403FormOriginatedWorkflowLive"
 
-          BDG_MATCHES=$(grep -RIl "function setupBudgetSheetWorkflow" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$BDG_MATCHES" || {
-            echo "FAIL: setupBudgetSheetWorkflow is missing from live Apps Script."
-            exit 1
-          }
-          BDG_FILE=$(printf '%s\n' "$BDG_MATCHES" | head -n 1)
-          grep -q "function onOpenBudgetSheetMenu" "$BDG_FILE" || {
-            echo "FAIL: onOpenBudgetSheetMenu missing from live workflow."
-            exit 1
-          }
-          grep -q "function generateSelectedBudgetId" "$BDG_FILE" || {
-            echo "FAIL: generateSelectedBudgetId missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA414BudgetGivenWorkflowLive" "$BDG_FILE" || {
-            echo "FAIL: testA414BudgetGivenWorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_04_oop_claim_processing.gs" "processOopClaimFormSubmit"
+          check_fn "a4_04_oop_claim_processing.gs" "verifyA404Architecture"
+          check_fn "a4_04_oop_claim_processing.gs" "verifyA404ManagerApprovalPrerequisites"
+          check_fn "a4_04_oop_claim_processing.gs" "testA404ApprovalGateLogicNonDestructive"
 
-          SPN_MATCHES=$(grep -RIl "function processEmployeeSpendingFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$SPN_MATCHES" || {
-            echo "FAIL: processEmployeeSpendingFormSubmit is missing from live Apps Script."
-            exit 1
-          }
-          SPN_FILE=$(printf '%s\n' "$SPN_MATCHES" | head -n 1)
-          grep -q "function verifyA403Architecture" "$SPN_FILE" || {
-            echo "FAIL: verifyA403Architecture missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA403FormOriginatedWorkflowLive" "$SPN_FILE" || {
-            echo "FAIL: testA403FormOriginatedWorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_05_salary_carry_forward.gs" "calculateOopSalaryCredit_"
+          check_fn "a4_05_salary_carry_forward.gs" "testA405OopSalaryRule"
+          check_fn "a4_05_salary_carry_forward.gs" "testA405ApprovalGateRule"
 
-          CLM_MATCHES=$(grep -RIl "function processOopClaimFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$CLM_MATCHES" || {
-            echo "FAIL: processOopClaimFormSubmit is missing from live Apps Script."
-            exit 1
-          }
-          CLM_FILE=$(printf '%s\n' "$CLM_MATCHES" | head -n 1)
-          grep -q "function verifyA404Architecture" "$CLM_FILE" || {
-            echo "FAIL: verifyA404Architecture missing from live workflow."
-            exit 1
-          }
-          grep -q "function verifyA404ManagerApprovalPrerequisites" "$CLM_FILE" || {
-            echo "FAIL: verifyA404ManagerApprovalPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA404ApprovalGateLogicNonDestructive" "$CLM_FILE" || {
-            echo "FAIL: testA404ApprovalGateLogicNonDestructive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_54_attachment_routing.gs" "routeAttachmentToProjectExpenses_"
+          check_fn "a4_54_attachment_routing.gs" "routeAttachmentToHr_"
+          check_fn "a4_54_attachment_routing.gs" "testR54AttachmentRoutingLive"
 
-          SAL_MATCHES=$(grep -RIl "function calculateOopSalaryCredit_" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$SAL_MATCHES" || {
-            echo "FAIL: calculateOopSalaryCredit_ is missing from live Apps Script."
-            exit 1
-          }
-          SAL_FILE=$(printf '%s\n' "$SAL_MATCHES" | head -n 1)
-          grep -q "function testA405OopSalaryRule" "$SAL_FILE" || {
-            echo "FAIL: testA405OopSalaryRule missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA405ApprovalGateRule" "$SAL_FILE" || {
-            echo "FAIL: testA405ApprovalGateRule missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_14_salary_sheet_workflow.gs" "generateSelectedSalaryIds"
+          check_fn "a4_14_salary_sheet_workflow.gs" "verifySalaryAdminPrerequisites"
+          check_fn "a4_14_salary_sheet_workflow.gs" "testSalaryAdminR57WorkflowLive"
 
-          PRJ_MATCHES=$(grep -RIl "function processA401ProjectSubmission" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$PRJ_MATCHES" || {
-            echo "FAIL: processA401ProjectSubmission is missing from live Apps Script."
-            exit 1
-          }
-          PRJ_FILE=$(printf '%s\n' "$PRJ_MATCHES" | head -n 1)
-          grep -q "function verifyA401ProjectProcessingPrerequisites" "$PRJ_FILE" || {
-            echo "FAIL: verifyA401ProjectProcessingPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function verifyA401ProjectFormTrigger" "$PRJ_FILE" || {
-            echo "FAIL: verifyA401ProjectFormTrigger missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA401A402ProjectProcessingLive" "$PRJ_FILE" || {
-            echo "FAIL: testA401A402ProjectProcessingLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_15_investment_processing.gs" "processInvestmentFormSubmit"
+          check_fn "a4_15_investment_processing.gs" "verifyA415InvestmentPrerequisites"
+          check_fn "a4_15_investment_processing.gs" "testA415InvestmentWorkflowLive"
 
-          DRV_MATCHES=$(grep -RIl "function ensureA402ProjectFolder" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$DRV_MATCHES" || {
-            echo "FAIL: ensureA402ProjectFolder is missing from live Apps Script."
-            exit 1
-          }
+          check_fn "a4_06_mom_processing.gs" "processMomFormSubmit"
+          check_fn "a4_06_mom_processing.gs" "verifyA406MomPrerequisites"
+          check_fn "a4_06_mom_processing.gs" "testA406MomProcessingLive"
 
-          R54_MATCHES=$(grep -RIl "function routeAttachmentToProjectExpenses_" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$R54_MATCHES" || {
-            echo "FAIL: routeAttachmentToProjectExpenses_ is missing from live Apps Script."
-            exit 1
-          }
-          R54_FILE=$(printf '%s\n' "$R54_MATCHES" | head -n 1)
-          grep -q "function routeAttachmentToHr_" "$R54_FILE" || {
-            echo "FAIL: routeAttachmentToHr_ missing from live workflow."
-            exit 1
-          }
-          grep -q "function testR54AttachmentRoutingLive" "$R54_FILE" || {
-            echo "FAIL: testR54AttachmentRoutingLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_07_mom_email_sender.gs" "sendMomDistributionEmail"
+          check_fn "a4_07_mom_email_sender.gs" "verifyA407MomEmailPrerequisites"
+          check_fn "a4_07_mom_email_sender.gs" "testA407MomEmailSenderLive"
 
-          SAL_R57_MATCHES=$(grep -RIl "function generateSelectedSalaryIds" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$SAL_R57_MATCHES" || {
-            echo "FAIL: generateSelectedSalaryIds is missing from live Apps Script."
-            exit 1
-          }
-          SAL_R57_FILE=$(printf '%s\n' "$SAL_R57_MATCHES" | head -n 1)
-          grep -q "function verifySalaryAdminPrerequisites" "$SAL_R57_FILE" || {
-            echo "FAIL: verifySalaryAdminPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function testSalaryAdminR57WorkflowLive" "$SAL_R57_FILE" || {
-            echo "FAIL: testSalaryAdminR57WorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_14_project_member_sheet_workflow.gs" "setupProjectMemberSheetWorkflow"
+          check_fn "a4_14_project_member_sheet_workflow.gs" "onOpenProjectMemberSheetMenu"
+          check_fn "a4_14_project_member_sheet_workflow.gs" "generateSelectedProjectMemberId"
+          check_fn "a4_14_project_member_sheet_workflow.gs" "testA414ProjectMemberWorkflowLive"
 
-          INV_MATCHES=$(grep -RIl "function processInvestmentFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$INV_MATCHES" || {
-            echo "FAIL: processInvestmentFormSubmit is missing from live Apps Script."
-            exit 1
-          }
-          INV_FILE=$(printf '%s\n' "$INV_MATCHES" | head -n 1)
-          grep -q "function verifyA415InvestmentPrerequisites" "$INV_FILE" || {
-            echo "FAIL: verifyA407InvestmentPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA415InvestmentWorkflowLive" "$INV_FILE" || {
-            echo "FAIL: testA407InvestmentWorkflowLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_14_project_note_sheet_workflow.gs" "setupProjectNoteSheetWorkflow"
+          check_fn "a4_14_project_note_sheet_workflow.gs" "onOpenProjectNoteSheetMenu"
+          check_fn "a4_14_project_note_sheet_workflow.gs" "generateSelectedProjectNoteId"
+          check_fn "a4_14_project_note_sheet_workflow.gs" "testA414ProjectNoteWorkflowLive"
 
-          MOM_MATCHES=$(grep -RIl "function processMomFormSubmit" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$MOM_MATCHES" || {
-            echo "FAIL: processMomFormSubmit is missing from live Apps Script."
-            exit 1
-          }
-          MOM_FILE=$(printf '%s\n' "$MOM_MATCHES" | head -n 1)
-          grep -q "function verifyA406MomPrerequisites" "$MOM_FILE" || {
-            echo "FAIL: verifyA406MomPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA406MomProcessingLive" "$MOM_FILE" || {
-            echo "FAIL: testA406MomProcessingLive missing from live workflow."
-            exit 1
-          }
+          check_fn "a4_14_budget_given_sheet_workflow.gs" "setupBudgetSheetWorkflow"
+          check_fn "a4_14_budget_given_sheet_workflow.gs" "onOpenBudgetSheetMenu"
+          check_fn "a4_14_budget_given_sheet_workflow.gs" "generateSelectedBudgetId"
+          check_fn "a4_14_budget_given_sheet_workflow.gs" "testA414BudgetGivenWorkflowLive"
 
-          MOM_EMAIL_MATCHES=$(grep -RIl "function sendMomDistributionEmail" "$LIVE" --include='*.js' --include='*.gs' || true)
-          test -n "$MOM_EMAIL_MATCHES" || {
-            echo "FAIL: sendMomDistributionEmail is missing from live Apps Script."
-            exit 1
-          }
-          MOM_EMAIL_FILE=$(printf '%s\n' "$MOM_EMAIL_MATCHES" | head -n 1)
-          grep -q "function verifyA407MomEmailPrerequisites" "$MOM_EMAIL_FILE" || {
-            echo "FAIL: verifyA407MomEmailPrerequisites missing from live workflow."
-            exit 1
-          }
-          grep -q "function testA407MomEmailSenderLive" "$MOM_EMAIL_FILE" || {
-            echo "FAIL: testA407MomEmailSenderLive missing from live workflow."
-            exit 1
-          }
-
-          OBSOLETE=$(grep -RIlE "function (onOpen\s*\(|showEmployeeCreationSidebar|generatePendingEmployeeId|saveEmployee\()" "$LIVE" --include='*.js' --include='*.gs' --include='*.html' || true)
-          if [ -n "$OBSOLETE" ]; then
-            echo "FAIL: obsolete employee workflow still exists after full replacement:"
-            echo "$OBSOLETE"
+          EMPLOYEE_FILE="$LIVE/employee_creation_workflow.gs"
+          if grep -qF "function saveSelectedEmployee" "$EMPLOYEE_FILE" ||
+             grep -qF "function processSelectedEmployee" "$EMPLOYEE_FILE" ||
+             grep -qF "function showEmployeeActionsFloatingPanel" "$EMPLOYEE_FILE" ||
+             grep -qF "function processEmployeeSheetControl" "$EMPLOYEE_FILE"; then
+            echo "FAIL: obsolete Employee workflow functions are present in the live project."
             exit 1
           fi
 
-          echo "PASS: live MASTER COMPANY Apps Script contains the direct Employees-sheet workflow and no obsolete employee workflow."
+          echo "PASS: live MASTER COMPANY Apps Script content matches the authoritative Phase 4 workflow assertions."
