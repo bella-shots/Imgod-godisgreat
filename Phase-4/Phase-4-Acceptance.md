@@ -4,9 +4,9 @@
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | NOT STARTED |
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
-| P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-06 | Test ₹5,000 rule. | Monthly company-essential OOP spend is applied to the next salary credit as actual approved spend: ₹1,000→+₹1,000; ₹5,000→+₹5,000; ₹7,000→+₹5,000+₹2,000 excess (=+₹7,000). No extra ₹5,000 line is added and claims are not auto-approved. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | PASS — live-verified 01-Oct-2026; FRM-03 → OOP_Claims_Responses → A4-04 → OOP_Claims, CLM generation, Director routing and Pending Review behavior all passed. |
+| P4-06 | Test ₹5,000 rule. | Monthly company-essential OOP spend is applied to the next salary credit as actual approved spend: ₹1,000→+₹1,000; ₹5,000→+₹5,000; ₹7,000→+₹5,000+₹2,000 excess (=+₹7,000). No extra ₹5,000 line is added and claims are not auto-approved. | PASS — live-verified 01-Oct-2026; ₹1,000, ₹5,000 and ₹7,000 cases passed with no separate ₹5,000 line. |
+| P4-07 | Test salary carry-forward. | Salary_Admin monthly record uses designated/base salary plus aggregated approved OOP spend from the applicable month, preserves prior salary history, and does not double-count the ₹5,000 baseline. | PASS — live-verified 01-Oct-2026; approved/pending/rejected/food cases and separate ₹1,000 allowance passed. |
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | NOT STARTED |
 | P4-09 | Test MOM email. | Email is sent to the approved recipient list and send result is logged. | NOT STARTED |
 | P4-10 | Test report generation. | Defined report is generated from authoritative Phase 3 data and indexed in Drive. | NOT STARTED |
@@ -104,7 +104,7 @@
 - Project Name is resolved to canonical `Project_ID`; proof is required.
 - Claims enter `Pending Review`; no silent auto-approval is introduced.
 - R60/R61 are now frozen: ₹5,000 is the company-essential monthly baseline, ordinary food is excluded, and ₹1,000 monthly food allowance is separate. A4-04 creates claims as `Pending Review` and routes them to the Top Manager for explicit approval; `Approved_Amount` remains unset until approval. A4-05 uses only explicitly approved salary-eligible claims.
-- Live verification of the complete approval and salary chain is pending.
+- **Live verification of the complete approval and salary chain = PASS on 01-Oct-2026.**
 
 
 ### R60 — OOP-to-Salary rule implementation — 01-Oct-2026
@@ -114,7 +114,7 @@
 - No separate ₹5,000 reimbursement line is created.
 - Only claims with Status = Approved and a positive Approved_Amount contribute to the salary addition.
 - Salary history is preserved; prior Salary_Admin records are not overwritten.
-- Live verification of A4-04 and A4-05 remains pending.
+- **Live verification of A4-04 and A4-05 = PASS on 01-Oct-2026.**
 
 ### R61 — Food allowance vs company-essential OOP — 01-Oct-2026
 - Every eligible employee receives a fixed ₹1,000 food/eatables allowance each month independently of actual food spending.
@@ -128,14 +128,14 @@
 ## R62 — OOP Top Manager approval acceptance tests
 | ID | Acceptance test | Expected result | Status |
 |---|---|---|---|
-| P4-51 | Test employee OOP submission routing | Valid FRM-03 submission creates a CLM record with `Pending Review` and notifies the single active `Director` resolved from `Employees`. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-52 | Test non-manager approval rejection | An account other than the resolved active `Director` cannot approve/reject a claim. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-53 | Test normal company-essential approval | Director-designated Top Manager approval changes `Pending Review` → `Approved`, writes positive `Approved_Amount`, sets `APPROVED_COMPANY_ESSENTIAL`, and makes the claim salary-eligible. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-54 | Test ordinary food claim | Food-related claim remains excluded from salary unless explicitly approved as a genuine business exception. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-55 | Test food business exception approval | Director-designated Top Manager uses `Approve Food Business Exception`; claim becomes `Approved`, receives positive `Approved_Amount` and `APPROVED_FOOD_BUSINESS_EXCEPTION`, and is eligible for salary. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-56 | Test rejection gate | Rejected claim contributes ₹0 to next-month OOP salary credit. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-57 | Test salary gate | A4-05 includes only `Approved` claims with `APPROVED_COMPANY_ESSENTIAL` or `APPROVED_FOOD_BUSINESS_EXCEPTION`; pending/unapproved/ordinary-food claims contribute ₹0. | IMPLEMENTED — LIVE VERIFICATION PENDING |
-| P4-58 | Test no schema expansion | OOP_Claims remains the frozen 11-column schema; approval workflow uses existing fields and Apps Script controls. | IMPLEMENTED — LIVE VERIFICATION PENDING |
+| P4-51 | Test employee OOP submission routing | Valid FRM-03 submission creates a CLM record with `Pending Review` and notifies the single active `Director` resolved from `Employees`. | PASS — live-verified 01-Oct-2026; FRM-03 created CLM-000001 in Pending Review and notified the single active Director. |
+| P4-52 | Test non-manager approval rejection | An account other than the resolved active `Director` cannot approve/reject a claim. | PASS — live-verified 01-Oct-2026; non-Director approval/rejection was rejected and claim remained Pending Review. |
+| P4-53 | Test normal company-essential approval | Director-designated Top Manager approval changes `Pending Review` → `Approved`, writes positive `Approved_Amount`, sets `APPROVED_COMPANY_ESSENTIAL`, and makes the claim salary-eligible. | PASS — live-verified 01-Oct-2026; Director approval produced Approved, positive Approved_Amount and APPROVED_COMPANY_ESSENTIAL. |
+| P4-54 | Test ordinary food claim | Food-related claim remains excluded from salary unless explicitly approved as a genuine business exception. | PASS — live-verified 01-Oct-2026; ordinary food remained excluded from company-essential salary eligibility. |
+| P4-55 | Test food business exception approval | Director-designated Top Manager uses `Approve Food Business Exception`; claim becomes `Approved`, receives positive `Approved_Amount` and `APPROVED_FOOD_BUSINESS_EXCEPTION`, and is eligible for salary. | PASS — live-verified 01-Oct-2026; Director food-business exception produced Approved, positive Approved_Amount and APPROVED_FOOD_BUSINESS_EXCEPTION. |
+| P4-56 | Test rejection gate | Rejected claim contributes ₹0 to next-month OOP salary credit. | PASS — live-verified 01-Oct-2026; rejected claims contributed ₹0. |
+| P4-57 | Test salary gate | A4-05 includes only `Approved` claims with `APPROVED_COMPANY_ESSENTIAL` or `APPROVED_FOOD_BUSINESS_EXCEPTION`; pending/unapproved/ordinary-food claims contribute ₹0. | PASS — live-verified 01-Oct-2026; only explicitly approved salary-eligible claims contributed to A4-05. |
+| P4-58 | Test no schema expansion | OOP_Claims remains the frozen 11-column schema; approval workflow uses existing fields and Apps Script controls. | PASS — live-verified 01-Oct-2026; OOP_Claims remained exactly 11 columns with no schema expansion. |
 
 ### R62 workflow decision — 01-Oct-2026
 - Employee submits FRM-03.
