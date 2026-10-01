@@ -113,6 +113,13 @@ R55 placement execution on 30-Sep-2026 completed successfully with all 12 assets
 
 All R55 placement and response-destination acceptance checks are now verified under the revised Drive hierarchy.
 
+### A4-09 Notification Engine / P4-11 live verification — 01-Oct-2026
+- `testA409NotificationEngineLive()` returned `A4-09 P4-11 OVERALL: PASS`.
+- 12/12 acceptance tests passed.
+- Dynamic R62 Top Manager resolution passed end-to-end; the active Director was resolved from authoritative Employees data.
+- Duplicate prevention, retry safety, recipient authorization, sensitive-data protection, zero-cost MailApp boundary and persistent ScriptProperties idempotency all passed.
+- Controlled Director test fixture was cleaned up after execution; no permanent test employee remained.
+
 ## Phase 4 implementation status
 - **Apps Script foundation/configuration: IMPLEMENTED and LIVE-VERIFIED.**
   - `verifyA4Foundation()` returned `PASS` on 30-Sep-2026.
@@ -239,8 +246,8 @@ All R55 placement and response-destination acceptance checks are now verified un
 6. **MOM Trigger verified active on MASTER_COMPANY_OPERATIONS.**
 7. **P4-49 Universal Form/System-Generated ID architecture is COMPLETE/PASS.**
 8. **Phase 4 MOM Stabilization Checkpoint is CLOSED.**
-9. **A4-08 Report Generator (P4-10) — COMPLETE/PASS; next Phase 4 focus moves to A4-09 Notification Engine, A4-10 Audit Logger, A4-11 Error Handler, and A4-00 closure.**
-10. Notification Engine (A4-09), Audit Logger (A4-10), Error Handler (A4-11), and universal A4-00 closure.
+9. **A4-08 Report Generator (P4-10) — COMPLETE/PASS.**
+10. **A4-09 Notification Engine (P4-11) — COMPLETE/PASS; live-verified 12/12 on 01-Oct-2026. Next Phase 4 focus: A4-10 Audit Logger, A4-11 Error Handler, and universal A4-00 closure.**
 
 ## Rule
 Do not mark Phase 4 complete because documentation exists. Completion requires observable implementation and verification.
