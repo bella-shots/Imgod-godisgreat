@@ -108,8 +108,8 @@ Every FRM-03 OOP claim must pass an explicit **Top Manager approval gate** befor
 
 1. Employee submits the OOP claim through FRM-03 with purpose, amount, project and proof.
 2. A4-04 creates the authoritative claim with a CLM ID and status `Pending Review`.
-3. The claim is routed/notified to the configured Top Manager.
-4. The Top Manager reviews the claim and explicitly approves or rejects it.
+3. The claim is routed/notified to the single active employee whose `Employees.Designation` is `Director` (the highest approved designation in the frozen hierarchy).
+4. That Director-level Top Manager reviews the claim and explicitly approves or rejects it.
 5. Only a claim with `Status = Approved`, a positive `Approved_Amount`, and an approved company-essential rule classification is eligible for the next salary calculation.
 6. `Pending Review` and `Rejected` claims contribute **₹0** to the OOP salary component.
 7. Ordinary food/eatables claims remain excluded. If the Top Manager determines that a food-related expense is a genuine company-essential business exception, the manager must use the dedicated **Approve Food Business Exception** action; that explicit decision changes the rule classification to `APPROVED_FOOD_BUSINESS_EXCEPTION` and makes the approved amount eligible.
