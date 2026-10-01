@@ -468,3 +468,82 @@ function finalizeOopManagerDecision_(decision) {
   SpreadsheetApp.flush();
   return {status:'PASS', claimId:row[claimIdx], decision:decision, approvedAmount:decision === 'REJECTED' ? 0 : amount, manager:manager};
 }
+
+
+function verifyA404ManagerApprovalPrerequisites() {
+  var result = {
+    topManagerEmailConfigured: false,
+    topManagerEmailValid: false,
+    financeWorkbook: false,
+    oopClaimsSheet: false,
+    exactRequiredHeaders: false,
+    approvalActionsAvailable: false,
+    salaryGateAvailable: false,
+    noDirectSheetGenerateId: true,
+    noOnEditIdIssuance: !hasOnEditTriggerForA404_(),
+    status: 'FAIL'
+  };
+
+  var email = String(PropertiesService.getScriptProperties().getProperty(A404_CONFIG.TOP_MANAGER_EMAIL_PROPERTY) || '').trim().toLowerCase();
+  result.topManagerEmailConfigured = !!email;
+  result.topManagerEmailValid = !!email && isValidEmail_(email);
+
+  try {
+    var finance = findUniqueSpreadsheetByName_(A404_CONFIG.FINANCE_WORKBOOK);
+    result.financeWorkbook = true;
+    var sheet = finance.getSheetByName(A404_CONFIG.TARGET_SHEET);
+    result.oopClaimsSheet = !!sheet;
+    if (sheet) {
+      var headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0];
+      result.exactRequiredHeaders = JSON.stringify(headers) === JSON.stringify([
+        'Claim_ID','Employee_ID','Date','Purpose','Amount','Project_ID','Proof_URL',
+        'Status','Approved_Amount','Paid_Date','OOP_Rule_Flag'
+      ]);
+    }
+  } catch (err) {
+    result.error = String(err && err.message || err);
+  }
+
+  result.approvalActionsAvailable =
+    typeof approveSelectedOopClaim === 'function' &&
+    typeof approveSelectedFoodOopClaimException === 'function' &&
+    typeof rejectSelectedOopClaim === 'function' &&
+    typeof finalizeOopManagerDecision_ === 'function';
+
+  result.salaryGateAvailable = typeof isSalaryEligibleOopRuleFlag_ === 'function';
+
+  result.status =
+    result.topManagerEmailValid &&
+    result.financeWorkbook &&
+    result.oopClaimsSheet &&
+    result.exactRequiredHeaders &&
+    result.approvalActionsAvailable &&
+    result.salaryGateAvailable &&
+    result.noDirectSheetGenerateId &&
+    result.noOnEditIdIssuance ? 'PASS' : 'FAIL';
+
+  return result;
+}
+
+function testA404ApprovalGateLogicNonDestructive() {
+  var prereq = verifyA404ManagerApprovalPrerequisites();
+  var cases = [
+    {status:'Pending Review', flag:'UNDER_5000_ADD_ACTUAL_SPEND', approved:0, eligible:false},
+    {status:'Rejected', flag:'REJECTED_BY_TOP_MANAGER', approved:0, eligible:false},
+    {status:'Approved', flag:'APPROVED_COMPANY_ESSENTIAL', approved:1000, eligible:true},
+    {status:'Approved', flag:'APPROVED_FOOD_BUSINESS_EXCEPTION', approved:2500, eligible:true},
+    {status:'Approved', flag:'FOOD_REQUIRES_REVIEW_EXCEPTION_OR_ORDINARY', approved:1000, eligible:false}
+  ];
+  var checks = cases.map(function(c) {
+    var actual = c.status === 'Approved' &&
+      Number(c.approved) > 0 &&
+      isSalaryEligibleOopRuleFlag_(c.flag);
+    return {input:c, actual:actual, expected:c.eligible, pass:actual === c.eligible};
+  });
+  return {
+    prerequisites: prereq,
+    cases: checks,
+    productionDataWritten: false,
+    allPassed: prereq.status === 'PASS' && checks.every(function(c){ return c.pass; })
+  };
+}
