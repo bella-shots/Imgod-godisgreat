@@ -209,13 +209,22 @@ All R55 placement and response-destination acceptance checks are now verified un
 - **A4-01 trigger hardening: IMPLEMENTED in GitHub.**
   - Spreadsheet-level onFormSubmit trigger ignores non-Projects_Responses sheets instead of throwing A4_01_WRONG_SHEET.
 
+## Phase 4 deployment/verification stabilization checkpoint — 01-Oct-2026
+- GitHub Actions deployment pipeline stabilization is PASS at run #72.
+- Apps Script source replacement is PASS.
+- Existing versioned Apps Script deployment is reused/updated; CI no longer creates a fresh deployment on every run.
+- Live Apps Script content pull is PASS for the stabilization-critical A4-06/A4-07 modules and frozen Employee architecture.
+- Historical #64 failure root cause: Google Apps Script 20-versioned-deployment limit.
+- Trigger installation/authorization remains HUMAN ACTION REQUIRED because Apps Script installable triggers require user authorization and execute as the trigger creator.
+- A4-08 remains blocked until trigger existence and live A4-06/A4-07 execution are confirmed.
+
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
 3. **Salary/Admin Generate-ID workflow is COMPLETE/PASS — P4-48 verified live.**
 4. **Investments R58 Source_Person exception workflow is COMPLETE/PASS under dedicated module A4-15.**
-5. **MOM Processing (A4-06) and MOM Email Sender (A4-07) are COMPLETE/PASS — P4-08 and P4-09 verified live.**
-6. **Next: Report Generator (A4-08) — P4-10.**
+5. **MOM Processing (A4-06) and MOM Email Sender (A4-07) implementation is COMPLETE; deployment/content checkpoint PASS. P4-08/P4-09 execution evidence must be re-confirmed after trigger authorization.**
+6. **A4-08 / P4-10 is BLOCKED until the stabilization checkpoint is fully closed.**
 7. Notification Engine (A4-09), Audit Logger (A4-10), Error Handler (A4-11), and universal A4-00 closure.
 
 ## Rule
