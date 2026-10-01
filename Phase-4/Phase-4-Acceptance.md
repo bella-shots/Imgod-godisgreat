@@ -4,7 +4,7 @@
 | P4-02 | Test project processing. | Valid project input creates/locates the required Drive structure and updates the project record correctly. | NOT STARTED |
 | P4-03 | Test expense processing. | Valid FRM-02 submission is validated, resolved to canonical Employee_ID/Project_ID, assigned SPN-XXXXXX through controlled Form processing, stored in Employee_Spending and given the correct processing status. | PASS — live-verified 01-Oct-2026; allPassed=true. |
 | P4-04 | Test invalid expense. | Invalid/missing FRM-02 data is rejected safely before authoritative transfer; source intake remains intact. | PASS — live verification harness passed 01-Oct-2026; no production data or SPN sequence was consumed. |
-| P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | NOT STARTED |
+| P4-05 | Test OOP claim processing. | Claim is validated and routed according to the approved workflow. | IMPLEMENTED — LIVE VERIFICATION PENDING |
 | P4-06 | Test ₹5,000 rule. | The approved rule is calculated exactly as specified; no unapproved interpretation is introduced. | NOT STARTED |
 | P4-07 | Test salary carry-forward. | Monthly salary records produce the approved carry-forward while preserving historical records. | NOT STARTED |
 | P4-08 | Test MOM publish/update. | MOM record/version/index is updated and the correct recipients are identified. | NOT STARTED |
@@ -92,3 +92,16 @@
 - **Live verification on 01-Oct-2026 returned `allPassed: true`.**
 - Verified exact 10-column schema, workbook/sheet resolution, Employee_ID and Project_ID resolution, A4-00 SPN availability, no SPN sequence consumption by the test, no onEdit ID issuance, R58 rejection of Member_Record_ID, and production-data preservation.
 - **Overall: A4-03 Employee Spending Form-Originated Workflow = PASS.**
+
+
+### OOP_Claims architecture decision — 01-Oct-2026
+- Frozen Phase 3 sources confirm `FRM-03 OOP Claim` is the authoritative creation path.
+- Native `OOP_Claims_Responses` is an intake-only response tab.
+- `OOP_Claims` is the authoritative Finance table.
+- Therefore R57 direct-Sheet Generate-ID UX is **not applicable** to OOP_Claims.
+- A4-04 automatically generates `CLM-XXXXXX` through A4-00 during controlled Form processing.
+- Canonical employee identity is `Employee_ID`; `Member_Record_ID` is explicitly rejected.
+- Project Name is resolved to canonical `Project_ID`; proof is required.
+- Claims enter `Pending Review`; no silent auto-approval is introduced.
+- The frozen Phase-4 source reviewed here does not contain the exact approved interpretation of the ₹5,000 rule. A4-04 therefore does **not** invent an allowance, excess, salary, or approval treatment; `Approved_Amount` remains unset and `OOP_Rule_Flag` is marked `PENDING_APPROVED_5000_RULE` until the approved interpretation is available.
+- Live verification is pending.
