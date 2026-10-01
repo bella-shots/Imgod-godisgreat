@@ -38,7 +38,7 @@
 Financial employee-related workflows must reject or flag any attempt to resolve an employee through `Member_Record_ID`. The canonical employee reference is `Employee_ID` for `Budget_Given`, `Employee_Spending`, `OOP_Claims` and `Salary_Admin`. `Investments` is excluded from this rule because its frozen schema uses `Source_Person`.
 
 ## R62 — OOP approval and salary-gate failures
-- If `TOP_MANAGER_EMAIL` is missing or invalid, FRM-03 processing must not silently create an un-routable claim; surface `A4_04_TOP_MANAGER_NOT_CONFIGURED` for administrator action.
+- If the authoritative `Employees` master does not contain exactly one active employee with `Designation = Director`, FRM-03 processing must not silently create an un-routable claim; surface `A4_04_TOP_MANAGER_RESOLUTION_FAILED` for administrator action.
 - If manager notification fails after claim creation, leave the claim in `Pending Review`, log the failure, and allow controlled retry. Never mark it Approved because an email failed.
 - If a non-manager attempts an approval action, reject with `A4_04_MANAGER_AUTHORIZATION_REQUIRED` and make no claim changes.
 - If a claim is not `Pending Review`, reject repeated approval/rejection attempts; do not alter an already-decided claim.
