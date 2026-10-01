@@ -43,7 +43,7 @@ R57 freezes the common UX and transaction contract for every user-created author
 7. The workflow performs the appropriate authoritative commit/finalization for that record type.
 8. The completed record is left in its approved post-creation state.
 
-R57 applies to direct Sheet-originated business records including Employee, Project Member, Project Note, Budget, Salary and Investment records. Employee_Spending and OOP_Claims are frozen Form-originated workflows and therefore remain automatic during controlled Form processing; they do not receive direct-Sheet Generate-ID UX. Salary may use one explicit controlled bulk Generate Salary ID(s) action for a validated batch.
+R57 applies to direct Sheet-originated business records including Employee, Project Member, Project Note, Budget and Salary records. Employee_Spending, OOP_Claims and Investments are frozen Form-originated workflows and therefore remain automatic during controlled Form processing; they do not receive direct-Sheet Generate-ID UX. Salary may use one explicit controlled bulk Generate Salary ID(s) action for a validated batch.
 
 The following are prohibited for R57 ID issuance: generic onEdit/autosave, passive cell edits, spreadsheet-open triggers, row-position-based ID generation, manually typed business IDs, or a second Save/Process action required solely to complete ID generation.
 
@@ -51,6 +51,12 @@ Form/system-generated IDs remain automatic. Form-processing workflows may genera
 
 R57 does not change the frozen Phase 3 schemas or the A4-00 ID formats. It standardizes the user interaction and transaction boundary for direct Sheet-originated records.
 
+
+## A4-15 — Investment Processing
+
+Investment processing is a dedicated Phase 4 module under the next unused module slot. It does not displace the frozen A4-06 MOM Processing / A4-07 MOM Email Sender / A4-08 Report Generator / A4-09 Notification Engine / A4-10 Audit Logger / A4-11 Error Handler sequence.
+
+The authoritative Investment path remains `FRM-07 → Investment_Responses → A4-15 → Investments`. `Source_Person` remains the frozen R58 exception; no Employee_ID is required or substituted.
 
 ## R58 — Financial employee identity invariant
 
