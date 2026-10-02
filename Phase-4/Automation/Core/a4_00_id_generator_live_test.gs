@@ -34,11 +34,18 @@ function testA400ConcurrentWorker(prefix, runToken, expectedWorkers) {
   var props = PropertiesService.getScriptProperties();
   var readyKey = 'A400_CONCURRENT_READY_' + runToken;
   var storageKey = 'A400_CONCURRENT_POOL_' + runToken;
+  var startedKey = 'A400_CONCURRENT_STARTED_' + runToken;
+  var errorKey = 'A400_CONCURRENT_ERRORS_' + runToken;
   var readyLock = LockService.getScriptLock();
 
-  // Register this independent execution at the barrier.
+  // Register this independent execution as started, then enter the barrier.
   readyLock.waitLock(30000);
   try {
+    var startedRaw = props.getProperty(startedKey);
+    var startedList = startedRaw ? JSON.parse(startedRaw) : [];
+    startedList.push({ executionId: Utilities.getUuid(), timestamp: Date.now() });
+    props.setProperty(startedKey, JSON.stringify(startedList));
+
     var readyRaw = props.getProperty(readyKey);
     var readyList = readyRaw ? JSON.parse(readyRaw) : [];
     readyList.push({
@@ -114,7 +121,25 @@ function testA400ConcurrentTrigger_() {
   }
 
   if (!job) return;
-  testA400ConcurrentWorker(job.prefix, job.runToken, job.expectedWorkers);
+  try {
+    testA400ConcurrentWorker(job.prefix, job.runToken, job.expectedWorkers);
+  } catch (err) {
+    var errorKey = 'A400_CONCURRENT_ERRORS_' + job.runToken;
+    var errorLock = LockService.getScriptLock();
+    errorLock.waitLock(30000);
+    try {
+      var errorRaw = props.getProperty(errorKey);
+      var errorList = errorRaw ? JSON.parse(errorRaw) : [];
+      errorList.push({
+        message: err && err.message ? err.message : String(err),
+        timestamp: Date.now()
+      });
+      props.setProperty(errorKey, JSON.stringify(errorList));
+    } finally {
+      errorLock.releaseLock();
+    }
+    throw err;
+  }
 }
 
 /**
@@ -256,6 +281,8 @@ function testA400UniversalIdClosureLive() {
       // five independent Apps Script executions that rendezvous before ID allocation.
       var queueKey = 'A400_CONCURRENT_QUEUE_' + runToken;
       var readyKey = 'A400_CONCURRENT_READY_' + runToken;
+      var startedKey = 'A400_CONCURRENT_STARTED_' + runToken;
+      var errorKey = 'A400_CONCURRENT_ERRORS_' + runToken;
       props.setProperty(queueKey, JSON.stringify([
         {prefix:'SUB', runToken:runToken, expectedWorkers:5},
         {prefix:'SUB', runToken:runToken, expectedWorkers:5},
@@ -264,8 +291,12 @@ function testA400UniversalIdClosureLive() {
         {prefix:'SUB', runToken:runToken, expectedWorkers:5}
       ]));
       props.setProperty(readyKey, JSON.stringify([]));
+      props.setProperty(startedKey, JSON.stringify([]));
+      props.setProperty(errorKey, JSON.stringify([]));
       testPropertyKeys.push(queueKey);
       testPropertyKeys.push(readyKey);
+      testPropertyKeys.push(startedKey);
+      testPropertyKeys.push(errorKey);
 
       cleanupA400ConcurrentTriggers_();
       for (var t = 0; t < 5; t++) {
@@ -274,9 +305,19 @@ function testA400UniversalIdClosureLive() {
           .after(60000)
           .create();
       }
-      // Apps Script time-driven triggers have a scheduling granularity/delay;
-      // allow enough time for all five independent executions to start and rendezvous.
-      Utilities.sleep(120000);
+      // Apps Script time-driven triggers have scheduler jitter. Give the five
+      // independent executions enough time to start and rendezvous, while staying
+      // below the Apps Script 6-minute per-execution runtime limit.
+      Utilities.sleep(240000);
+
+      var startedRaw = props.getProperty(startedKey);
+      var startedList = startedRaw ? JSON.parse(startedRaw) : [];
+      var errorRaw = props.getProperty(errorKey);
+      var errorList = errorRaw ? JSON.parse(errorRaw) : [];
+      p18Evidence.push('Independent worker executions started: ' + startedList.length + '/5');
+      if (errorList.length) {
+        p18Evidence.push('Worker execution errors: ' + JSON.stringify(errorList));
+      }
 
       var readyRaw = props.getProperty(readyKey);
       var readyList = readyRaw ? JSON.parse(readyRaw) : [];
