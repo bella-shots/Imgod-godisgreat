@@ -17,19 +17,19 @@
 | P4-15 | Verify zero additional-cost boundary. | No paid automation, hosting, database, email API or Workspace subscription has been introduced. | NOT STARTED |
 | P4-16 | Phase 4 closure. | All Phase 4 tests PASS and evidence is recorded; system is ready for Phase 5 final testing/handover. | NOT STARTED |
 | P4-17 | Test universal ID generation for all 13 prefixes. | Each new record receives the correct prefix + six-digit format; sequences are independent. | PASS — live-verified 02-Oct-2026; all 13 canonical prefixes generated valid six-digit IDs with independent counters and unique values. |
-| P4-18 | Test concurrent ID generation. | Simultaneous requests receive distinct IDs with no duplicate/collision. | IN PROGRESS — live verification attempted 02-Oct-2026; P4-18 failed because 0/5 scheduled worker executions reached the barrier within the timing window. No generator collision was observed; the harness scheduling/timing was revised in GitHub commit `e4d043ce99e70af9edd46dcde3e36c9236b16bb6`. Awaiting next live run. |
+| P4-18 | Test concurrent ID generation. | Simultaneous requests receive distinct IDs with no duplicate/collision. | PASS — live-verified 02-Oct-2026; 5/5 independent Apps Script executions started, all reached the cross-execution barrier, and generated five unique collision-free IDs (`SUB-000029` through `SUB-000033`) under the real A4-00 LockService path. |
 | P4-19 | Test ID persistence/deletion behavior. | Issued IDs remain stable and are never reused; gaps are allowed. | PASS — live-verified 02-Oct-2026; NOT-000005 was not reused after a simulated deletion gap; subsequent ID was NOT-000006. |
 | P4-20 | Test counter recovery. | A stored counter lower than an existing valid ID is reconciled before a new ID is issued. | PASS — live-verified 02-Oct-2026; lower counter reconciled to highest existing ID and higher stored counter was preserved without rollback. |
 
-### A4-00 Universal ID closure live verification — 02-Oct-2026
+### A4-00 Universal ID closure live verification — 02-Oct-2026 — CLOSED
 - `testA400UniversalIdClosureLive()` was executed against the live MASTER COMPANY Phase 4 Automation Apps Script project.
 - P4-17: PASS — all 13 canonical prefixes generated valid six-digit IDs with independent counters.
-- P4-18: FAIL on this run — the concurrency worker barrier observed 0 of 5 workers; the worker pool contained 0 IDs. This did not demonstrate a generator collision or duplicate.
-- P4-19: PASS — issued NOT-000005 was not reused after a simulated deletion gap; subsequent ID was NOT-000006.
-- P4-20: PASS — counter reconciliation advanced a lower BDG counter to the highest existing ID and preserved a higher stored counter without rollback.
-- Cleanup: PASS — temporary concurrency properties were removed and no production sheet records were modified/deleted.
-- The P4-18 harness was corrected because same-execution lock contention did not prove cross-execution concurrency. The revised harness uses independent Apps Script executions.
-- The first revised timing window produced 0/5 workers; GitHub commit `e4d043ce99e70af9edd46dcde3e36c9236b16bb6` increased trigger/wait timing. **A4-00 closure remains open pending a successful live P4-18 run.**
+- P4-18: PASS — 5/5 independent Apps Script executions started, all reached the real cross-execution barrier, and the worker pool recorded five unique collision-free IDs: `SUB-000029`, `SUB-000030`, `SUB-000031`, `SUB-000032`, `SUB-000033`.
+- P4-19: PASS — issued `NOT-000008` was not reused after a simulated deletion gap; subsequent ID was `NOT-000009`.
+- P4-20: PASS — counter reconciliation advanced the lower BDG counter from 40 to 55, generated `BDG-000056`, preserved the higher counter at 56, and generated `BDG-000057` without rollback.
+- Cleanup: PASS — all temporary concurrency properties were removed, temporary triggers were cleaned up, and no production sheet records were modified or deleted.
+- The P4-18 test now proves genuine cross-execution concurrency rather than same-execution lock behavior.
+- **A4-00 UNIVERSAL ID CLOSURE = PASS (4/4).**
 
 ### A4-01 + A4-02 live verification evidence — 01-Oct-2026
 - A4-01 prerequisites: PASS; exact Projects, Project_Members, Employees and Submission_Index schemas verified.
