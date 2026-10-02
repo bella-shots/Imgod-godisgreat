@@ -1405,6 +1405,164 @@ function getA408ExistingIds_(sheet, headers) {
   return ids;
 }
 
+
+/**
+ * P4-13 — Sensitive Access Live Verification.
+ * Verifies that a standard active employee cannot receive restricted
+ * employee-level Salary/Investment/HR data through the report automation.
+ *
+ * This test inspects only generated report models; it does not change
+ * workbook permissions and therefore does not claim to override direct
+ * Google Drive/Sheets sharing already granted outside the automation.
+ */
+function testA413SensitiveAccessLive() {
+  var results = [];
+  var hrWb = findA408Spreadsheet_(A408_CONFIG.HR_WORKBOOK);
+  var financeWb = findA408Spreadsheet_(A408_CONFIG.FINANCE_WORKBOOK);
+  var empSheet = hrWb.getSheetByName(A408_CONFIG.EMPLOYEES_SHEET);
+  if (!empSheet || empSheet.getLastRow() < 2) {
+    throw new Error('A4_13_NO_EMPLOYEE_DATA');
+  }
+
+  var headers = empSheet.getRange(1, 1, 1, empSheet.getLastColumn()).getValues()[0];
+  var rows = empSheet.getRange(2, 1, empSheet.getLastRow() - 1, headers.length).getValues();
+  var nonAdmin = null;
+
+  for (var i = 0; i < rows.length; i++) {
+    if (!isA408BooleanTrue_(rows[i][headers.indexOf('Active')])) continue;
+    var role = String(rows[i][headers.indexOf('Role')] || '').trim();
+    var desig = String(rows[i][headers.indexOf('Designation')] || '').trim();
+    var isAdmin = /^(Administrator|Site Admin)$/i.test(role) ||
+                  /^(Administrator|Site Admin)$/i.test(desig);
+    if (!isAdmin) {
+      nonAdmin = {
+        email: String(rows[i][headers.indexOf('Email')] || '').trim(),
+        employeeId: String(rows[i][headers.indexOf('Employee_ID')] || '').trim()
+      };
+      break;
+    }
+  }
+
+  if (!nonAdmin || !nonAdmin.email || !nonAdmin.employeeId) {
+    throw new Error('A4_13_NO_ACTIVE_NON_ADMIN_EMPLOYEE');
+  }
+
+  var testPeriod = '2026-07-01 to 2026-09-30';
+  var baselineEmpRows = empSheet.getLastRow();
+  var salarySheet = financeWb.getSheetByName(A408_CONFIG.SALARY_ADMIN_SHEET);
+  var investmentSheet = financeWb.getSheetByName(A408_CONFIG.INVESTMENTS_SHEET);
+  var baselineSalaryRows = salarySheet ? salarySheet.getLastRow() : 0;
+  var baselineInvestmentRows = investmentSheet ? investmentSheet.getLastRow() : 0;
+
+  try {
+    var company = generateA408Report({
+      email: nonAdmin.email,
+      reportType: 'Company Summary',
+      period: testPeriod
+    });
+    var companyModel = company && company.model ? company.model : {};
+    var companyFinance = companyModel.financeSummary || {};
+    var companyHr = companyModel.hrSummary || {};
+
+    var companyPass =
+      companyFinance.salary === null &&
+      companyFinance.investment === null &&
+      companyHr.roleCounts === null &&
+      JSON.stringify(companyModel).indexOf('Salary_Basis') < 0 &&
+      JSON.stringify(companyModel).indexOf('HR_Notes') < 0;
+
+    results.push({
+      test: 'Company Summary restricted data',
+      status: companyPass ? 'PASS' : 'FAIL',
+      evidence: 'Non-admin requester receives no Salary summary, Investment summary, company-wide role counts, Salary_Basis or HR_Notes.'
+    });
+
+    var finance = generateA408Report({
+      email: nonAdmin.email,
+      reportType: 'Finance Report',
+      period: testPeriod
+    });
+    var financeModel = finance && finance.model ? finance.model : {};
+    var mySalary = Array.isArray(financeModel.mySalary) ? financeModel.mySalary : [];
+    var salarySelfOnly = mySalary.every(function(row) {
+      return String(row.employeeId || row.Employee_ID || '').trim() === nonAdmin.employeeId;
+    });
+    var financePass = salarySelfOnly &&
+      !Object.prototype.hasOwnProperty.call(financeModel, 'investments') &&
+      JSON.stringify(financeModel).indexOf('Investment_ID') < 0;
+
+    results.push({
+      test: 'Finance Report salary/investment restriction',
+      status: financePass ? 'PASS' : 'FAIL',
+      evidence: 'Salary is requester-self-only and Investments are excluded from the standard Finance Report.'
+    });
+
+    var hr = generateA408Report({
+      email: nonAdmin.email,
+      reportType: 'HR Report',
+      period: testPeriod
+    });
+    var hrModel = hr && hr.model ? hr.model : {};
+    var profiles = Array.isArray(hrModel.profiles) ? hrModel.profiles : [];
+    var hrSelfOnly = profiles.every(function(profile) {
+      return String(profile.employeeId || '').trim() === nonAdmin.employeeId;
+    });
+    var hrSensitiveMasked = profiles.every(function(profile) {
+      return profile.salaryBasis === null &&
+             profile.hrNotes === null &&
+             String(profile.projectAccess || '') === '' &&
+             String(profile.reimbursementSettings || '') === '' &&
+             String(profile.createdAt || '') === '';
+    });
+    var hrPass = hrSelfOnly && hrSensitiveMasked;
+
+    results.push({
+      test: 'HR Report self-only/confidential-field restriction',
+      status: hrPass ? 'PASS' : 'FAIL',
+      evidence: 'Non-admin requester receives self-only HR profile; Salary_Basis, HR_Notes and restricted administrative fields are masked.'
+    });
+
+    var statePass =
+      empSheet.getLastRow() === baselineEmpRows &&
+      (!salarySheet || salarySheet.getLastRow() === baselineSalaryRows) &&
+      (!investmentSheet || investmentSheet.getLastRow() === baselineInvestmentRows);
+
+    results.push({
+      test: 'Source/state preservation',
+      status: statePass ? 'PASS' : 'FAIL',
+      evidence: 'P4-13 verification created no employee, salary or investment records.'
+    });
+
+  } finally {
+    // No test records are created by this harness; nothing to delete.
+  }
+
+  var passed = results.filter(function(r) { return r.status === 'PASS'; }).length;
+  var summary = [
+    'P4-13 SENSITIVE ACCESS LIVE VERIFICATION',
+    '',
+    results.map(function(r) { return r.test + ': ' + r.status; }).join('\n'),
+    '',
+    'P4-13 LIVE VERIFICATION — ' + (passed === results.length ? 'PASS (' + passed + '/' + results.length + ')' : 'FAIL (' + passed + '/' + results.length + ')')
+  ].join('\n');
+
+  console.log(summary);
+  Logger.log(summary);
+  console.log(JSON.stringify({
+    requesterEmployeeId: nonAdmin.employeeId,
+    requesterEmail: nonAdmin.email,
+    results: results
+  }, null, 2));
+
+  return {
+    allPassed: passed === results.length,
+    passedCount: passed,
+    totalCount: results.length,
+    summary: summary,
+    results: results
+  };
+}
+
 function findA408Spreadsheet_(name) {
   var files = DriveApp.getFilesByName(name);
   var matches = [];
