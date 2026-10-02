@@ -237,6 +237,14 @@ All R55 placement and response-destination acceptance checks are now verified un
 - Temporary test Project_Members, Projects and Report_Index records were cleaned up by the test harness; pre-existing production data was preserved.
 - P4-10 is now closed as PASS; A4-08 is no longer the next phase.
 
+## A4-00 Universal ID closure — current progress (02-Oct-2026)
+- P4-17: **PASS** — all 13 canonical prefixes generated valid six-digit IDs with independent counters.
+- P4-18: **OPEN / IN PROGRESS** — latest live run observed 0/5 concurrency workers reaching the barrier; no collision was observed. The verification harness was corrected to use independent Apps Script executions and its timing window was then extended in commit `e4d043ce99e70af9edd46dcde3e36c9236b16bb6`.
+- P4-19: **PASS** — no-reuse behavior verified across a simulated deletion gap.
+- P4-20: **PASS** — counter recovery/reconciliation and no-backward movement verified.
+- Cleanup: **PASS** — temporary test properties removed and production sheet records preserved.
+- **A4-00 overall closure remains OPEN** until P4-18 produces a genuine live PASS.
+
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
