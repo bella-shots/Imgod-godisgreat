@@ -239,11 +239,11 @@ All R55 placement and response-destination acceptance checks are now verified un
 
 ## A4-00 Universal ID closure — current progress (02-Oct-2026)
 - P4-17: **PASS** — all 13 canonical prefixes generated valid six-digit IDs with independent counters.
-- P4-18: **OPEN / IN PROGRESS** — latest live run observed 0/5 concurrency workers reaching the barrier; no collision was observed. The verification harness was corrected to use independent Apps Script executions and its timing window was then extended in commit `e4d043ce99e70af9edd46dcde3e36c9236b16bb6`.
+- P4-18: **PASS** — live-verified 02-Oct-2026; 5/5 independent Apps Script executions started, reached the cross-execution barrier, and generated unique collision-free IDs `SUB-000029` through `SUB-000033` under LockService.
 - P4-19: **PASS** — no-reuse behavior verified across a simulated deletion gap.
 - P4-20: **PASS** — counter recovery/reconciliation and no-backward movement verified.
 - Cleanup: **PASS** — temporary test properties removed and production sheet records preserved.
-- **A4-00 overall closure remains OPEN** until P4-18 produces a genuine live PASS.
+- **A4-00 overall closure = PASS (4/4)** — P4-17, P4-18, P4-19 and P4-20 all passed live verification on 02-Oct-2026; cleanup also passed.
 
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
