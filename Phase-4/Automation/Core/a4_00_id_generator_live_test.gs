@@ -51,7 +51,7 @@ function testA400ConcurrentWorker(prefix, runToken, expectedWorkers) {
   }
 
   // Wait until all independently scheduled executions are ready.
-  var deadline = Date.now() + 20000;
+  var deadline = Date.now() + 90000;
   while (Date.now() < deadline) {
     var currentReadyRaw = props.getProperty(readyKey);
     var currentReady = currentReadyRaw ? JSON.parse(currentReadyRaw) : [];
@@ -271,10 +271,12 @@ function testA400UniversalIdClosureLive() {
       for (var t = 0; t < 5; t++) {
         ScriptApp.newTrigger('testA400ConcurrentTrigger_')
           .timeBased()
-          .after(1000)
+          .after(60000)
           .create();
       }
-      Utilities.sleep(12000);
+      // Apps Script time-driven triggers have a scheduling granularity/delay;
+      // allow enough time for all five independent executions to start and rendezvous.
+      Utilities.sleep(120000);
 
       var readyRaw = props.getProperty(readyKey);
       var readyList = readyRaw ? JSON.parse(readyRaw) : [];
