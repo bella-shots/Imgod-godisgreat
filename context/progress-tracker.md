@@ -373,4 +373,14 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - P4-16 is intentionally **not** marked complete until the live harness returns PASS and the evidence is recorded in `Phase-4/Phase-4-Acceptance.md`.
 
 ### Current Phase 4 position — 05-Oct-2026
-**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = COMPLETE/PASS → P4-15 Zero Additional Cost = COMPLETE/PASS → P4-16 Phase-4 closure LIVE VERIFICATION REQUIRED. Phase 5 remains blocked until Phase 4 is fully accepted.**
+
+### P4-16 Phase 4 Closure — LIVE VERIFICATION COMPLETE/PASS — 05-Oct-2026
+- `testP416Phase4ClosureLive()` executed against the live MASTER COMPANY Phase 4 Automation Apps Script project.
+- **25/25 checks passed; 0 failed.**
+- C16-01 through C16-07 all PASS.
+- Live trigger state: **3 installed / 20 ceiling / 0 duplicates**.
+- Closure execution: **1.35 seconds**, below the 360-second boundary.
+- Non-destructive closure verification: **PASS**; trigger count remained 3 → 3 and no trigger or ScriptProperties side effects occurred.
+- Final result: **P4-16 = PASS. Phase 4 is fully accepted and closed. Phase 5 is unblocked.**
+
+**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = COMPLETE/PASS → P4-15 Zero Additional Cost = COMPLETE/PASS → P4-16 Phase-4 closure = COMPLETE/PASS. Phase 4 is fully accepted and closed; Phase 5 is unblocked.**
