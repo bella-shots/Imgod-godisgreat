@@ -492,9 +492,9 @@ This acceptance item is closed. This does not by itself close the overall Financ
 
 The MASTER_COMPANY_FINANCE → Budget_Given authoritative tab has been physically verified and is working as intended against the current Phase-3-Schema-Blueprint.md requirements.
 
-The remaining Finance authoritative tabs — Employee_Spending, OOP_Claims, Salary_Admin, and Investments — remain separately unverified until the user confirms their live-sheet implementation.
+The remaining Finance authoritative tabs were subsequently covered by the 2026-09-30 live Phase 3 closure confirmation and by later Phase 4 live workflows against the frozen schemas. This historical milestone note is retained for audit history; it is superseded by the Phase 3 closure reconciliation recorded below.
 
-Overall Phase 3 remains IN PROGRESS / HUMAN ACTION REQUIRED.
+Overall Phase 3 status is now **CLOSED / RECONCILED — 05-Oct-2026**.
 
 
 
