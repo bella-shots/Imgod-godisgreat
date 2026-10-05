@@ -14,3 +14,9 @@
 | Storage condition | Acceptance must verify that expected files/data fit within the storage available to the actual accounts used. |
 | Access condition | Acceptance must verify that the chosen Gmail/Google Account sharing model works for the intended employees. |
 | Final gate | PASS only when all required business workflows work without introducing a new paid software/service dependency. |
+
+## P4-15 implementation note — 05-Oct-2026
+- Phase 4 zero-cost verification harness: `Phase-4/Automation/Core/p4_15_zero_additional_cost_live_test.gs`.
+- Deployment CI now enforces a source-level zero-cost boundary for Phase-4 automation and verifies the P4-15 live harness is present in the deployed Apps Script source.
+- The live harness verifies the Google-native dependency boundary and performs no quota/cost-consuming business operation.
+- Account-level Google billing/subscription state is not exposed by Apps Script runtime APIs; P4-15 therefore requires separate human confirmation for any account-level subscription/billing question.
