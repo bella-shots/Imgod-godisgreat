@@ -245,6 +245,26 @@ All R55 placement and response-destination acceptance checks are now verified un
 - Cleanup: **PASS** — temporary test properties removed and production sheet records preserved.
 - **A4-00 overall closure = PASS (4/4)** — P4-17, P4-18, P4-19 and P4-20 all passed live verification on 02-Oct-2026; cleanup also passed.
 
+## Phase 5 — Final Testing & Handover — ACTIVE (05-Oct-2026)
+
+**Phase 4 is COMPLETE/CLOSED. Phase 5 is now active.**
+
+### Foundation-gate reconciliation
+- **P5-01 Phase 1:** PASS — Phase-1 acceptance records P1-01 through P1-12 PASS/CLOSED.
+- **P5-02 Phase 2:** PASS — Phase-2 acceptance records P2-01 through P2-14 PASS/CLOSED.
+- **P5-03 Phase 3:** BLOCKED pending repository reconciliation — Phase-3 acceptance still contains a stale P3-15 `NOT VERIFIED / HUMAN ACTION REQUIRED` closure statement. This must be reconciled in the Phase-3 authoritative record before P5-03 can be marked PASS.
+- **P5-04 Phase 4:** PASS — Phase-4 acceptance records P4-01 through P4-20 PASS, including P4-16 final closure 25/25.
+
+### Phase 5 next execution order
+1. Reconcile P3-15 / close P5-03 from authoritative repository evidence.
+2. Execute critical E2E matrix (P5-05 / E2E-01 through E2E-16 as applicable).
+3. Execute permissions/security tests (P5-06 / SEC-01 through SEC-12).
+4. Execute zero-cost + quota gate (P5-07/P5-08).
+5. Execute UAT (P5-09).
+6. Close defects (P5-11).
+7. Complete handover (P5-10).
+8. Execute final closure gate (P5-12).
+
 ## Phase 4 immediate focus
 1. **A4-01 + A4-02 live verification is COMPLETE/PASS.**
 2. **R54 attachment routing is COMPLETE/PASS — FRM-02, FRM-03 and FRM-04 verified live.**
