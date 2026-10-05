@@ -15,11 +15,19 @@
 | P4-13 | Test sensitive access. | Automation does not broaden employee access to restricted Finance, Salary, Investment or HR source data. | PASS — live-verified 05-Oct-2026; `testA413SensitiveAccessLive()` completed 4/4 PASS: Company Summary restricted data, Finance Report salary/investment restriction, HR Report self-only/confidential-field restriction, and source/state preservation. |
 | P4-14 | Test quota-safe behavior. | Expected internal workload does not require unlimited email/trigger/runtime assumptions; deferred/failure behavior is controlled. | PASS — live-verified 05-Oct-2026; `testA414QuotaSafeBehaviorLive()` completed 5/5 PASS: live email quota visibility (100 remaining recipients), trigger capacity/duplicate protection (3/20, 0 duplicates), bounded execution (0.82s), controlled notification/idempotency boundary, and no quota-consuming side effects. |
 | P4-15 | Verify zero additional-cost boundary. | No new paid automation, hosting, database, email API or employee Workspace subscription dependency is introduced; Phase 4 uses the approved Google-native baseline. | PASS — live-verified 05-Oct-2026; `testP415ZeroAdditionalCostLive()` completed 7/7 PASS. |
-| P4-16 | Phase 4 closure. | All Phase 4 tests PASS and evidence is recorded; system is ready for Phase 5 final testing/handover. | NOT STARTED |
+| P4-16 | Phase 4 closure. | All Phase 4 tests PASS and evidence is recorded; system is ready for Phase 5 final testing/handover. | NOT STARTED — LIVE VERIFICATION REQUIRED |
 | P4-17 | Test universal ID generation for all 13 prefixes. | Each new record receives the correct prefix + six-digit format; sequences are independent. | PASS — live-verified 02-Oct-2026; all 13 canonical prefixes generated valid six-digit IDs with independent counters and unique values. |
 | P4-18 | Test concurrent ID generation. | Simultaneous requests receive distinct IDs with no duplicate/collision. | PASS — live-verified 02-Oct-2026; 5/5 independent Apps Script executions started, all reached the cross-execution barrier, and generated five unique collision-free IDs (`SUB-000029` through `SUB-000033`) under the real A4-00 LockService path. |
 | P4-19 | Test ID persistence/deletion behavior. | Issued IDs remain stable and are never reused; gaps are allowed. | PASS — live-verified 02-Oct-2026; NOT-000005 was not reused after a simulated deletion gap; subsequent ID was NOT-000006. |
 | P4-20 | Test counter recovery. | A stored counter lower than an existing valid ID is reconciled before a new ID is issued. | PASS — live-verified 02-Oct-2026; lower counter reconciled to highest existing ID and higher stored counter was preserved without rollback. |
+
+### P4-16 Phase 4 Closure — live verification preparation — 05-Oct-2026
+- Added `Phase-4/Automation/Core/p4_16_phase4_closure_live_test.gs` with `testP416Phase4ClosureLive()`.
+- The harness is deliberately non-destructive: it sends no email, creates no trigger, creates no Drive artifact, writes no business record, generates no A4-00 business ID, and changes no permissions.
+- Closure checks cover: required live production entry points, explicit direct-sheet Generate-ID workflows, bounded/duplicate-free trigger state, approved Google-native service availability, bounded execution, unchanged trigger/ScriptProperties state, and final live readiness.
+- Deployment CI was strengthened to require `testP416Phase4ClosureLive` in the live Apps Script source after deployment.
+- **P4-16 remains OPEN until the live function returns PASS and the observed evidence is recorded here.**
+
 
 ### A4-00 Universal ID closure live verification — 02-Oct-2026 — CLOSED
 - `testA400UniversalIdClosureLive()` was executed against the live MASTER COMPANY Phase 4 Automation Apps Script project.
