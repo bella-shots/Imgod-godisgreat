@@ -45,9 +45,9 @@ function testP416Phase4ClosureLive() {
     [
       'generateA4Id',
       'processA401ProjectSubmission',
-      'processA403ExpenseSubmission',
-      'processA404OopClaimSubmission',
-      'processA406MomFormSubmit',
+      'processEmployeeSpendingFormSubmit',
+      'processOopClaimFormSubmit',
+      'processMomFormSubmit',
       'sendMomDistributionEmail',
       'generateA408Report',
       'dispatchA409Notification',
