@@ -14,7 +14,7 @@
 | P4-12 | Test failure handling. | Forced error creates a visible failure state and appropriate admin notification/log entry. | PASS — live-verified 01-Oct-2026; `testA411ErrorHandlerLive()` completed 13/13 PASS, including failure capture, Manual Review/Validation Failed routing, missing Submission_ID handling, source preservation, duplicate idempotency, admin failure notification, retryability, no uncontrolled retry, zero-cost boundary, ID non-reuse and cleanup. |
 | P4-13 | Test sensitive access. | Automation does not broaden employee access to restricted Finance, Salary, Investment or HR source data. | PASS — live-verified 05-Oct-2026; `testA413SensitiveAccessLive()` completed 4/4 PASS: Company Summary restricted data, Finance Report salary/investment restriction, HR Report self-only/confidential-field restriction, and source/state preservation. |
 | P4-14 | Test quota-safe behavior. | Expected internal workload does not require unlimited email/trigger/runtime assumptions; deferred/failure behavior is controlled. | PASS — live-verified 05-Oct-2026; `testA414QuotaSafeBehaviorLive()` completed 5/5 PASS: live email quota visibility (100 remaining recipients), trigger capacity/duplicate protection (3/20, 0 duplicates), bounded execution (0.82s), controlled notification/idempotency boundary, and no quota-consuming side effects. |
-| P4-15 | Verify zero additional-cost boundary. | No paid automation, hosting, database, email API or Workspace subscription has been introduced. | NOT STARTED |
+| P4-15 | Verify zero additional-cost boundary. | No new paid automation, hosting, database, email API or employee Workspace subscription dependency is introduced; Phase 4 uses the approved Google-native baseline. | NOT STARTED — LIVE VERIFICATION REQUIRED |
 | P4-16 | Phase 4 closure. | All Phase 4 tests PASS and evidence is recorded; system is ready for Phase 5 final testing/handover. | NOT STARTED |
 | P4-17 | Test universal ID generation for all 13 prefixes. | Each new record receives the correct prefix + six-digit format; sequences are independent. | PASS — live-verified 02-Oct-2026; all 13 canonical prefixes generated valid six-digit IDs with independent counters and unique values. |
 | P4-18 | Test concurrent ID generation. | Simultaneous requests receive distinct IDs with no duplicate/collision. | PASS — live-verified 02-Oct-2026; 5/5 independent Apps Script executions started, all reached the cross-execution barrier, and generated five unique collision-free IDs (`SUB-000029` through `SUB-000033`) under the real A4-00 LockService path. |
@@ -288,3 +288,18 @@
 - Only explicit approval by that resolved Director makes the claim eligible for the next salary calculation.
 - Ordinary food claims are not eligible; genuine client/business/hosted-guest exceptions require the dedicated food-business-exception approval action.
 - A4-05 excludes all unapproved and non-salary-eligible claims.
+
+
+## P4-15 Zero Additional Cost Boundary — IMPLEMENTED, LIVE VERIFICATION PENDING
+- Added `Phase-4/Automation/Core/p4_15_zero_additional_cost_live_test.gs`.
+- The harness is non-destructive: no email, trigger, Drive artifact, Sheet/Form record, external HTTP call, or A4-00 business ID is created/consumed.
+- COST-01 verifies the approved Google-native service boundary: Sheets, Drive, Forms, MailApp/GmailApp, PropertiesService, LockService and ScriptApp.
+- COST-02 verifies the A4-09 notification boundary through native Apps Script email services without dispatching an email.
+- COST-03 verifies the approved database/storage/form architecture: Google Sheets + Google Drive + Google Forms.
+- COST-04 checks Script Properties for obvious paid-service/billing configuration names without logging property values.
+- COST-05 verifies installed trigger count and duplicate-trigger protection.
+- COST-06 verifies the P4-15 test itself consumes no quota/cost-bearing business resources.
+- COST-07 verifies the verification remains bounded.
+- Deployment CI was strengthened with a Phase-4 source boundary check that rejects prohibited external HTTP/known paid-service integration patterns and verifies `testP415ZeroAdditionalCostLive` is present in the live Apps Script source.
+- Account-level billing/subscription invoices cannot be inspected through Apps Script runtime APIs; P4-15 therefore distinguishes application dependency verification from account-level billing confirmation.
+- **P4-15 remains OPEN until `testP415ZeroAdditionalCostLive()` is executed against the live MASTER COMPANY Phase 4 Automation Apps Script project and returns PASS (7/7).**
