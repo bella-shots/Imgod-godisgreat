@@ -327,5 +327,16 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - P4-12 is recorded as PASS in `Phase-4/Phase-4-Acceptance.md`.
 - Next focus is A4-00 universal ID closure: P4-17, P4-18, P4-19 and P4-20. P4-13, P4-14, P4-15 and P4-16 remain independently open and are not being pre-marked.
 
-### Current Phase 4 position — 01-Oct-2026
-**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) → P4-14/P4-15 → P4-16 Phase-4 closure. P4-13 remains independently open. Phase 5 remains blocked until Phase 4 is fully accepted.**
+### P4-13 Sensitive Access — LIVE VERIFICATION COMPLETE/PASS — 05-Oct-2026
+- `testA413SensitiveAccessLive()` was executed against the live MASTER COMPANY Phase 4 Automation Apps Script project.
+- **All 4/4 required checks passed.**
+- Company Summary restricted data: PASS — non-admin requester received no Salary summary, Investment summary, company-wide role counts, Salary_Basis or HR_Notes.
+- Finance Report salary/investment restriction: PASS — salary was requester-self-only and Investments were excluded from the standard Finance Report.
+- HR Report self-only/confidential-field restriction: PASS — non-admin requester received a self-only HR profile; Salary_Basis, HR_Notes and restricted administrative fields were masked.
+- Source/state preservation: PASS — verification created no employee, salary or investment records.
+- Requester used for the live verification: `EMP-000001` / `a4-01.test.employee@example.com`.
+- The test verifies generated report access behavior; it does **not** claim to change or override direct Google Drive/Sheets sharing permissions granted outside the automation.
+- **P4-13 = PASS (4/4).**
+
+### Current Phase 4 position — 05-Oct-2026
+**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety → P4-15 Zero Additional Cost → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
