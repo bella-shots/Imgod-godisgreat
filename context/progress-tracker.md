@@ -338,5 +338,17 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - The test verifies generated report access behavior; it does **not** claim to change or override direct Google Drive/Sheets sharing permissions granted outside the automation.
 - **P4-13 = PASS (4/4).**
 
+### P4-14 Quota-Safe Behavior — IMPLEMENTED / LIVE VERIFICATION REQUIRED — 05-Oct-2026
+- Added `Phase-4/Automation/Core/a4_14_quota_safe_live_test.gs`.
+- The live harness is deliberately non-destructive: it sends no email, creates no trigger, creates no Drive artifact, creates no Sheet record, and consumes no A4-00 business ID.
+- Q14-01 checks live `MailApp.getRemainingDailyQuota()` visibility and requires at least one currently available recipient slot.
+- Q14-02 checks installed trigger count against the current Apps Script limit of 20 triggers per user/script and rejects duplicate trigger registrations.
+- Q14-03 checks that the verification itself remains bounded below the Apps Script 6-minute execution limit.
+- Q14-04 verifies the native A4-09 MailApp + ScriptProperties notification/idempotency boundary without dispatching an email.
+- Q14-05 verifies the harness creates no trigger-state side effects.
+- Google documents that Apps Script quotas vary by account type and may change; therefore the harness records the live quota state instead of hard-coding a daily email quota.
+- Deployment CI was strengthened to require `testA414QuotaSafeBehaviorLive` in the live Apps Script source.
+- **P4-14 remains OPEN until the live function returns PASS.**
+
 ### Current Phase 4 position — 05-Oct-2026
-**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety → P4-15 Zero Additional Cost → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
+**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = IMPLEMENTED / LIVE VERIFICATION REQUIRED → P4-15 Zero Additional Cost → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
