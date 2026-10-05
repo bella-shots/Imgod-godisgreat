@@ -340,6 +340,9 @@ jobs:
           # P4-15 Zero Additional Cost live verification harness
           grep_live_fn "testP415ZeroAdditionalCostLive"
 
+          # P4-16 Phase 4 Closure live verification harness
+          grep_live_fn "testP416Phase4ClosureLive"
+
 
           # A4-11 Error Handler verification
           grep_live_fn "handleA411Error"
