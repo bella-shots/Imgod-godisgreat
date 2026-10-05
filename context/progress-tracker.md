@@ -367,5 +367,10 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 - **P4-15 = PASS (7/7).**
 
 
+### P4-16 Phase 4 Closure — preparation — 05-Oct-2026
+- Added `Phase-4/Automation/Core/p4_16_phase4_closure_live_test.gs` with the non-destructive `testP416Phase4ClosureLive()` final closure harness.
+- Deployment CI now verifies the P4-16 closure function exists in the live Apps Script source after deployment.
+- P4-16 is intentionally **not** marked complete until the live harness returns PASS and the evidence is recorded in `Phase-4/Phase-4-Acceptance.md`.
+
 ### Current Phase 4 position — 05-Oct-2026
-**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = COMPLETE/PASS → P4-15 Zero Additional Cost = COMPLETE/PASS → P4-16 Phase-4 closure. Phase 5 remains blocked until Phase 4 is fully accepted.**
+**A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = COMPLETE/PASS → P4-15 Zero Additional Cost = COMPLETE/PASS → P4-16 Phase-4 closure LIVE VERIFICATION REQUIRED. Phase 5 remains blocked until Phase 4 is fully accepted.**
