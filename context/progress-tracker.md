@@ -4,16 +4,16 @@
 Repository is under the playbook-controlled five-phase architecture.
 
 ## Current state
-**PHASE 4 COMPLETE/CLOSED — PHASE 5 ACTIVE; P5-03 BLOCKED BY CROSS-ACCOUNT FORM ACCESS**
+**PHASE 4 COMPLETE/CLOSED — PHASE 5 ACTIVE; P5-03 AWAITING FORM RETEST**
 
-Phase 4 is complete/closed. A new live non-admin access check on 2026-10-16 confirmed direct Drive/Sheets restrictions work (P3-10 PASS), but FRM-04 through FRM-07 do not open (P3-11 FAIL — remediation required). Phase 3/P5-03 acceptance remains blocked pending Form access remediation and retest.
+Phase 4 is complete/closed. The user reported the earlier FRM-04–FRM-07 access denial was caused by Forms not being published and says the intended responder-access configuration is now done. Retest is pending: FRM-04–FRM-06 with a non-admin employee account; FRM-07 with an authorized Admin account because the frozen Forms map defines it as admin-only. P3-10 direct Drive/Sheets permissions passed the user's live non-admin test.
 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (revised 30-Sep-2026: Admin and Site containers added)
 - 02 Master Google Site: COMPLETE & VERIFIED
-- 03 Sheets + Forms: SCHEMAS/STRUCTURES VERIFIED; cross-account access remediation OPEN (FRM-04–FRM-07)
+- 03 Sheets + Forms: SCHEMAS/STRUCTURES VERIFIED; cross-account Form retest OPEN (FRM-04–FRM-06 employee access; FRM-07 admin access)
 - 04 Apps Script automation: COMPLETE & VERIFIED
-- 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending FRM-04–FRM-07 access remediation
+- 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending Form submission/response-routing retests
 
 ## Verified Phase 3 workbooks
 - MASTER_COMPANY_OPERATIONS
@@ -408,5 +408,6 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 
 ## Phase 3 / P5-03 status reconciliation — updated 2026-10-16
 - **P3-10 = PASS.** User-reported live non-admin account check confirms direct Drive/Sheets restrictions are working for Finance, `Salary_Admin`, `Investments`, restricted HR data and project-specific access.
-- **P3-11 = FAIL — REMEDIATION REQUIRED.** FRM-01, FRM-02 and FRM-03 open; FRM-04, FRM-05, FRM-06 and FRM-07 do not open for the tested non-admin Google account. Submission success, identity handling, response destinations and the paid-Workspace dependency have not yet been fully verified.
-- **P3-15 / P5-03 = BLOCKED** until FRM-04–FRM-07 access is fixed and the complete cross-account Form test passes. The 2026-09-30 closure commit remains historical evidence and does not override this newer failing live result.
+- **P3-11 = RETEST REQUIRED.** The user clarified that the earlier access denial was caused by Forms not being published and reports completing the intended responder-access configuration. No post-publication retest result has yet been reported.
+- Test FRM-04, FRM-05 and FRM-06 with a non-admin employee account. Test FRM-07 with an authorized Admin account because the frozen Forms map defines Investment Entry as admin-authorized. Verify successful submissions, identity handling and the correct response destinations.
+- **P3-15 / P5-03 = BLOCKED pending these retests.** Do not mark access or submission tests PASS until observed results are provided.
