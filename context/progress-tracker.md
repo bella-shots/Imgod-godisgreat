@@ -11,7 +11,7 @@ Phase 4 is complete/closed. A new live non-admin access check on 2026-10-16 conf
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (revised 30-Sep-2026: Admin and Site containers added)
 - 02 Master Google Site: COMPLETE & VERIFIED
-- 03 Sheets + Forms: COMPLETE & VERIFIED
+- 03 Sheets + Forms: SCHEMAS/STRUCTURES VERIFIED; cross-account access remediation OPEN (FRM-04–FRM-07)
 - 04 Apps Script automation: COMPLETE & VERIFIED
 - 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending FRM-04–FRM-07 access remediation
 
@@ -406,7 +406,7 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 **A4-11 Error Handler = COMPLETE/PASS → A4-00 universal closure (P4-17–P4-20) = COMPLETE/PASS → P4-13 Sensitive Access = COMPLETE/PASS → P4-14 Quota Safety = COMPLETE/PASS → P4-15 Zero Additional Cost = COMPLETE/PASS → P4-16 Phase-4 closure = COMPLETE/PASS. Phase 4 is fully accepted and closed; Phase 5 is unblocked.**
 
 
-## Phase 3 / P5-03 reconciliation — 05-Oct-2026
-- **P3-15 = PASS / Phase 3 CLOSED.** The authoritative Phase-3 acceptance record was reconciled against the 2026-09-30 live workbook/Form closure record (`164473da8f30a85b3169e893f494d88f82f15684`) and subsequent Phase 4 live corroboration.
-- **P5-03 = PASS.** Phase 5 no longer has a stale Phase 3 acceptance blocker.
-- P3-10 and P3-11 retain explicit PASS WITH LIMITATION status for direct Google sharing and dedicated cross-account Form-access evidence respectively; these limitations are documented and are not treated as unresolved blocking defects.
+## Phase 3 / P5-03 status reconciliation — updated 2026-10-16
+- **P3-10 = PASS.** User-reported live non-admin account check confirms direct Drive/Sheets restrictions are working for Finance, `Salary_Admin`, `Investments`, restricted HR data and project-specific access.
+- **P3-11 = FAIL — REMEDIATION REQUIRED.** FRM-01, FRM-02 and FRM-03 open; FRM-04, FRM-05, FRM-06 and FRM-07 do not open for the tested non-admin Google account. Submission success, identity handling, response destinations and the paid-Workspace dependency have not yet been fully verified.
+- **P3-15 / P5-03 = BLOCKED** until FRM-04–FRM-07 access is fixed and the complete cross-account Form test passes. The 2026-09-30 closure commit remains historical evidence and does not override this newer failing live result.
