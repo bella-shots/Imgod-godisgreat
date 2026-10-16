@@ -34,5 +34,5 @@
 - The later live retests supersede the earlier pending access/submission checks: FRM-04, FRM-05 and FRM-06 passed with a non-admin employee account; FRM-07 passed with an authorized Admin account; all four response destinations were reported correct.
 - The user's report did not separately confirm identity-handling behavior, so P5-03 remains blocked until identity handling is verified. The historical 05-Oct closure note above is retained as a record of the earlier state, not the current gate status.
 - Reconciled acceptance commit: `b9afb0b4d52ae95a037d620d00bed331a56d2b75`.
-- Phase 5 foundation state after reconciliation: **P5-01 PASS, P5-02 PASS, P5-03 PASS, P5-04 PASS**.
+- Current Phase 5 foundation state: **P5-01 PASS, P5-02 PASS, P5-03 BLOCKED pending identity-handling verification, P5-04 PASS**.
 - P3-10/P3-11 limitations remain explicitly documented and are not silently converted into stronger claims than the repository evidence supports.
