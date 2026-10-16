@@ -252,11 +252,11 @@ All R55 placement and response-destination acceptance checks are now verified un
 ### Foundation-gate reconciliation
 - **P5-01 Phase 1:** PASS — Phase-1 acceptance records P1-01 through P1-12 PASS/CLOSED.
 - **P5-02 Phase 2:** PASS — Phase-2 acceptance records P2-01 through P2-14 PASS/CLOSED.
-- **P5-03 Phase 3:** PASS — reconciled 05-Oct-2026. The authoritative Phase-3 acceptance now records P3-15 PASS/CLOSED, with P3-10 and P3-11 explicitly preserved as PASS WITH LIMITATION rather than overstating unrecorded direct-account tests.
+- **P5-03 Phase 3:** BLOCKED — current 2026-10-16 retests pass Form open/submit and response routing for FRM-04–FRM-06 (non-admin employee) and FRM-07 (authorized Admin); identity-handling verification remains open.
 - **P5-04 Phase 4:** PASS — Phase-4 acceptance records P4-01 through P4-20 PASS, including P4-16 final closure 25/25.
 
 ### Phase 5 next execution order
-1. P3-15 / P5-03 reconciliation: COMPLETE — Phase 3 authoritative acceptance reconciled and closed.
+1. P3-15 / P5-03 reconciliation: Form access/submission/response routing retested PASS; identity-handling verification remains OPEN and blocks closure.
 2. Execute critical E2E matrix (P5-05 / E2E-01 through E2E-16 as applicable).
 3. Execute permissions/security tests (P5-06 / SEC-01 through SEC-12).
 4. Execute zero-cost + quota gate (P5-07/P5-08).
@@ -408,6 +408,6 @@ Do not mark Phase 4 complete because documentation exists. Completion requires o
 
 ## Phase 3 / P5-03 status reconciliation — updated 2026-10-16
 - **P3-10 = PASS.** User-reported live non-admin account check confirms direct Drive/Sheets restrictions are working for Finance, `Salary_Admin`, `Investments`, restricted HR data and project-specific access.
-- **P3-11 = RETEST REQUIRED.** The user clarified that the earlier access denial was caused by Forms not being published and reports completing the intended responder-access configuration. No post-publication retest result has yet been reported.
+- **P3-11 = PARTIAL PASS — IDENTITY HANDLING CHECK OPEN.** The user reported successful access/submission and correct response destinations for FRM-04–FRM-06 using a non-admin account and FRM-07 using an authorized Admin account on 2026-10-16.
 - Test FRM-04, FRM-05 and FRM-06 with a non-admin employee account. Test FRM-07 with an authorized Admin account because the frozen Forms map defines Investment Entry as admin-authorized. Verify successful submissions, identity handling and the correct response destinations.
-- **P3-15 / P5-03 = BLOCKED pending these retests.** Do not mark access or submission tests PASS until observed results are provided.
+- **P3-15 / P5-03 = BLOCKED pending identity-handling verification.** Do not mark identity behavior PASS until observed results are provided.
