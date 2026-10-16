@@ -4,16 +4,16 @@
 Repository is under the playbook-controlled five-phase architecture.
 
 ## Current state
-**PHASE 3 COMPLETE & VERIFIED — PHASE 4 IN PROGRESS**
+**PHASE 4 COMPLETE/CLOSED — PHASE 5 ACTIVE; P5-03 BLOCKED BY CROSS-ACCOUNT FORM ACCESS**
 
-The user has confirmed that all required Phase 3 workbooks and Forms have been live-verified. Phase 4 implementation and verification are in progress.
+Phase 4 is complete/closed. A new live non-admin access check on 2026-10-16 confirmed direct Drive/Sheets restrictions work (P3-10 PASS), but FRM-04 through FRM-07 do not open (P3-11 FAIL — remediation required). Phase 3/P5-03 acceptance remains blocked pending Form access remediation and retest.
 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (revised 30-Sep-2026: Admin and Site containers added)
 - 02 Master Google Site: COMPLETE & VERIFIED
 - 03 Sheets + Forms: COMPLETE & VERIFIED
-- 04 Apps Script automation: IN PROGRESS
-- 05 Testing + permissions + handover: BLOCKED until Feature 04 is verified
+- 04 Apps Script automation: COMPLETE & VERIFIED
+- 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending FRM-04–FRM-07 access remediation
 
 ## Verified Phase 3 workbooks
 - MASTER_COMPANY_OPERATIONS
