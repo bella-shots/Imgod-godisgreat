@@ -502,7 +502,7 @@ Overall Phase 3 status is now **CLOSED / RECONCILED — 05-Oct-2026**.
 ## Phase 3 closure reconciliation — 05-Oct-2026
 
 ### Why the repository previously appeared inconsistent
-The historical Phase-3 acceptance table retained the pre-instantiation state (SPEC READY / HUMAN ACTION REQUIRED) even after the live Phase 3 workbooks and Forms had been verified. The repository's 2026-09-30 closure commit, `164473da8f30a85b3169e893f494d88f82f15684` (“Close Phase 3 after live workbook and form verification”), updated the project progress state to **PHASE 3 COMPLETE & VERIFIED — PHASE 4 UNBLOCKED** and explicitly recorded the four verified workbooks and seven verified Forms. The acceptance table was not updated in that commit, creating the stale P3-15 record now being reconciled.
+The repository's 2026-09-30 closure commit, `164473da8f30a85b3169e893f494d88f82f15684` (“Close Phase 3 after live workbook and form verification”), records the historical Phase 3 closure state based on workbook/Form verification. The current acceptance status is governed by the live cross-account retest evidence recorded above; the newly reported Form tests pass access, submission and response routing, but identity handling remains unverified, so current P3-15 is BLOCKED.
 
 ### Closure evidence used
 1. **Phase 3 live instantiation/verification:** the 2026-09-30 closure record confirms these four workbooks were live-verified: `MASTER_COMPANY_OPERATIONS`, `MASTER_COMPANY_FINANCE`, `MASTER_COMPANY_HR_ADMIN`, and `MASTER_COMPANY_ADMIN`.
@@ -513,7 +513,7 @@ The historical Phase-3 acceptance table retained the pre-instantiation state (SP
 
 ### Explicit limitations preserved
 - **P3-10 — PASS WITH LIMITATION:** Phase 4 P4-13 verifies generated-report authorization behavior but explicitly does not claim to modify or override direct Google Drive/Sheets sharing permissions. The repository contains no recorded conflicting direct-access defect; underlying sharing remains governed by the live Google resource configuration and Phase 1 access controls.
-- **P3-11 — PASS WITH LIMITATION:** Native Google email/quota behavior and the zero-additional-cost boundary are live-verified, but the repository does not contain a dedicated recorded cross-account Form-access test for a representative non-admin account. No paid Workspace prerequisite or access blocker is recorded.
+- **P3-11 — CURRENT STATUS: PARTIAL PASS; IDENTITY HANDLING CHECK OPEN.** The user reported successful open/submit and correct response destinations for FRM-04–FRM-06 with a non-admin employee account and FRM-07 with an authorized Admin account on 2026-10-16. The current remaining check is identity resolution/handling; the historical statement about no recorded cross-account test is superseded by these newly reported results.
 
 ### Closure decision
-**P3-15 = PASS — Phase 3 CLOSED/RECONCILED on 05-Oct-2026.** The stale `NOT VERIFIED / HUMAN ACTION REQUIRED` state was a documentation-state drift, not an unresolved Phase 3 implementation defect. No Phase 3 schema, Form, business rule, or architecture is changed by this reconciliation.
+**Historical decision:** P3-15 was recorded PASS/CLOSED on 05-Oct-2026. **Current decision after 2026-10-16 retests:** P3-15 is BLOCKED — IDENTITY HANDLING CHECK OPEN, because identity handling was not included in the user's reported test results. The historical closure entry is retained for audit history; it does not override the current acceptance row above.
