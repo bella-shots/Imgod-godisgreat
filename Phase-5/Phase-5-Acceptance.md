@@ -2,7 +2,7 @@
 |---|---|---|---|
 | P5-01 | All Phase 1 acceptance tests are PASS. | Drive foundation is complete and secure. | PASS — reconciled from `Phase-1/Phase-1-Acceptance.md`; P1-01 through P1-12 are recorded PASS/CLOSED. |
 | P5-02 | All Phase 2 acceptance tests are PASS. | Master Site is structurally complete and accessible as intended. | PASS — reconciled from `Phase-2/Phase-2-Acceptance.md`; P2-01 through P2-14 are recorded PASS/CLOSED. |
-| P5-03 | All Phase 3 acceptance tests are PASS. | Sheets/Forms data layer is complete and validated. | BLOCKED — P3-11 RETEST REQUIRED. User reports the initial denial was because Forms had not been published and has now completed the intended responder-access configuration. Retest FRM-04, FRM-05 and FRM-06 with a non-admin employee account; test FRM-07 with an authorized Admin account because its frozen workflow is admin-only. Verify successful submissions, identity handling and response destinations before passing P5-03. |
+| P5-03 | All Phase 3 acceptance tests are PASS. | Sheets/Forms data layer is complete and validated. | BLOCKED — IDENTITY HANDLING CHECK OPEN. On 2026-10-16 the user reported successful open/submit and correct response destinations for FRM-04, FRM-05 and FRM-06 using a non-admin employee account, and FRM-07 using an authorized Admin account. Identity handling was not separately reported as tested; complete that check before passing P5-03. |
 | P5-04 | All Phase 4 acceptance tests are PASS. | Automation layer is working and quota-safe. | PASS — reconciled from `Phase-4/Phase-4-Acceptance.md`; P4-01 through P4-20 are recorded PASS, including P4-16 final closure 25/25. |
 | P5-05 | All critical end-to-end tests are PASS. | Core employee/admin workflows work from Site through data/automation/output. | NOT STARTED |
 | P5-06 | All security/permission tests are PASS. | No unauthorized access to sensitive or restricted material is found. | NOT STARTED |
@@ -25,14 +25,14 @@
 
 - **P5-01 = PASS:** Phase 1 acceptance file records P1-01 through P1-12 PASS/CLOSED.
 - **P5-02 = PASS:** Phase 2 acceptance file records P2-01 through P2-14 PASS/CLOSED.
-- **P5-03 = PASS — reconciled 05-Oct-2026:** The authoritative Phase-3 acceptance record has been reconciled. P3-15 is now PASS/CLOSED based on the 2026-09-30 live workbook/Form closure record and subsequent Phase 4 live corroboration. The previous `NOT VERIFIED / HUMAN ACTION REQUIRED` state was a stale acceptance-record entry, not a remaining Phase 3 implementation defect.
+- **P5-03 = BLOCKED — updated 2026-10-16:** Form retests now confirm successful access/submission and correct response destinations for FRM-04–FRM-06 using a non-admin employee account and FRM-07 using an authorized Admin account. Identity handling has not been separately confirmed; P5-03 remains blocked until that check is completed.
 - **P5-04 = PASS:** Phase 4 acceptance file records all required automation/closure tests PASS, including P4-16 live closure at 25/25.
 - **Rule:** Phase 5 must use repository evidence as the source of truth. A later phase cannot silently convert an earlier unresolved acceptance item into PASS.
 
 
-## P5-03 closure evidence — 05-Oct-2026
-- Phase 3 authoritative acceptance was reconciled before closing P5-03; Phase 5 does not override the Phase 3 record.
-- Source closure evidence: commit `164473da8f30a85b3169e893f494d88f82f15684` explicitly closed Phase 3 after live workbook/Form verification and listed the four verified workbooks and seven applicable Forms.
+## P5-03 status correction — 2026-10-16
+- The later live retests supersede the earlier pending access/submission checks: FRM-04, FRM-05 and FRM-06 passed with a non-admin employee account; FRM-07 passed with an authorized Admin account; all four response destinations were reported correct.
+- The user's report did not separately confirm identity-handling behavior, so P5-03 remains blocked until identity handling is verified. The historical 05-Oct closure note above is retained as a record of the earlier state, not the current gate status.
 - Reconciled acceptance commit: `b9afb0b4d52ae95a037d620d00bed331a56d2b75`.
 - Phase 5 foundation state after reconciliation: **P5-01 PASS, P5-02 PASS, P5-03 PASS, P5-04 PASS**.
 - P3-10/P3-11 limitations remain explicitly documented and are not silently converted into stronger claims than the repository evidence supports.
