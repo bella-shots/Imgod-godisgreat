@@ -24,12 +24,12 @@
 ### Page 1: HOME
 - **Page Name in Navigation:** `HOME`
 - **Header Type:** Banner (Medium)
-- **Header Text:** `MASTER COMPANY Operations Portal`
-- **Header Subtitle:** `Centralized Hub for Projects, Finance, Human Resources, and Executive Reporting`
+- **Header Text:** `MASTER COMPANY`
+- **Header Subtitle:** None. Do not add a tagline/subtitle unless the administrator explicitly approves one.
 
 #### Layout & Content Blocks:
 1. **Welcome Section (Text Box):**
-   > **Welcome to the Master Company Operations Portal**  
+   > **Welcome to MASTER COMPANY**  
    > This internal portal provides centralized access to company workflows, project resources, financial guidelines, and operational documentation. All records, file assets, and operational forms are natively integrated with Google Workspace at zero additional infrastructure cost.
 2. **Quick Navigation Hub (4-Column Layout or Button Grid):**
    - **Card 1: Projects Hub** → Link to `/projects`  
