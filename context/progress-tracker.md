@@ -4,16 +4,16 @@
 Repository is under the playbook-controlled five-phase architecture.
 
 ## Current state
-**PHASE 4 COMPLETE/CLOSED — PHASE 5 ACTIVE; P5-03 AWAITING FORM RETEST**
+**PHASE 4 COMPLETE/CLOSED — PHASE 5 ACTIVE; P5-03 AWAITING IDENTITY-HANDLING CHECK**
 
-Phase 4 is complete/closed. The user reported the earlier FRM-04–FRM-07 access denial was caused by Forms not being published and says the intended responder-access configuration is now done. Retest is pending: FRM-04–FRM-06 with a non-admin employee account; FRM-07 with an authorized Admin account because the frozen Forms map defines it as admin-only. P3-10 direct Drive/Sheets permissions passed the user's live non-admin test.
+Phase 4 is complete/closed. On 2026-10-16, user-reported retests passed open/submit and correct response-destination checks for FRM-04–FRM-06 using a non-admin employee account and FRM-07 using an authorized Admin account. Identity handling was not separately reported as tested, so P3-11/P3-15 and P5-03 remain blocked pending that check. P3-10 direct Drive/Sheets permissions passed the user's live non-admin test.
 
 ## Feature status
 - 01 Google Drive structure: COMPLETE & VERIFIED (revised 30-Sep-2026: Admin and Site containers added)
 - 02 Master Google Site: COMPLETE & VERIFIED
-- 03 Sheets + Forms: SCHEMAS/STRUCTURES VERIFIED; cross-account Form retest OPEN (FRM-04–FRM-06 employee access; FRM-07 admin access)
+- 03 Sheets + Forms: SCHEMAS/STRUCTURES VERIFIED; Form access/submission/response routing PASS for FRM-04–FRM-06 (non-admin) and FRM-07 (authorized Admin); identity-handling verification OPEN
 - 04 Apps Script automation: COMPLETE & VERIFIED
-- 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending Form submission/response-routing retests
+- 05 Testing + permissions + handover: IN PROGRESS; Phase 3 foundation gate P5-03 BLOCKED pending identity-handling verification; next Phase 5 test is E2E-01 (employee opens Master Site)
 
 ## Verified Phase 3 workbooks
 - MASTER_COMPANY_OPERATIONS
