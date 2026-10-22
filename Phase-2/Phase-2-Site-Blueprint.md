@@ -40,13 +40,13 @@
      *Subtitle:* Employee directory, company policies, and HR request workflows.
    - **Card 4: Reports Hub** → Link to `/reports`  
      *Subtitle:* Management reports, project status updates, and operational metrics.
-3. **Company Resources & Drive Access (2-Column Layout):**
-   - **Column A — File Storage Guidance:**  
-     *Text:* Operational files and project artifacts are securely stored in the authoritative Google Drive foundation (`MASTER COMPANY`). Direct access is role-restricted.
-   - **Column B — Security & Privacy Invariant:**  
-     *Text:* Sensitive data (salary ledgers, personal records, and confidential investments) is strictly isolated and never embedded on public pages.
+3. **Company Notices (Employee-Facing):**
+   - Add a clean **Company Notices** section for genuine announcements employees need to see.
+   - Do not display internal security rules, Drive-access explanations, or administrative implementation notes as public-facing website copy.
+   - Add only approved, current notices; do not invent announcements.
 4. **Notice Board & Operational Bulletins (Collapsible Group or Card):**
-   > **Operational Status:** System operating in Phase 2 deployment mode. Phase 3 operational Forms and Phase 4 automation routines will be linked upon verification.
+   - Use this as the Company Notices section above.
+   - Keep the section empty or show a neutral “No current announcements” message until an actual approved notice is available.
 
 ---
 
